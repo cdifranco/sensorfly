@@ -17,9 +17,11 @@
  </Memory4>
  <Project>
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
+  <SourceCodeControlLogin password="4EE6E11338F7433337510CB1628F7195" repositoryRoot="trunk/sensorfly4_1/basic_sensors" provider="Subversion" localRoot="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/" user="imaveek" database="https://sensorfly.googlecode.com/svn/" />
  </Project>
  <Register1>
-  <RegisterWindow openNodes="CPU - Current Mode" binaryNodes="" unsignedNodes="" visibleGroups="CPU - Current Mode" decimalNodes="" octalNodes="" asciiNodes="" />
+  <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
  </Register1>
  <Register2>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -47,5 +49,5 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files/>
- <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sfcode/sensorfly3.1/common" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
+ <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="" debugSearchFileMap="" fileDialogInitialDirectory="" fileDialogDefaultFilter="*.c" autoConnectCapabilities="0" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

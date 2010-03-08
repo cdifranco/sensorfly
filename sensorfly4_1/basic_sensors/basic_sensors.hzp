@@ -7,7 +7,6 @@
     <folder Name="Source Files">
       <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc"/>
       <file file_name="main.c"/>
-      <file file_name="tn_user.c"/>
       <folder Name="TNKernel">
         <file file_name="../TNKernel/tn.c"/>
         <file file_name="../TNKernel/tn_dqueue.c"/>
@@ -21,11 +20,12 @@
         <file file_name="../TNKernel/tn_port_asm.s"/>
       </folder>
       <folder Name="includes">
-        <file file_name="../common/lpc214x.h"/>
-        <file file_name="../common/tn_irq.h"/>
-        <file file_name="include/tn_user.h"/>
+        <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
+        <file file_name="../common/sensorfly.h"/>
       </folder>
       <file file_name="../common/sf_irq.c"/>
+      <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
+      <file file_name="../common/tn_user.c"/>
     </folder>
     <folder Name="System Files">
       <file file_name="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC210X_Target.js">

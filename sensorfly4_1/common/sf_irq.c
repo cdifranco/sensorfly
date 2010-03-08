@@ -5,10 +5,8 @@
 #include "../common/sf_irq.h"
 #include "../TNKernel/tn.h"
 
-/*=========================================================================*/
-/*  DEFINE: All Structures and Common Constants                            */
-/*=========================================================================*/
-typedef void (*IRQ_FUNC)(void);
+extern void tn_arm_disable_interrupts(void);
+
 
 /*=========================================================================*/
 /*  DEFINE: Definition of all local Data                                   */
@@ -50,29 +48,6 @@ void DefaultVICHandler (void)
 /*=========================================================================*/
 /*  DEFINE: All code exported                                              */
 /*=========================================================================*/
-
-/***************************************************************************/
-/*  tn_cpu_irq_handler                                                     */
-/*                                                                         */
-/*  This function will execute the user interrupt function.                */
-/*                                                                         */                                                                       
-/*  In    : none                                                           */
-/*  Out   : none                                                           */
-/*  Return: none                                                           */
-/***************************************************************************/
-void tn_cpu_irq_handler (void)
-{
-   IRQ_FUNC IrqFunc;
-   
-   IrqFunc = (IRQ_FUNC)VICVectAddr;   
-   if (IrqFunc != (IRQ_FUNC)0)
-   {
-      IrqFunc();
-   }
-
-   /* Acknowledge Interrupt */
-   VICVectAddr = 0;
-}
 
 /***************************************************************************/
 /*  tn_irq_init                                                            */

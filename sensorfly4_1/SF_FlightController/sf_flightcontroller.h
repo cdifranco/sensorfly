@@ -21,12 +21,15 @@
 #define SF_FLIGHTCONTROLLER_H_
 
 #include "../SF_Firmware/SF_Drives/sf_drive.h"
+#include "../SF_Firmware/SF_Sensors/sf_sonic.h"
+#include "../SF_Firmware/SF_Sensors/sf_gyro.h"
 
 //-----------------------------------------------------------------------------
 // Task flight controller
 //-----------------------------------------------------------------------------
-#define  TASK_FLIGHTCONTROLLER_PRIORITY   0
+#define  TASK_FLIGHTCONTROLLER_PRIORITY   1
 #define  TASK_FLIGHTCONTROLLER_STK_SIZE  128
+#define  TASK_FLIGHTCONTROLLER_TASKID 11
 
 //-----------------------------------------------------------------------------
 // Initialization

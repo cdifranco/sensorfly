@@ -1,9 +1,7 @@
 <!DOCTYPE CrossStudio_for_ARM_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints>
-  <BreakpointListItem line="67" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/common/sf_irq.c" expression="" />
- </Breakpoints>
+ <Breakpoints/>
  <ExecutionCountWindow/>
  <Memory1>
   <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
@@ -22,6 +20,7 @@
   <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;includes" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;System Files" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -51,10 +50,6 @@
  <Watch4>
   <Watches active="0" update="Never" />
  </Watch4>
- <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="16" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" y="86" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" y="72" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" left="0" selected="0" name="unnamed" top="0" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Firmware/SF_Drives/sf_drive.c" y="42" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Firmware/SF_Drives/sf_drive.c" left="0" selected="1" name="unnamed" top="0" />
- </Files>
- <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Firmware" fileDialogDefaultFilter="*.h" autoConnectCapabilities="0" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
+ <Files/>
+ <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Firmware/SF_Sensors" fileDialogDefaultFilter="*.h" autoConnectCapabilities="0" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

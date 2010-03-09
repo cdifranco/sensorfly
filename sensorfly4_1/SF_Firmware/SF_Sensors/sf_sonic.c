@@ -17,36 +17,51 @@
 *
 *******************************************************************************/
 
-#include "sensorfly.h"
-#include "sonic.h"
+#include "../../common/sensorfly.h"
+#include "sf_sonic.h"
 
+//-----------------------------------------------------------------------------
+// Local declarations
+//-----------------------------------------------------------------------------
 #define PINSEL1_ADC17_MASK ((1 << 12) | (1 << 13))
 #define PINSEL1_ADC17_EN (1 << 12)
 
-void SonicInit(void) {
-
-	// Enable ADC1.7 for SFv3
-	PINSEL1 = (PINSEL1 & ~PINSEL1_ADC17_MASK) | PINSEL1_ADC17_EN;
-
+//-----------------------------------------------------------------------------
+// Definitions
+//-----------------------------------------------------------------------------
+/*! \fn void sf_sensor_sonic_init(void)
+    \brief Initialize the ultrasound height sensor
+    \param none
+    \return none
+*/
+void sf_sensor_sonic_init() 
+{
+    // Enable ADC1.7
+    rPINSEL1 = (rPINSEL1 & ~PINSEL1_ADC17_MASK) | PINSEL1_ADC17_EN;
 }
 
-uint32_t SonicGetVal(void) {
+/*! \fn uint32_t sf_sensor_sonic_get() 
+    \brief Get height reading from ultrasound sensor
+    \param none
+    \return The value
+*/
+uint32_t sf_sensor_sonic_get() 
+{
 
-	volatile uint32_t val = 0;
+    volatile uint32_t val = 0;
 
-	AD1CR = 0x00200400 | (1 << 7);
+    rAD1CR = 0x00200400 | (1 << 7);
 
-	AD1CR |= 0x01000000;                              // START = 001 = Start Conversion Now
+    rAD1CR |= 0x01000000;                              // START = 001 = Start Conversion Now
 
-	do
-	{
-	  val = AD1GDR;                                   // Read A/D Data Register
-	}
-	while ((val & 0x80000000) == 0);                  // Wait ADC Conversion Complete
-	val = (val >> 6) & 0x03FF;                        // Shift ADC Result to Integer
+    do
+    {
+      val = rAD1GDR;                                   // Read A/D Data Register
+    }
+    while ((val & 0x80000000) == 0);                  // Wait ADC Conversion Complete
+    val = (val >> 6) & 0x03FF;                        // Shift ADC Result to Integer
 
-	AD1CR = 0x00;
+    rAD1CR = 0x00;
 
-	return val;
-
+    return val;
 }

@@ -62,6 +62,10 @@ void	console_init(void)
     /*
      * enable UART 1
      */
+	
+	PORTD |= (1 << PD0);
+	DDRD &= ~(1 << DDD0);
+		
 	AVR_UBRR1H = 0;                                    		/* USART1: 38400 bps */
 	AVR_UBRR1L = 25;
 	AVR_UCSR1C |= (1 << AVR_UCSZ11) | (1 << AVR_UCSZ10);     /* USART1: asynchronous 8N1 */

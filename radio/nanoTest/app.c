@@ -216,7 +216,8 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		address[] = {0,0,0,0,0,9};
+	MyByte8T		s_address[] = {0,0,0,0,0,1};
+	MyByte8T		d_address[] = {0,0,0,0,0,2};
 
     apl = &aplM;
 
@@ -225,11 +226,11 @@ void APLInit(void)
      * use the same MAC address. This way we need only
      * one executable for both stations.
      */
-	memcpy (apl->src, address, 6);
-	memcpy (apl->dest, address, 6);
+	memcpy (apl->src, s_address, 6);
+	memcpy (apl->dest, d_address, 6);
 	downMsg.prim = PLME_SET_REQUEST;
 	downMsg.attribute = PHY_MAC_ADDRESS1;
-	memcpy (downMsg.data, address, 6);
+	memcpy (downMsg.data, s_address, 6);
 	PLMESap (&downMsg);
 
 	/* These variables are used by the demo application.
@@ -340,6 +341,7 @@ void APLPoll (void)
 	MyInt16T c;
 	
 	static MyByte8T packets_sent = 0xFF;
+	MyByte8T power = 0;
 	
 	//int i, j;
 
@@ -439,12 +441,14 @@ void APLPoll (void)
 			printf ("                                   [1 22MHz, 4us, 2.412GHz cf, no FEC]\n");
 			printf ("                                   [2 22MHz, 4us, 2.442GHz cf, no FEC]\n");
 			printf ("                                   [3 22MHz, 4us, 2.472GHz cf, no FEC]\n");
+			printf ("pow <value>			set power	[0 - 8 ( * 8), -33dBm to 0dBm]\n");
+			printf ("ack <value>			set auto ack [0 False, 1 True]\n");
 
 			printf ("chat                   start communication\n");
 			printf ("rang                   send ranging request\n");
 			printf ("ranf                   send fast ranging request\n");
-			printf ("ptes 			         packet loss test | send packets\n");
-			printf ("plis                   packet loss test | listen packets\n");
+			printf ("ptes 			        packet loss test | send packets\n");
+			printf ("plis                   packet loss/ range test | listen packets\n");
 			printf ("help                   this menu\n");
 			printf ("[ESC]                  leave chat mode\n");
 		}
@@ -500,6 +504,42 @@ void APLPoll (void)
 				}
 
 			}
+			else if (strncmp (buf, "pow ", 4) == 0)
+			{
+				power = (MyByte8T)(atoi (&(buf[3])));
+				if (power != 0)
+				{
+					power = (power * 8) - 1;
+				}
+				downMsg.value = power;
+				downMsg.prim = PLME_SET_REQUEST;
+				downMsg.attribute = PHY_TX_POWER;
+				PLMESap (&downMsg);
+				if (downMsg.status == PHY_SUCCESS)
+				{
+					puts ("Ok");
+				}
+				else
+				{
+					puts ("invalid value");
+				}
+			}
+			else if (strncmp (buf, "ack ", 4) == 0)
+			{
+				downMsg.value = (MyByte8T)(atoi (&(buf[3])));
+				downMsg.prim = PLME_SET_REQUEST;
+				downMsg.attribute = PHY_ARQ;
+				PLMESap (&downMsg);
+				if (downMsg.status == PHY_SUCCESS)
+				{
+					puts ("Ok");
+				}
+				else
+				{
+					puts ("invalid value");
+				}
+			}
+			
 			else if (strncmp (buf, "help", 4) == 0)
 			{
 				apl->help = 0;
@@ -513,22 +553,15 @@ void APLPoll (void)
 				downMsg.value = PHY_RX_ON;
 				PLMESap (&downMsg);
 			}
-			else if (strncmp (buf, "ptes", 4) == 0)
+			else if (strncmp (buf, "rang", 4) == 0)
 			{
-				apl->mode = 4;
-				packets_received = 0;
-				
-				/* switch on receiver */
+				apl->mode = 2;
+				/* switch FEC on */
 				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
+				downMsg.attribute = PHY_FEC;
+				downMsg.value = FALSE;
 				PLMESap (&downMsg);
-			}
-			else if (strncmp (buf, "plis", 4) == 0)
-			{
-				apl->mode = 5;
-				packets_received = 0;
-				
+
 				/* switch on receiver */
 				downMsg.prim = PLME_SET_REQUEST;
 				downMsg.attribute = PHY_RX_CMD;
@@ -551,15 +584,22 @@ void APLPoll (void)
 				downMsg.value = PHY_RX_ON;
 				PLMESap (&downMsg);
 			}
-			else if (strncmp (buf, "rang", 4) == 0)
+			else if (strncmp (buf, "ptes", 4) == 0)
 			{
-				apl->mode = 2;
-				/* switch FEC on */
+				apl->mode = 4;
+				packets_received = 0;
+				
+				/* switch on receiver */
 				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_FEC;
-				downMsg.value = FALSE;
+				downMsg.attribute = PHY_RX_CMD;
+				downMsg.value = PHY_RX_ON;
 				PLMESap (&downMsg);
-
+			}
+			else if (strncmp (buf, "plis", 4) == 0)
+			{
+				apl->mode = 5;
+				packets_received = 0;
+				
 				/* switch on receiver */
 				downMsg.prim = PLME_SET_REQUEST;
 				downMsg.attribute = PHY_RX_CMD;
@@ -610,58 +650,6 @@ void APLPoll (void)
 		{
 			SendBuffer ();
 		}
-	}
-	else if (apl->mode == 5)
-	{
-		while (kbhit())
-		{
-			c = getchar ();
-			if (c == 0x1b)
-			{
-				apl->mode = 0;
-				apl->len = 0;
-				printf ("\nEnd of chat mode.\n");
-				/* switch off receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_TRX_OFF;
-				PLMESap (&downMsg);
-				return;
-			}
-		}
-	}
-	else if (apl->mode == 4)
-	{
-		/* In ptes mode sends 100 packets to peer */
-		
-		if( (apl->len == 0) && (packets_sent < 100) )
-		{
-			downMsg.data[apl->len++] = packets_sent;
-		}
-		
-		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
-		{
-			packets_sent++;
-			SendBuffer ();
-			/* reset timer */
-			apl->hwclock = hwclock ();
-		}
-
-		if(packets_sent >= 100) 
-		{
-			printf("Sent %d packets.\n", packets_sent);
-			packets_sent = 0;
-			apl->mode = 0;
-			apl->len = 0;
-			printf ("\nEnd of packet test.\n");
-			/* switch off receiver */
-			downMsg.prim = PLME_SET_REQUEST;
-			downMsg.attribute = PHY_RX_CMD;
-			downMsg.value = PHY_TRX_OFF;
-			PLMESap (&downMsg);
-		}
-		return;
-
 	}
 	else if (apl->mode == 2) 
 	{
@@ -717,5 +705,57 @@ void APLPoll (void)
 				PLMESap (&downMsg);
 			}
 			return;
+	}
+	else if (apl->mode == 4)
+	{
+		/* In ptes mode sends 100 packets to peer */
+		
+		if( (apl->len == 0) && (packets_sent < 100) )
+		{
+			downMsg.data[apl->len++] = packets_sent;
+		}
+		
+		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
+		{
+			packets_sent++;
+			SendBuffer ();
+			/* reset timer */
+			apl->hwclock = hwclock ();
+		}
+
+		if(packets_sent >= 100) 
+		{
+			printf("Sent %d packets.\n", packets_sent);
+			packets_sent = 0;
+			apl->mode = 0;
+			apl->len = 0;
+			printf ("\nEnd of packet test.\n");
+			/* switch off receiver */
+			downMsg.prim = PLME_SET_REQUEST;
+			downMsg.attribute = PHY_RX_CMD;
+			downMsg.value = PHY_TRX_OFF;
+			PLMESap (&downMsg);
+		}
+		return;
+
+	}
+	else if (apl->mode == 5)
+	{
+		while (kbhit())
+		{
+			c = getchar ();
+			if (c == 0x1b)
+			{
+				apl->mode = 0;
+				apl->len = 0;
+				printf ("\nEnd of chat mode.\n");
+				/* switch off receiver */
+				downMsg.prim = PLME_SET_REQUEST;
+				downMsg.attribute = PHY_RX_CMD;
+				downMsg.value = PHY_TRX_OFF;
+				PLMESap (&downMsg);
+				return;
+			}
+		}
 	}
 }

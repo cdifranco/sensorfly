@@ -29,6 +29,9 @@ unsigned int task_flightcontroller_stack[TASK_FLIGHTCONTROLLER_STK_SIZE];
 TN_TCB  task_flightcontroller;
 void task_flightcontroller_func(void * par);
 
+uint32_t sf_hover(uint32_t d_val);
+int32_t sf_spin(uint32_t spin);
+
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -41,7 +44,7 @@ void  sf_flightcontroller_task_init()
 {
 
    //--- Task flight controller
-   task_flightcontroller.id_task = 0;
+   task_flightcontroller.id_task = TASK_FLIGHTCONTROLLER_TASKID;
    tn_task_create(&task_flightcontroller,            //-- task TCB
                  task_flightcontroller_func,           //-- task function
                  TASK_FLIGHTCONTROLLER_PRIORITY,       //-- task priority
@@ -61,12 +64,109 @@ void  sf_flightcontroller_task_init()
 */
 void task_flightcontroller_func(void * par)
 {
+   uint32_t s = 0, z = 0, ip = 0, diff = 0, c;
+   
    /* Prevent compiler warning */
    par = par;
    
    while(1)
    {     
-      /* Sleep 100 ticks */
-      tn_task_sleep(1);
+
+      // First order filter params
+      const int a1 = 1;
+      const int b1 = 3;
+
+      static uint32_t sonicLast = 0;
+
+      // Get sensor readings
+      s = sf_sensor_sonic_get();
+      z = sf_sensor_gyro_z_get();
+
+      // Filter sonic readings
+      s = ((a1 * s) + (b1 * sonicLast))/(a1 + b1);
+      sonicLast = s;
+
+      ip = sf_hover(s);
+      diff = sf_spin(z);
+
+      sf_drive_duty_set(ip - diff, ip + diff);
+
+      /* Sleep 10 ticks */
+      tn_task_sleep(10);
    }
+}
+
+uint32_t sf_hover(uint32_t d_val) {
+
+	//PID control
+
+	static uint32_t i = 0;
+
+	static int32_t err = 0, errLast = 0, sigErr = 0;
+	static int32_t input = 0;
+	static int32_t outP = 0;
+
+	const int32_t kscale = 10000;
+	const int32_t setP = 80;
+	// scaled k
+	const int32_t kp = 2000;
+	const int32_t kd = 2000;
+	const int32_t ki = 2;
+
+
+	// First order filter params
+	const int a1 = 1;
+	const int b1 = 10;
+
+	input = d_val;
+	err = setP - input;
+
+	outP = (kp * err) + (kd * (err - errLast)) + (ki * sigErr);
+	errLast = err;
+
+	//Convert to %
+	outP = outP / 10000;
+
+	if (outP > 90)
+		outP = 90;
+	else if (outP < 10)
+		outP = 10;
+	else
+		sigErr += err;
+	return outP;
+}
+
+int32_t sf_spin(uint32_t spin) 
+{
+	//PID control
+	static uint32_t i = 0;
+
+	static int32_t err = 0, errLast = 0, sigErr = 0;
+	static int32_t input = 0;
+	static int32_t outP = 0;
+
+	const int32_t kscale = 10000;
+	const int32_t setP = 0;
+	// scaled k
+	const int32_t kp = 2000;
+	const int32_t kd = 2000;
+	const int32_t ki = 2;
+
+	input = spin;
+	err = setP - input;
+
+	outP = (kd * (err - errLast));
+	errLast = err;
+
+	//Convert to %
+	outP = outP / 10000;
+
+	if (outP > 5)
+		outP = 0;
+	else if (outP < -5)
+		outP = -5;
+	else
+		sigErr += err;
+
+	return outP;
 }

@@ -22,11 +22,15 @@
       <folder Name="includes">
         <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
         <file file_name="../common/sensorfly.h"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.h"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.h"/>
       </folder>
       <file file_name="../common/sf_irq.c"/>
       <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
       <file file_name="../common/tn_user.c"/>
       <file file_name="../SF_Firmware/SF_Drives/sf_drive.c"/>
+      <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.c"/>
+      <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.c"/>
     </folder>
     <folder Name="System Files">
       <file file_name="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC210X_Target.js">

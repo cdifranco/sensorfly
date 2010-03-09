@@ -75,10 +75,10 @@ void hardware_init (void)
    rT0PR = 0;
 
    /*
-    * Assume a CPU clock of 60MHz and a APB bus clock of 30MHz.
-    * The timer tick will be set to 1ms (30MHz / 1KHz = 30000)
+    * CPU clock of 60MHz and a APB bus clock of 30MHz.
+    * The timer tick will be set to 0.1ms (30MHz / 10KHz = 3000)
     */
-   rT0MR0 = (30000-1);
+   rT0MR0 = (3000-1);
    
    /*
     * Interrupt on MR0, an interrupt is generated when MR0 matches 

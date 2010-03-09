@@ -38,22 +38,22 @@ void sf_drive_init(void)
 {
 	uint32_t duty_cycle;
 
-	PINSEL0 |= 0x000A0000;
+	rPINSEL0 |= 0x000A0000;
 
-	PWMPR = 0;
+	rPWMPR = 0;
 	
 	// Enable PWM4 & PWM6 for output
-	PWMPCR |= 0x00005000;
-	PWMMCR |= 0x00000002;
+	rPWMPCR |= 0x00005000;
+	rPWMMCR |= 0x00000002;
 
 	duty_cycle = ((0 * PWM_FREQ) / 100);
 
-	PWMMR0  = PWM_FREQ;
-	PWMMR4	= duty_cycle;
-	PWMMR6	= duty_cycle;
+	rPWMMR0  = PWM_FREQ;
+	rPWMMR4	= duty_cycle;
+	rPWMMR6	= duty_cycle;
 
-	PWMLER = 0x00000051;
-	PWMTCR = 0x00000009;
+	rPWMLER = 0x00000051;
+	rPWMTCR = 0x00000009;
 }
 
 
@@ -69,8 +69,8 @@ void sf_drive_duty_set(uint32_t drive1DC, uint32_t drive2DC)
 	uint32_t duty_cycle;
 
 	duty_cycle = ((drive1DC * PWM_FREQ) / 100);
-	PWMMR4 = duty_cycle;
+	rPWMMR4 = duty_cycle;
 	duty_cycle = ((drive2DC * PWM_FREQ) / 100);
-	PWMMR6 = duty_cycle;
-	PWMLER = 0x00000050;
+	rPWMMR6 = duty_cycle;
+	rPWMLER = 0x00000050;
 }

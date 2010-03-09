@@ -1,9 +1,9 @@
 /*============================================================================
-  tn_user.c
+  sf_user.c
 *===========================================================================*/
-#include "../common/LPC214X.h"
-#include "../common/sf_irq.h"
-#include "../TNKernel/tn.h"
+#include "../common/sensorfly.h"
+#include "../common/tn_irq.h"
+
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
@@ -91,8 +91,21 @@ void hardware_init (void)
    /* Enable the Timer0 */   
    rT0TCR = 1;
 
-   /* Install timer0 with prio 1 */
+   /* Install timer0 with priority 1 */
    tn_irq_install(TIMER0_ID, 1, Timer0IRQHandler);
+
+   /* Set I/O port directions */
+
+   // Set P0.0-0.31 as input
+   rIO0DIR |= 0x000000;	
+   rIO0CLR |= 0x000000;
+   
+   // Set P1.22 as output
+   rIO1DIR |= 0x200000;
+   rIO1CLR |= 0x200000;
+
+   /* Initialize LED */
+   sf_led_init();
 
 }
 

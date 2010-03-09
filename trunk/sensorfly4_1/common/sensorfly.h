@@ -1,11 +1,24 @@
 #ifndef SF_SENSORFLY_H_
 #define SF_SENSORFLY_H_
 
+//-----------------------------------------------------------------------------
+// Standard Headers
+//-----------------------------------------------------------------------------
+#include <stdint.h>
+
+//-----------------------------------------------------------------------------
+// Kernel and Platform headers
+//-----------------------------------------------------------------------------
 #include "LPC214x.h"
-#include "tn_user.h"
+#include "sf_user.h"
 #include "../TNKernel/tn.h"
 #include "../TNKernel/tn_port.h"
 
-#include <stdint.h>
+//-----------------------------------------------------------------------------
+// LED declarations
+//-----------------------------------------------------------------------------
+void sf_led_init();
+void sf_led_on();
+void sf_led_off();
 
 #endif /* SF_SENSORFLY_H_ */

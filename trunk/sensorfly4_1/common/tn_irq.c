@@ -2,7 +2,7 @@
 /*  Includes                                                               */
 /*=========================================================================*/
 #include "../common/LPC214X.h"
-#include "../common/sf_irq.h"
+#include "../common/tn_irq.h"
 #include "../TNKernel/tn.h"
 
 extern void tn_arm_disable_interrupts(void);

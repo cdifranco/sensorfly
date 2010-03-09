@@ -86,22 +86,22 @@ rMAMCR:          .word  0xE01FC000
 tn_startup_hardware_init:
       ldr r0, =SCB_BASE
 #if defined(PLLCFG_VAL) && !defined(NO_PLL_ENABLE)
-      /* Configure PLL Multiplier/Divider */
+      // Configure PLL Multiplier/Divider 
       ldr r1, =PLLCFG_VAL
       str r1, [r0, #SCB_PLLCFG_OFFS]
-      /* Enable PLL */
+      // Enable PLL 
       mov r1, #0x1
       str r1, [r0, #SCB_PLLCON_OFFS]
       mov r1, #0xAA
       str r1, [r0, #SCB_PLLFEED_OFFS]
       mov r1, #0x55
       str r1, [r0, #SCB_PLLFEED_OFFS]
-      /* Wait for PLL to lock */
+      // Wait for PLL to lock 
     pll_lock_loop:
       ldr r1, [r0, #SCB_PLLSTAT_OFFS]
       tst r1, #0x400
       beq pll_lock_loop
-      /* PLL Locked, connect PLL as clock source */
+      // PLL Locked, connect PLL as clock source 
       mov r1, #0x3
       str r1, [r0, #SCB_PLLCON_OFFS]
       mov r1, #0xAA
@@ -110,18 +110,18 @@ tn_startup_hardware_init:
       str r1, [r0, #SCB_PLLFEED_OFFS]
 #endif
 
-     /* Flash speed */
-     /* rMAMTIM = 3 */
+     // Flash speed 
+     // rMAMTIM = 3 
      ldr   r0, rMAMTIM
      mov   r1, #3
      strb  r1, [r0]
 
-     /* rMAMCR  = 2 */
+     // rMAMCR  = 2 
      ldr   r0, rMAMCR
      mov   r1, #2
      strb  r1, [r0]
 
-     /* Configure the VPB clock */
+     // Configure the VPB clock 
      ldr r1, =VPBDIV_VAL
      str r1, [r0, #SCB_VPBDIV_OFFS]
 

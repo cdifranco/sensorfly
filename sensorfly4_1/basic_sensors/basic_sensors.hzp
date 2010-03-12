@@ -19,18 +19,23 @@
         <file file_name="../TNKernel/tn_utils.c"/>
         <file file_name="../TNKernel/tn_port_asm.s"/>
       </folder>
-      <folder Name="includes">
-        <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
-        <file file_name="../common/sensorfly.h"/>
+      <folder Name="SF_Firmware">
+        <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.c"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.c"/>
+        <file file_name="../SF_Firmware/SF_Drives/sf_drive.c"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_compass.h"/>
         <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.h"/>
         <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.h"/>
       </folder>
-      <file file_name="../common/sf_irq.c"/>
-      <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
-      <file file_name="../common/tn_user.c"/>
-      <file file_name="../SF_Firmware/SF_Drives/sf_drive.c"/>
-      <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.c"/>
-      <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.c"/>
+      <folder Name="common">
+        <file file_name="../common/sf_led.c"/>
+        <file file_name="../common/lpc214x.h"/>
+        <file file_name="../common/sf_user.h"/>
+        <file file_name="../common/tn_irq.h"/>
+        <file file_name="../common/sf_user.c"/>
+        <file file_name="../common/tn_irq.c"/>
+        <file file_name="../common/sensorfly.h"/>
+      </folder>
     </folder>
     <folder Name="System Files">
       <file file_name="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC210X_Target.js">

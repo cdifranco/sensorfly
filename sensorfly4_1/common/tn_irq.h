@@ -30,5 +30,4 @@ void tn_irq_init (void);
 int tn_irq_install (TN_IRQ_ID   id,
                     TN_IRQ_PRIO prio,
                     void (*irq_func)(void));
-
 #endif

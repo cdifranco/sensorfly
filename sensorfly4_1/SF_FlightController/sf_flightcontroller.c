@@ -29,8 +29,8 @@ unsigned int task_flightcontroller_stack[TASK_FLIGHTCONTROLLER_STK_SIZE];
 TN_TCB  task_flightcontroller;
 void task_flightcontroller_func(void * par);
 
-uint32_t sf_hover(uint32_t d_val);
-int32_t sf_spin(uint32_t spin);
+uint32_t sf_hover_controller(uint32_t d_val);
+int32_t sf_spin_controller(uint32_t spin);
 
 //-----------------------------------------------------------------------------
 // Definitions
@@ -42,9 +42,13 @@ int32_t sf_spin(uint32_t spin);
 */
 void  sf_flightcontroller_task_init()
 {
+   // Initialize sensors and drives
+   sf_sensor_sonic_init();
+   sf_sensor_gyro_init();
+   sf_drive_init();
 
    //--- Task flight controller
-   task_flightcontroller.id_task = TASK_FLIGHTCONTROLLER_TASKID;
+   task_flightcontroller.id_task = 0; /*!< Must be 0 for all tasks */
    tn_task_create(&task_flightcontroller,            //-- task TCB
                  task_flightcontroller_func,           //-- task function
                  TASK_FLIGHTCONTROLLER_PRIORITY,       //-- task priority
@@ -86,8 +90,8 @@ void task_flightcontroller_func(void * par)
       s = ((a1 * s) + (b1 * sonicLast))/(a1 + b1);
       sonicLast = s;
 
-      ip = sf_hover(s);
-      diff = sf_spin(z);
+      ip = sf_hover_controller(s);
+      diff = sf_spin_controller(z);
 
       sf_drive_duty_set(ip - diff, ip + diff);
 
@@ -96,7 +100,12 @@ void task_flightcontroller_func(void * par)
    }
 }
 
-uint32_t sf_hover(uint32_t d_val) {
+/*! \fn uint32_t sf_hover_controller(uint32_t d_val)
+    \brief PID Controller for altitude control
+    \param d_val The altitude - sonic sensor reading
+    \return The drive duty cycle
+*/
+uint32_t sf_hover_controller(uint32_t d_val) {
 
 	//PID control
 
@@ -136,7 +145,12 @@ uint32_t sf_hover(uint32_t d_val) {
 	return outP;
 }
 
-int32_t sf_spin(uint32_t spin) 
+/*! \fn int32_t sf_spin_controller(uint32_t spin) 
+    \brief PID controller for spin/attitude control
+    \param spin The z axis velocity - Gyro reading
+    \return 1/2 of the offset between CW and CCW drives
+*/
+int32_t sf_spin_controller(uint32_t spin) 
 {
 	//PID control
 	static uint32_t i = 0;

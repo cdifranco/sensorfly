@@ -1,15 +1,27 @@
-/*
- * gyro.h
- *
- *  Created on: Jun 18, 2009
- *      Author: Aveek
- */
+/******************************************************************************
+*  SensorFly, a controlled-mobile sensor networking platform.
+*  Copyright (C) 2010, Carnegie Mellon University
+*  All rights reserved.
+*
+*  This program is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, version 2.0 of the License.
+*
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*******************************************************************************/
 
-#ifndef GYRO_H_
-#define GYRO_H_
+#ifndef SF_GYRO_H_
+#define SF_GYRO_H_
 
-void GyroInit(void);
-uint32_t GyroGetZ(void);
-uint32_t GyroGetZ45(void);
+void sf_sensor_gyro_init();
+uint32_t sf_sensor_gyro_z_get();
+uint32_t sf_sensor_gyro_z45_get();
 
-#endif /* GYRO_H_ */
+#endif /* SF_GYRO_H_ */

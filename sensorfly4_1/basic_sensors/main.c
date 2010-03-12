@@ -18,11 +18,7 @@
 *******************************************************************************/
 
 #include <stdio.h>
-#include <string.h>
 #include "../common/sensorfly.h"
-#include "../SF_FlightController/sf_flightcontroller.h"
-
-#define LED_SEL 0x800000 
 
 //-----------------------------------------------------------------------------
 // Local declarations
@@ -47,12 +43,6 @@ int main(void)
 {
    hardware_init();
 
-   // Set IO directions
-   rIO0DIR |= 0x800000;	
-   rIO0CLR |= 0x800000;
-   rIO1DIR |= 0x200000;
-   rIO1CLR |= 0x200000;
-
    tn_start_system(); //-- Never returns
 
    return 1;
@@ -65,11 +55,9 @@ int main(void)
 */
 void  tn_app_init()
 {
-   //--- Task flight APP
-   sf_flightcontroller_task_init();
 
    //--- Task application
-   task_app.id_task = 1;
+   task_app.id_task = 0; /*!< Must be 0 for all tasks */
    tn_task_create(&task_app,            //-- task TCB
                  task_app_func,           //-- task function
                  TASK_APP_PRIORITY,       //-- task priority
@@ -97,17 +85,16 @@ void task_app_func(void * par)
    {
       if (Blink & 1)
       {
-          // P0.10 & P0.11 output 
-         rIO0CLR = LED_SEL;
+         sf_led_on();
       }
       else
       {
-         rIO0SET = LED_SEL;
+         sf_led_off();
       }   
       
       Blink = Blink ^ 1;
       
-      /* Sleep 100 ticks */
-      tn_task_sleep(100);
+      /* Sleep 1000 ticks */
+      tn_task_sleep(1000);
    }
 }

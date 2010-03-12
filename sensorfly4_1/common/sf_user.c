@@ -9,6 +9,7 @@
 /*  DEFINE: All Structures and Common Constants                            */
 /*=========================================================================*/
 #define TIMER0_ID 4
+#define UART0_ID 6
 
 typedef void (*IRQ_FUNC)(void);
 
@@ -32,7 +33,7 @@ extern void tn_arm_enable_interrupts(void);
 /*  Out   : none                                                           */
 /*  Return: none                                                           */
 /***************************************************************************/
-void Timer0IRQHandler (void)
+void sf_timer0_int_handler (void)
 {
    /* Clear timer interrupt */
    rT0IR = 1;
@@ -54,58 +55,66 @@ void Timer0IRQHandler (void)
 /***************************************************************************/
 void hardware_init (void)
 {
-   /*
-    * Init the interrupt system first
-    */            
-   tn_irq_init();
+  /*
+  * Init the interrupt system first
+  */            
+  tn_irq_init();
 
-   /*
-    * The CPU clock is set to 60MHz and the APB bus to 30MHz
-    * by the startup code from CrossWorks for ARM. Here we must 
-    * only init the timer. Setup the Timer0 with a period of 1ms.
-    */
+  
+  /* Set I/O port directions */
+  // Set P0.0-0.31 as input
+  rIO0DIR |= 0x000000;	
+  rIO0CLR |= 0x000000;
+  
+  // Set P1.22 as output
+  rIO1DIR |= 0x200000;
+  rIO1CLR |= 0x200000;
+  
+  /* Initialize the UART */
+  sf_uart0_init();
 
-   /* Disable Timer0 */
-   rT0TCR = 0;
-   
-   /* 
-    * Set the prescale counter.
-    * This causes the TC to increment on every PCLK when PR = 0
-    */
-   rT0PR = 0;
-
-   /*
-    * CPU clock of 60MHz and a APB bus clock of 30MHz.
-    * The timer tick will be set to 0.1ms (30MHz / 10KHz = 3000)
-    */
-   rT0MR0 = (3000-1);
-   
-   /*
-    * Interrupt on MR0, an interrupt is generated when MR0 matches 
-    * the value in the TC.
-    *
-    * Reset on MR0: the TC will be reset if MR0 matches it.
-    */
-   rT0MCR = 0x0003;
-
-   /* Enable the Timer0 */   
-   rT0TCR = 1;
-
-   /* Install timer0 with priority 1 */
-   tn_irq_install(TIMER0_ID, 1, Timer0IRQHandler);
-
-   /* Set I/O port directions */
-
-   // Set P0.0-0.31 as input
-   rIO0DIR |= 0x000000;	
-   rIO0CLR |= 0x000000;
-   
-   // Set P1.22 as output
-   rIO1DIR |= 0x200000;
-   rIO1CLR |= 0x200000;
-
-   /* Initialize LED */
-   sf_led_init();
+  /*
+  * The CPU clock is set to 60MHz and the APB bus to 30MHz
+  * by the startup code from CrossWorks for ARM. Here we must 
+  * only init the timer. Setup the Timer0 with a period of 1ms.
+  */
+  
+  /* Disable Timer0 */
+  rT0TCR = 0;
+  
+  /* 
+  * Set the prescale counter.
+  * This causes the TC to increment on every PCLK when PR = 0
+  */
+  rT0PR = 0;
+  
+  /*
+  * CPU clock of 60MHz and a APB bus clock of 30MHz.
+  * The timer tick will be set to 0.1ms (30MHz / 10KHz = 3000)
+  */
+  rT0MR0 = (3000-1);
+  
+  /*
+  * Interrupt on MR0, an interrupt is generated when MR0 matches 
+  * the value in the TC.
+  *
+  * Reset on MR0: the TC will be reset if MR0 matches it.
+  */
+  rT0MCR = 0x0003;
+  
+  /* Enable the Timer0 */   
+  rT0TCR = 1;
+  
+  
+  /* Install UART0 with priority 1 */
+  tn_irq_install(UART0_ID, 1, sf_uart0_int_handler);
+  
+  /* Install timer0 with priority 2 */
+  tn_irq_install(TIMER0_ID, 2, sf_timer0_int_handler);
+  
+  
+  /* Initialize LED */
+  sf_led_init();
 
 }
 
@@ -124,6 +133,9 @@ void hardware_init (void)
 /***************************************************************************/
 void tn_cpu_int_enable (void)
 {
+   /* Enable UART0 interrupt */
+   VICIntEnable = (1<<UART0_ID);
+
    /* Enable Timer0 interrupt */
    VICIntEnable = (1<<TIMER0_ID);
    

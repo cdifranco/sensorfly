@@ -42,6 +42,10 @@
         <file file_name="../SF_Network/sf_network.c"/>
         <file file_name="../SF_Network/sf_network.h"/>
       </folder>
+      <folder Name="SF_FlightController">
+        <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
+        <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
+      </folder>
     </folder>
     <folder Name="System Files">
       <file file_name="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC210X_Target.js">

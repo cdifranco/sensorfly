@@ -56,6 +56,9 @@ int main(void)
 void  tn_app_init()
 {
 
+   //--- Flight Controller task
+   sf_flightcontroller_task_init();
+
    //--- Task application
    task_app.id_task = 0; /*!< Must be 0 for all tasks */
    tn_task_create(&task_app,            //-- task TCB

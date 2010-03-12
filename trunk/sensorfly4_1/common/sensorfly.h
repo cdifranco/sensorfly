@@ -5,6 +5,7 @@
 // Standard Headers
 //-----------------------------------------------------------------------------
 #include <stdint.h>
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 // Kernel and Platform headers
@@ -13,6 +14,8 @@
 #include "sf_user.h"
 #include "../TNKernel/tn.h"
 #include "../TNKernel/tn_port.h"
+
+#include "../SF_Firmware/SF_UART/sf_uart.h"
 
 //-----------------------------------------------------------------------------
 // LED declarations

@@ -29,7 +29,6 @@
 //-----------------------------------------------------------------------------
 #define  TASK_FLIGHTCONTROLLER_PRIORITY   1
 #define  TASK_FLIGHTCONTROLLER_STK_SIZE  128
-#define  TASK_FLIGHTCONTROLLER_TASKID 11
 
 //-----------------------------------------------------------------------------
 // Initialization

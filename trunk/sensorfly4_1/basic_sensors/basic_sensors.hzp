@@ -26,6 +26,8 @@
         <file file_name="../SF_Firmware/SF_Sensors/sf_compass.h"/>
         <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.h"/>
         <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.h"/>
+        <file file_name="../SF_Firmware/SF_UART/sf_uart.c"/>
+        <file file_name="../SF_Firmware/SF_UART/sf_uart.h"/>
       </folder>
       <folder Name="common">
         <file file_name="../common/sf_led.c"/>
@@ -35,6 +37,10 @@
         <file file_name="../common/sf_user.c"/>
         <file file_name="../common/tn_irq.c"/>
         <file file_name="../common/sensorfly.h"/>
+      </folder>
+      <folder Name="SF_Network">
+        <file file_name="../SF_Network/sf_network.c"/>
+        <file file_name="../SF_Network/sf_network.h"/>
       </folder>
     </folder>
     <folder Name="System Files">

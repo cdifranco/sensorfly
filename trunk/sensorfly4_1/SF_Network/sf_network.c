@@ -171,7 +171,7 @@ void sf_network_tx()
              (((unsigned int)tx_block) & 0x00FFFFFF);
      tx_mem = (unsigned char *) mem_addr;
      for(i = 0; i < len; i++)
-        rU1THR = tx_mem[i];
+        rU0THR = tx_mem[i];
   
      tn_fmem_release(&TxUART0MemPool,(void*)tx_mem);
   }

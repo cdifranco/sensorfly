@@ -49,7 +49,7 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" y="19" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" left="0" selected="1" name="unnamed" top="3" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" y="19" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="24" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/common/sf_user.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/common/sf_user.c" left="0" selected="0" name="unnamed" top="123" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/common/tn_irq.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/common/tn_irq.c" left="0" selected="0" name="unnamed" top="39" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" left="0" selected="0" name="unnamed" top="0" />

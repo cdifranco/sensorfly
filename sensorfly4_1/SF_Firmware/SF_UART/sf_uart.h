@@ -39,12 +39,6 @@
 #define LSR_THR_EMPTY           	(uint32_t)0x00000020
 #define LSR_RBR_EMPTY           	(uint32_t)0x00000001
 
-
-#define BAUD_9600_MSB                   0x00
-#define BAUD_9600_LSB	    	  	0x61
-#define BAUD_115200_MSB			0x00
-#define BAUD_115200_LSB	    	  	0x08
-
 #define IER_RBR		0x01
 #define IER_THRE	0x02
 #define IER_RLS		0x04

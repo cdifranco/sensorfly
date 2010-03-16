@@ -32,10 +32,9 @@ void sf_uart0_init()
   // enable access to divisor latch regs
   rU0LCR = LCR_ENABLE_LATCH_ACCESS;
 
-  // set divisor for desired baud
-  rU0FDR = 0x00000010;
-  rU0DLM = BAUD_9600_MSB; //BAUD_115200_MSB;
-  rU0DLL = BAUD_9600_LSB; //BAUD_115200_LSB;
+  // set divisor for 38400 baud rate
+  rU0DLM = 0;
+  rU0DLL = 49;
 
   // disable access to divisor latch regs
   rU0LCR = LCR_DISABLE_LATCH_ACCESS;

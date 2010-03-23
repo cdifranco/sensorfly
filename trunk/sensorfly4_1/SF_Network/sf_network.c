@@ -116,7 +116,7 @@ void  sf_network_init()
 
 }
 
-void sf_network_wait_until_rx()
+void sf_network_wait_until_pkt_received()
 {
   int rc;
   int i;
@@ -150,7 +150,7 @@ void sf_network_wait_until_rx()
 }
 
 
-void sf_network_tx()
+void sf_network_txqueue_send()
 {
   int rc;
   int i;
@@ -162,6 +162,9 @@ void sf_network_tx()
   rc = tn_queue_receive(&queueTxUART0, (void **)&tx_block, TN_WAIT_INFINITE);
   if(rc == TERR_NO_ERR)
   {
+     //-- Wait for radio CTS
+     sf_uart0_cts_wait();
+     
      //-- Wait UART Tx FIFO interrupt (here - UART Tx FIFO is empty)
   
      tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
@@ -175,4 +178,14 @@ void sf_network_tx()
   
      tn_fmem_release(&TxUART0MemPool,(void*)tx_mem);
   }
+}
+
+/*! \fn 
+    \brief
+    \param
+    \return
+*/
+void sf_network_tx_enqueue(unsigned char * buf, int size)
+{
+  sf_uart0_enqueue(buf,size);
 }

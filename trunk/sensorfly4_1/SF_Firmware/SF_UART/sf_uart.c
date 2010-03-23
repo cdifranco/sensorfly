@@ -24,10 +24,18 @@
 #define TO_INT    (0x6<<1)
 #define TX_INT    (0x1<<1)
 
+// Pin 0.21
+#define CTS_MASK (1<<22)
+// Pin 0.20
+#define RTS_MASK (1<<21)
+
 void sf_uart0_init()
 {
   //-- Pins P0.0-TXD0 & P0.1-RXD0
   rPINSEL0 |=   1 |  (1<<2);
+
+  // Pins 0.20 and 0.21 RTS(output) & CTS(input)
+  rIO0DIR |= (1 << 21);
 
   // enable access to divisor latch regs
   rU0LCR = LCR_ENABLE_LATCH_ACCESS;
@@ -51,6 +59,9 @@ void sf_uart0_init()
   //-- setup line control reg - disable break transmission, even parity,
   //-- 1 stop bit, 8 bit chars
   rU0LCR = 0x13;
+
+  // init RTS to high
+  sf_uart0_rts_set();
 }
 
 void sf_uart0_int_handler()
@@ -195,4 +206,36 @@ int sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte)
     }
   }
   return 0;
+}
+
+/*! \fn 
+    \brief
+    \param
+    \return
+*/
+void sf_uart0_cts_wait()
+{
+  volatile uint32_t flag;
+  flag = rIO0PIN;
+  while(~(flag & CTS_MASK));
+}
+
+/*! \fn 
+    \brief
+    \param
+    \return
+*/
+void sf_uart0_rts_set()
+{
+  rIO0CLR |= RTS_MASK;
+}
+
+/*! \fn 
+    \brief
+    \param
+    \return
+*/
+void sf_uart0_rts_clr()
+{
+  rIO0SET |= RTS_MASK;
 }

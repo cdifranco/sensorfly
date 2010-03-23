@@ -91,7 +91,7 @@ void task_flightcontroller_func(void * par)
       sonicLast = s;
 
       ip = sf_hover_controller(s);
-      diff = sf_spin_controller(z);
+      //diff = sf_spin_controller(z);
 
       sf_drive_duty_set(ip - diff, ip + diff);
 

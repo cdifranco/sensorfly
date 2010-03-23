@@ -19,8 +19,8 @@
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
-  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Firmware" name="unnamed" />
-  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;common" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_FlightController" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Network" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -51,7 +51,9 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" left="0" selected="1" name="unnamed" top="57" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="72" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" y="93" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" left="0" selected="0" name="unnamed" top="138" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Network/sf_network.c" y="0" path="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_Network/sf_network.c" left="0" selected="0" name="unnamed" top="159" />
  </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

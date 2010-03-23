@@ -116,7 +116,7 @@ void  sf_network_init()
 
 }
 
-void sf_network_wait_until_pkt_received()
+void sf_network_wait_until_rx()
 {
   int rc;
   int i;
@@ -150,7 +150,7 @@ void sf_network_wait_until_pkt_received()
 }
 
 
-void sf_network_txqueue_send()
+void sf_network_tx_send()
 {
   int rc;
   int i;
@@ -163,7 +163,7 @@ void sf_network_txqueue_send()
   if(rc == TERR_NO_ERR)
   {
      //-- Wait for radio CTS
-     sf_uart0_cts_wait();
+     // sf_uart0_cts_wait();
      
      //-- Wait UART Tx FIFO interrupt (here - UART Tx FIFO is empty)
   

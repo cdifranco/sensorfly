@@ -43,6 +43,8 @@ int main(void)
 {
    hardware_init();
 
+   sf_network_init();
+
    tn_start_system(); //-- Never returns
 
    return 1;
@@ -81,6 +83,8 @@ void task_app_func(void * par)
 {
    unsigned short Blink = 1;
 
+   char * buf = "Hello World\n";
+
    /* Prevent compiler warning */
    par = par;
    
@@ -96,6 +100,9 @@ void task_app_func(void * par)
       }   
       
       Blink = Blink ^ 1;
+
+      sf_network_tx_enqueue(buf, strlen(buf));
+      sf_network_tx_send();
       
       /* Sleep 1000 ticks */
       tn_task_sleep(1000);

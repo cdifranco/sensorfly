@@ -89,4 +89,11 @@ int  sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte);
 void sf_uart0_init();
 void sf_uart0_int_handler();
 
+//-----------------------------------------------------------------------------
+// RTS & CTS with the Radio
+//-----------------------------------------------------------------------------
+void sf_uart0_cts_wait();
+void sf_uart0_rts_set();
+void sf_uart0_rts_clr();
+
 #endif /* SF_UART_H_ */

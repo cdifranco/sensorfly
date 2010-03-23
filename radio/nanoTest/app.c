@@ -237,7 +237,7 @@ void APLInit(void)
      * They are used by the user interface
      */
     apl->hwclock = 0;
-	apl->mode = 0;
+	apl->mode = 1;
 	apl->help = 0;
 	apl->len = 0;
 
@@ -250,11 +250,17 @@ void APLInit(void)
 	apl->tkey[3] = FALSE;
 #	endif /* CONFIG_USE_KEYS */
 
-	/* switch off receiver */
+	/* switch on receiver */
 	downMsg.prim = PLME_SET_REQUEST;
 	downMsg.attribute = PHY_RX_CMD;
-	downMsg.value = PHY_TRX_OFF;
+	downMsg.value = PHY_RX_ON;
 	PLMESap (&downMsg);
+
+	// /* switch off receiver */
+	// downMsg.prim = PLME_SET_REQUEST;
+	// downMsg.attribute = PHY_RX_CMD;
+	// downMsg.value = PHY_TRX_OFF;
+	// PLMESap (&downMsg);
 }
 
 /**
@@ -267,28 +273,34 @@ void APLInit(void)
 void SendBuffer (void)
 /***************************************************************************/
 {
+	// clear RTS
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
 	SendMsg (&downMsg);
+	// Set RTS
 }
 
 
 void SendRange (void)
 {
+	// clear RTS
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_RANGING_REQUEST;
 	apl->len = 0;
 	SendMsg (&downMsg);
+	// Set RTS
 }
 
 void SendFastRange (void)
 {
+	// clear RTS
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_RANGING_FAST_REQUEST;
 	apl->len = 0;
 	SendMsg (&downMsg);
+	// Set RTS
 }
 
 #define CONFIG_ALIVE_LED 1

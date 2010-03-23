@@ -20,8 +20,8 @@
 #define SF_NETWORK_H_
 
 void sf_network_init();
-void sf_network_wait_until_pkt_received();
+void sf_network_wait_until_rx();
 void sf_network_tx_enqueue();
-void sf_network_txqueue_send();
+void sf_network_tx_send();
 
 #endif /* SF_NETWORK_H_ */

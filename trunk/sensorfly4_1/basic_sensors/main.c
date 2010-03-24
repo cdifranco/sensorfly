@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include "../common/sensorfly.h"
+#include "../SF_Network/sf_network.h"
+#include "../SF_FlightController/sf_flightcontroller.h"
 
 //-----------------------------------------------------------------------------
 // Local declarations

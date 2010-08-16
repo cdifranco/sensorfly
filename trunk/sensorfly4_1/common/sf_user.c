@@ -3,6 +3,7 @@
 *===========================================================================*/
 #include "../common/sensorfly.h"
 #include "../common/tn_irq.h"
+#include "../SF_Firmware/SF_Sensors/sf_compass.h"
 
 
 /*=========================================================================*/
@@ -62,13 +63,13 @@ void hardware_init (void)
 
   
   /* Set I/O port directions */
-  // Set P0.0-0.31 as input
-  rIO0DIR |= 0x000000;	
-  rIO0CLR |= 0x000000;
+  // Set P0.0-0.31 as input, but later one of these pins will be set as output for enabling flow control with the radio
+  rIO0DIR = 0x000000;	
+  rIO0CLR = 0x000000;
   
-  // Set P1.22 as output
-  rIO1DIR |= 0x200000;
-  rIO1CLR |= 0x200000;
+  // Set P1.22 as output (UART)
+  rIO1DIR = 0x200000;
+  rIO1CLR = 0x200000;
   
   /* Initialize the UART */
   sf_uart0_init();
@@ -115,6 +116,9 @@ void hardware_init (void)
   
   /* Initialize LED */
   sf_led_init();
+
+  //enable following line if sensorfly has a compass chip
+  //setHeadingRefreshRateTo10Hz_itsTheMaximum();
 
 }
 

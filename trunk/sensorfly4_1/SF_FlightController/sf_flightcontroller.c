@@ -49,7 +49,7 @@ void  sf_flightcontroller_task_init()
 
    //--- Task flight controller
    task_flightcontroller.id_task = 0; /*!< Must be 0 for all tasks */
-   tn_task_create(&task_flightcontroller,            //-- task TCB
+   /*tn_task_create(&task_flightcontroller,            //-- task TCB
                  task_flightcontroller_func,           //-- task function
                  TASK_FLIGHTCONTROLLER_PRIORITY,       //-- task priority
                  &(task_flightcontroller_stack         //-- task stack first addr in memory
@@ -57,7 +57,7 @@ void  sf_flightcontroller_task_init()
                  TASK_FLIGHTCONTROLLER_STK_SIZE,       //-- task stack size (in int,not bytes)
                  NULL,                           //-- task function parameter
                  TN_TASK_START_ON_CREATION     //-- Creation option
-                 );
+                 );*/
 
 }
 

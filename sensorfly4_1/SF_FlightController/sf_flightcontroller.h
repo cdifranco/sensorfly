@@ -28,12 +28,20 @@
 // Task flight controller
 //-----------------------------------------------------------------------------
 #define  TASK_FLIGHTCONTROLLER_PRIORITY   1
-#define  TASK_FLIGHTCONTROLLER_STK_SIZE  128
+#define  TASK_FLIGHTCONTROLLER_STK_SIZE  256
+
+//-----------------------------------------------------------------------------
+// Task Get Heading
+//-----------------------------------------------------------------------------
+#define  TASK_GET_HEADING_PRIORITY   1
+#define  TASK_GET_HEADING_STK_SIZE  128
 
 //-----------------------------------------------------------------------------
 // Initialization
 //-----------------------------------------------------------------------------
 void  sf_flightcontroller_task_init(void);
+int16_t sf_heading_controller();
+int32_t get_gyro_zero();
 
 //-----------------------------------------------------------------------------
 // Navigation API

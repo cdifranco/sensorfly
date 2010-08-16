@@ -307,8 +307,8 @@ int sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte)
 */
 void sf_uart0_cts_wait()
 {
-  //comment out next line to test sending messages to radio in case radio doesn't work for some odd reason
-  //while(!(rIO0PIN & CTS_MASK));
+  //comment out next line to force send messages to radio in case radio doesn't signal CTS for some odd reason
+  while(!(rIO0PIN & CTS_MASK));
 }
 
 /*! \fn 

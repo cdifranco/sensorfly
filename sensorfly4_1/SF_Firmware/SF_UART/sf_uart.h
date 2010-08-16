@@ -19,6 +19,9 @@
 #ifndef SF_UART_H_
 #define SF_UART_H_
 
+#ifndef SF_NETWORK_H_
+#include "../../SF_Network/sf_network.h"
+#endif
 //-----------------------------------------------------------------------------
 //  UART PARAMS
 //-----------------------------------------------------------------------------
@@ -35,6 +38,7 @@
 #define LCR_DISABLE_LATCH_ACCESS 	(uint32_t)0x00000000
 #define LCR_ENABLE_LATCH_ACCESS  	(uint32_t)0x00000080
 #define LCR_CHAR_LENGTH_8        	(uint32_t)0x00000003
+#define LCR_ENABLE_FIFO                 (uint32_t)0x00000001
 
 #define LSR_THR_EMPTY           	(uint32_t)0x00000020
 #define LSR_RBR_EMPTY           	(uint32_t)0x00000001
@@ -70,7 +74,6 @@ extern  TN_FMP  TxUART0MemPool;
 extern  TN_SEM  semTxUART0;
 extern  TN_SEM  semFifoEmptyTxUART0;
 
-
 //-----------------------------------------------------------------------------
 // PROTOTYPES
 //-----------------------------------------------------------------------------
@@ -85,6 +88,7 @@ void sf_uart0_enqueue(unsigned char * buf, int size);
 void sf_uart0_str_enqueue(unsigned char * buf);
 int  sf_uart0_rx(unsigned char * buf, unsigned char in_byte, int max_buf_size);
 int  sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte);
+Read_Sf_packet_state sf_uart0_Sf_packet_rx ( Sf_packet *output_area, unsigned char *rcvd_data, int len, char tag );
 
 void sf_uart0_init();
 void sf_uart0_int_handler();

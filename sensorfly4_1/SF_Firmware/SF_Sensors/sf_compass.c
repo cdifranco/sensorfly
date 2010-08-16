@@ -148,6 +148,33 @@ uint8_t setHeadingRefreshRateTo10Hz_itsTheMaximum() {
 	StopI2C();
 }
 
+uint8_t setIIRFilterTo14_itsTheMaximum() {	
+	InitI2C();
+
+	if (SendI2CAddress((uint8_t)SLAV_ADD_W)) {
+		StopI2C();
+		return 10;
+	}
+
+	if (WriteI2C((uint8_t)WRITE_EEPROM_CMD)) {
+		StopI2C();
+		return 20;
+	}
+	else {
+		if (WriteI2C((uint8_t)0x14)) {  // register 0x014 controls the IIR Filter
+			StopI2C();
+			return 30;
+		}
+		else {
+			if (WriteI2C((uint8_t)0x0E)) {  // the value 0x0F means we are requesting each compass reading to be averaged based on the last 14 readings (it's the maximum).
+				StopI2C();
+				return 40;
+			}
+		}
+	}
+
+	StopI2C();
+}
 
 uint8_t SendI2CAddress(uint8_t Addr_S) {
     uint8_t r;

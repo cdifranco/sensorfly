@@ -20,8 +20,10 @@
 #ifndef SF_GYRO_H_
 #define SF_GYRO_H_
 
+//#define AZ_ZERO 256 //middle of scale in "auto-zeroed" gyro. Diego 06072010
+
 void sf_sensor_gyro_init();
 uint32_t sf_sensor_gyro_z_get();
-uint32_t sf_sensor_gyro_z45_get();
-
+uint32_t sf_sensor_gyro_z45_get(); //auto zero for better range. Diego 06072010
+void sf_sensor_gyro_auto_zero();
 #endif /* SF_GYRO_H_ */

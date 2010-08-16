@@ -118,7 +118,7 @@ void hardware_init (void)
   sf_led_init();
 
   //enable following line if sensorfly has a compass chip
-  //setHeadingRefreshRateTo10Hz_itsTheMaximum();
+  //setHeadingRefreshRateTo10Hz_itsTheMaximum(); //provided in sf_compass.c
 
 }
 

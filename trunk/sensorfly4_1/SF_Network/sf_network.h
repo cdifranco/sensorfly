@@ -52,7 +52,7 @@ typedef enum {
     range_listen,
     goto_send_mode,
     incomming_data,  // source is same as last source
-    incomming_range_indication,
+     incomming_range_indication,
     incomming_data_but_source_changed  // source is prefixed to the data
 } radio_msg_type;
 

@@ -1,0 +1,28 @@
+#if multiple radios are connected and ready to be programmed, we need to specify a serial number after the usb param in the avrdude command.
+#the serialnumbers of the devices can be found by running the avrdude command and specifying an invalid usb port (e.g. usb:xx) and enabling verbosity,
+#something like   avrdude -p m644 -P usb:asdf -c avrispmkII -U flash:w:main.hex -v
+
+# the serial numbers I've found so far.
+
+serial_number_for_left="000200036997";
+serial_number_for_right="000200037019";
+
+make clean
+make
+
+SERIAL_NO="";
+if [ "left" == "$1" ]; then
+      SERIAL_NO="$serial_number_for_left";
+else 
+   if [ "right" == "$1" ]; then
+   	SERIAL_NO="$serial_number_for_right";
+   fi;
+fi;
+
+if [ "$SERIAL_NO" != "" ]; then
+   avrdude -p m644 -P usb:"$SERIAL_NO"  -c avrispmkII -U flash:w:main.hex -v
+else
+   avrdude -p m644 -P usb -c avrispmkII -U flash:w:main.hex -v
+fi;
+
+exit 0;

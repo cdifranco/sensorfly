@@ -1,0 +1,67 @@
+<!DOCTYPE CrossStudio_Project_File>
+<solution Name="basic_sensors" version="2">
+  <project Name="basic_sensors">
+    <configuration Name="Common" Target="LPC2148" arm_architecture="v4T" arm_core_type="ARM7TDMI-S" arm_simulator_memory_simulation_filename="$(PackagesDir)/targets/Philips_LPC210X/LPC2000SimulatorMemory.dll" arm_simulator_memory_simulation_parameter="LPC21;0x80000;0x8000" arm_target_debug_interface_type="ARM7TDI" arm_target_loader_parameter="12000000" gcc_entry_point="reset_handler" link_include_startup_code="No" linker_additional_files="$(PackagesDir)/lib/liblpc2000$(LibExt)$(LIB)" linker_memory_map_file="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC2148_MemoryMap.xml" oscillator_frequency="12MHz" project_directory="" project_type="Executable" property_groups_file_path="$(PackagesDir)/targets/Philips_LPC210X/propertyGroups21xx.xml"/>
+    <configuration Name="RAM" Placement="RAM" linker_section_placement_file="$(StudioDir)/targets/sram_placement.xml" target_reset_script="SRAMReset()"/>
+    <configuration Name="Flash" Placement="Flash" arm_target_flash_loader_file_path="$(PackagesDir)/targets/Philips_LPC210X/Release/Loader_rpc.elf" arm_target_flash_loader_type="LIBMEM RPC Loader" linker_section_placement_file="$(StudioDir)/targets/flash_placement.xml" target_reset_script="FLASHReset()"/>
+    <folder Name="Source Files">
+      <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc"/>
+      <file file_name="main.c"/>
+      <folder Name="TNKernel">
+        <file file_name="../TNKernel/tn.c"/>
+        <file file_name="../TNKernel/tn_dqueue.c"/>
+        <file file_name="../TNKernel/tn_event.c"/>
+        <file file_name="../TNKernel/tn_mem.c"/>
+        <file file_name="../TNKernel/tn_mutex.c"/>
+        <file file_name="../TNKernel/tn_port.c"/>
+        <file file_name="../TNKernel/tn_sem.c"/>
+        <file file_name="../TNKernel/tn_tasks.c"/>
+        <file file_name="../TNKernel/tn_utils.c"/>
+        <file file_name="../TNKernel/tn_port_asm.s"/>
+      </folder>
+      <folder Name="SF_Firmware">
+        <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.c"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.c"/>
+        <file file_name="../SF_Firmware/SF_Drives/sf_drive.c"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_compass.h"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_gyro.h"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.h"/>
+        <file file_name="../SF_Firmware/SF_UART/sf_uart.c"/>
+        <file file_name="../SF_Firmware/SF_UART/sf_uart.h"/>
+      </folder>
+      <folder Name="common">
+        <file file_name="../common/sf_led.c"/>
+        <file file_name="../common/lpc214x.h"/>
+        <file file_name="../common/sf_user.h"/>
+        <file file_name="../common/tn_irq.h"/>
+        <file file_name="../common/sf_user.c"/>
+        <file file_name="../common/tn_irq.c"/>
+        <file file_name="../common/sensorfly.h"/>
+      </folder>
+      <folder Name="SF_Network">
+        <file file_name="../SF_Network/sf_network.c"/>
+        <file file_name="../SF_Network/sf_network.h"/>
+      </folder>
+      <folder Name="SF_FlightController">
+        <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
+        <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
+      </folder>
+    </folder>
+    <folder Name="System Files">
+      <file file_name="$(PackagesDir)/targets/Philips_LPC210X/Philips_LPC210X_Target.js">
+        <configuration Name="Common" file_type="Reset Script"/>
+      </file>
+      <file file_name="../common/startup_hardware_init.s"/>
+      <file file_name="../common/tnkernel_startup_gcc.s"/>
+    </folder>
+  </project>
+  <configuration Name="ARM RAM Debug" inherited_configurations="ARM;RAM;Debug"/>
+  <configuration Name="ARM" Platform="ARM" arm_instruction_set="ARM" arm_library_instruction_set="ARM" c_preprocessor_definitions="__ARM" hidden="Yes"/>
+  <configuration Name="RAM" c_preprocessor_definitions="__RAM_BUILD" hidden="Yes"/>
+  <configuration Name="Debug" build_debug_information="Yes" c_preprocessor_definitions="DEBUG" gcc_optimization_level="None" hidden="Yes" link_include_startup_code="No"/>
+  <configuration Name="ARM RAM Release" inherited_configurations="ARM;RAM;Release"/>
+  <configuration Name="Release" build_debug_information="No" c_additional_options="-g1" c_preprocessor_definitions="NDEBUG" gcc_optimization_level="Level 1" hidden="Yes" link_include_startup_code="No"/>
+  <configuration Name="ARM Flash Debug" inherited_configurations="ARM;Flash;Debug"/>
+  <configuration Name="Flash" c_preprocessor_definitions="__FLASH_BUILD" hidden="Yes"/>
+  <configuration Name="ARM Flash Release" inherited_configurations="ARM;Flash;Release"/>
+</solution>

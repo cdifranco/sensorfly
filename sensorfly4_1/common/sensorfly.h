@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------------------
 // Kernel and Platform headers
 //-----------------------------------------------------------------------------
-#include "LPC214x.h"
+#include "lpc214x.h"
 #include "sf_user.h"
 #include "../TNKernel/tn.h"
 #include "../TNKernel/tn_port.h"

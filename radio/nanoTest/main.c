@@ -34,6 +34,7 @@
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
 
+
 #ifdef	CONFIG_CONSOLE
 #include    "usart.h"
 #endif	/* CONFIG_CONSOLE */
@@ -149,7 +150,7 @@ int	main(int ac, char *av[])
 	{
 		/*
 		 * call application periodically
-         */
+         */		
 		APLPoll ();
 		/*
          * Check for incomming packets

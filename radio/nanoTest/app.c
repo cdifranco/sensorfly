@@ -216,8 +216,8 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,1};
-	MyByte8T		d_address[] = {0,0,0,0,0,2};
+	MyByte8T		s_address[] = {0,0,0,0,0,0};
+	MyByte8T		d_address[] = {0,0,0,0,0,1};
 
     apl = &aplM;
 

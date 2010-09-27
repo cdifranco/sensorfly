@@ -34,6 +34,9 @@
 #	include 	"usart.h"
 #endif
 
+// #define CONFIG_PRINTF 1
+// #define CONFIG_LOGO 1
+
 extern MyBoolT NTRXRestart (void);
 extern PhyPIB phyPIB;
 
@@ -335,6 +338,7 @@ MyBoolT NTRXCheckVerRev (void)
 
 #   if ((CONFIG_PRINTF) && (CONFIG_LOGO))
     printf("ver:%d, rev:%d\n", buff[0], buff[1]);
+	printf("Iver:%d, Irev:%d\n",NA_Version_I, NA_Revision_I);
 #   endif
 
     if (buff[0] == NA_Version_I && buff[1] == NA_Revision_I)

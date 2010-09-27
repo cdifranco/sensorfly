@@ -161,9 +161,9 @@ void NTRXInit(void)
     	HWDelayus( 1 ); //!! Some short delay seems necessary here??
 	    /* check connection and firmware version and revision */
     	if (!NTRXCheckVerRev())
-	    {
-        	error_handler (506);
-		}
+    	{
+    		error_handler (506);
+    	}
 	}
 	else
 	{

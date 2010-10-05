@@ -18,6 +18,8 @@
 *******************************************************************************/
 
 #include "../../common/sensorfly.h"
+#include "sf_uart.h"
+#include "../../SF_Network/sf_network.h"
 
 // UART status register bits
 #define RX_INT    (0x2<<1)
@@ -90,17 +92,6 @@ void sf_uart0_int_handler()
     {
        data = rU0RBR;
 
-/* --------------------------------- */
-if (data == 'l')
-  {
-    sf_fly_command = 'l';
-  }
-if (data == 'f')
-  {
-  sf_fly_command = 'f';
-  }
-//-----------------------------------------------------------------------------
-// 
 //-----------------------------------------------------------------------------
        if(rx_buf)
           rx_buf[rc++] = (unsigned char)data;
@@ -128,9 +119,9 @@ if (data == 'f')
 
 void sf_uart0_enqueue(unsigned char * buf, int size)
 {
-  int tx_bytes;
-  int rc;
-  unsigned char * tx_buf;
+  int tx_bytes; // byte number of transmission
+  int rc; //-- return code
+  unsigned char * tx_buf; // transmission buffer
   unsigned int data;
   unsigned char * ptr = buf;
   int nbytes = size;
@@ -138,27 +129,15 @@ void sf_uart0_enqueue(unsigned char * buf, int size)
     return;
   
   //-- for Tx UART FIFO treshold = 0 -> load = UART_FIFO_SIZE
-  
   tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
-  
-  while(nbytes)
-  {
-    if(nbytes > UART_FIFO_SIZE)
-       tx_bytes = UART_FIFO_SIZE;
-    else
-       tx_bytes = nbytes;
-    rc = tn_fmem_get(&TxUART0MemPool, (void **) &tx_buf, TN_WAIT_INFINITE);
-    if(rc == TERR_NO_ERR)
-    {
-       memcpy(tx_buf, ptr, tx_bytes); //-- for non-blocking tx we need copy
-       //-- Pack len & addr
-       data = (tx_bytes << 24) | (((unsigned int)tx_buf) & 0x00FFFFFF);
-       tn_queue_send(&queueTxUART0, (void *)data, TN_WAIT_INFINITE);
-    }
-    ptr    += tx_bytes;
-    nbytes -= tx_bytes;
-  }
-  
+  // cut the data length into 16
+  if(nbytes > UART_FIFO_SIZE)
+     tx_bytes = UART_FIFO_SIZE;
+  else
+     tx_bytes = nbytes;  
+  int i;
+  for(i = 0; i < tx_bytes; i++)
+      rU0THR = buf[i];
   tn_sem_signal(&semTxUART0);
 }
 
@@ -170,7 +149,15 @@ void sf_uart0_str_enqueue(unsigned char * buf)
    sf_uart0_enqueue(buf, strlen((char*)buf));
 }
 
+void sf_uart0_pkt_send(Packet *pkt)
+{
+    char * pkt_bytes = (char *)pkt;
+    int __length = 16;
+    sf_uart0_enqueue(pkt_bytes, __length);
 
+}
+
+// receive from uart
 int sf_uart0_rx(unsigned char * buf, unsigned char in_byte, int max_buf_size)
 {
   static int pos = 0;
@@ -220,6 +207,16 @@ int sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte)
   }
   return 0;
 }
+
+/**
+ * TODO: add packet receive code 
+ */
+int sf_uart0_pkt_rx(Packet *pkt, unsigned char in_byte[4])
+{
+ 
+  return 0;
+}
+
 
 /*! \fn 
     \brief

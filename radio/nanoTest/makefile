@@ -83,8 +83,9 @@ OBJS = main.o \
 	   phy.o \
 	   ntrxinit.o \
 	   ntrxutil.o \
-       ntrxiqpar.o \
-	   ntrxranging.o
+     ntrxiqpar.o \
+	   ntrxranging.o \
+		 packet.o	
 
 all:	$(HEX) $(EXTCOFF) $(EEP) $(LSS) $(SYM) elfsize
 

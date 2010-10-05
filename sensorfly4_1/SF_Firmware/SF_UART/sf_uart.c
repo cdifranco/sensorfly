@@ -31,6 +31,12 @@
 // Pin 0.20
 #define RTS_MASK (1<<21)
 
+// encode bytes
+#define START_BYTE  0xFF
+#define ESC_BYTE    0x1B
+#define STOP_BYTE   0xEF   
+
+
 void sf_uart0_init()
 {
   //-- Pins P0.0-TXD0 & P0.1-RXD0
@@ -116,11 +122,31 @@ void sf_uart0_int_handler()
     tn_sem_isignal(&semFifoEmptyTxUART0);
 }
 
+char * encode(Packet * pkt)
+{
+    char buf[16];
+    uint32_t i,j=0;
+    uint8_t __length = 6;
+    buf[0] = START_BYTE;
+    for (i = 0; i< __length; i++ )
+    { 
+       if (*(((char *)pkt)+j) == START_BYTE || *(((char *)pkt)+j) == STOP_BYTE || *(((char *)pkt)+j) == ESC_BYTE)
+       {
+           buf[i]=ESC_BYTE;
+           __length++;
+           i++;
+       }
+       j++;
+       buf[i]=*(((char *)pkt)+i);
+    }
+    return buf;
+}
+
 
 void sf_uart0_pkt_send(Packet *pkt)
 {
-    char * pkt_bytes = (char *)pkt;
-    uint8_t __length = 16;
+    char * pkt_bytes = encode(pkt);
+    uint8_t __length = 6;
     uint32_t i;
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     

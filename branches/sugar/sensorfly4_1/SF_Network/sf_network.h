@@ -19,9 +19,26 @@
 #ifndef SF_NETWORK_H_
 #define SF_NETWORK_H_
 
+/**
+  * Packet Part
+  */
+typedef unsigned char PByte8T;// Byte used in Packet  
+
+typedef struct
+{
+  int16_t id;
+  PByte8T type;	// r--> ranging; d--> data; s-->setting 
+  PByte8T checksum;
+  PByte8T dest[2]; // with 6 characters MAC Address
+  PByte8T src[2];	// with 6 characters MAC Address
+  PByte8T pktdata[6];
+} Packet;
+
+
 void sf_network_init();
 void sf_network_wait_until_rx();
 void sf_network_tx_enqueue();
 void sf_network_tx_send();
+Packet *sf_network_create_testing_packet();
 
 #endif /* SF_NETWORK_H_ */

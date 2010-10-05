@@ -111,15 +111,13 @@ void task_app_func(void * par)
       pkt.checksum = 0;
       pkt.src = 1;
       pkt.dest = 2;
-      uint32_t i;
-      for (i = 0; i<6; i++)
-      {
-          pkt.pktdata[i] = 'a'+i;
-      }
-
+      pkt.length = 6;
+      
+      // Send pkt
       sf_uart0_pkt_send(&pkt);
       
       /* Sleep 1000 ticks */
       tn_task_sleep(1000);
    }
 }
+

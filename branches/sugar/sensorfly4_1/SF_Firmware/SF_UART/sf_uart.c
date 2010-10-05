@@ -122,16 +122,6 @@ void sf_uart0_int_handler()
     tn_sem_isignal(&semFifoEmptyTxUART0);
 }
 
-char * encode(Packet * pkt)
-{
-    char buf[16];
-    uint32_t i,j=0;
-    uint8_t __length = 6;
-   
-    return buf;
-}
-
-
 void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;

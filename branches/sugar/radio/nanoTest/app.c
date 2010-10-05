@@ -244,19 +244,12 @@ void APLPoll (void)
 	/* reset timer */
 	apl->hwclock = hwclock ();
 
-	while (kbhit())
+	Packet * pktArm2Radio;
+	if (GetPacket())
 	{
-		c = getchar ();
-		
-		// check if start byte
-		// check if stop byte
-		// remove escape
-		
-		
-		/** print out what is sending out byte by byte (for sender is a must)*/
-		//putchar (c);
-
-		downMsg.data[apl->len++] = (MyByte8T)c;
+		pktArm2Radio = (Packet *)downMsg.data;
+		apl->dest = pktArm2Radio->dest;
+		apl->src = pktArm2Radio->src;
 	}
 
 }

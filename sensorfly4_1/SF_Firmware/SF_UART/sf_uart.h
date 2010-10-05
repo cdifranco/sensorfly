@@ -19,10 +19,13 @@
 #ifndef SF_UART_H_
 #define SF_UART_H_
 
+#include "../SF_Network/sf_network.h" 
+
+
 //-----------------------------------------------------------------------------
 //  UART PARAMS
 //-----------------------------------------------------------------------------
-#define UART_FIFO_SIZE    16
+#define UART_FIFO_SIZE    24
 
 
 #define UART0_RX_PAYLOAD_BUF_SIZE  64
@@ -83,8 +86,11 @@ typedef struct _UARTDRV
 
 void sf_uart0_enqueue(unsigned char * buf, int size);
 void sf_uart0_str_enqueue(unsigned char * buf);
+void sf_uart0_pkt_send(Packet *pkt);
 int  sf_uart0_rx(unsigned char * buf, unsigned char in_byte, int max_buf_size);
 int  sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte);
+int  sf_uart0_pkt_rx(Packet * pkt, unsigned char in_byte[4]);
+
 
 void sf_uart0_init();
 void sf_uart0_int_handler();

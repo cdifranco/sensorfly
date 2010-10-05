@@ -60,6 +60,11 @@
  * To be IEEE layer complient, all configuration data is stored
  * in one data structure.
  */
+
+#define GET_PACKET_FAILURE 0
+#define GET_PACKET_SUCCESS 1
+
+
 typedef struct
 {
 	MyDword32T hwclock; 	/**< Timestamp to determine a timeout condition for a data request */
@@ -252,5 +257,52 @@ void APLPoll (void)
 		apl->src = pktArm2Radio->src;
 	}
 
+}
+
+
+/*
+ * State Machine getting the packet from ARM
+ */
+int GetPacket (void)
+{
+	//states:
+	//0:wait
+	//1:receive
+	//2:escape
+	//3:stop(received)
+	char state = 0;
+	char c;
+	while (kbhit())
+	{
+		c = getchar ();
+
+		//Time is out
+		if (apl->hwclock + TIME_OUT < hwclock ())
+		{
+			apl->len = 0;
+			return GET_PACKET_FAILURE;
+		}
+
+		switch (state)
+		{
+			case 0 :
+					if (c == START_BYTE)
+						state = 1;
+			case 1 :
+					if (c == ESC_BYTE)
+						state = 2;
+					else if (c == STOP_BYTE)
+					{
+						state = 3;
+						return GET_PACKET_SUCCESS;
+					}
+					else
+						downMsg.data[apl->len++] = c;
+			case 2 :
+					state = 1;
+					downMsg.data[apl->len++] = c;
+		}
+	}
+	return GET_PACKET_FAILURE;
 }
 

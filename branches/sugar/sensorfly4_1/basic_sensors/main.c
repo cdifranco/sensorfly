@@ -60,11 +60,7 @@ int main(void)
 */
 void  tn_app_init()
 {
-
     sf_network_init();
-
-   //--- Flight Controller task
-   sf_flightcontroller_task_init();
 
    //--- Task application
    task_app.id_task = 0; /*!< Must be 0 for all tasks */
@@ -86,13 +82,9 @@ void  tn_app_init()
 */
 void task_app_func(void * par)
 {
+    Packet pkt;
+
     unsigned short Blink = 1;
-    
-//    /* for packet testing*/
-     Packet *pkt = sf_network_create_testing_packet();
-//     Packet * receive_pkt;
-    /* for string testing*/
-//       char * buffer = "abcdefghijklmnopqr\n";
     
     /* Prevent compiler warning */
     par = par;
@@ -110,22 +102,15 @@ void task_app_func(void * par)
         Blink = Blink ^ 1;
         
         /* receive from ARM*/    
-        sf_network_wait_until_rx();
-        Packet * receivebuf = (Packet *)drvUART0.buf;
-//        
-//        if (drvUART0.buf != NULL)
-//        {
-//          buf =(char *)drvUART0.buf;
-//        }
-//        receive_pkt = (Packet *)buf;  
+//        sf_network_wait_until_rx();
+//        Packet * receivebuf = (Packet *)drvUART0.buf;
 
-         /** string send testing*/
-//       int buflen = strlen(buffer);        
-//       sf_network_tx_enqueue(buffer,buflen);
-        
-//         sf_uart0_pkt_send(pkt);
-        
-        /* Sleep 1000 ticks */
-        tn_task_sleep(1000);
+      // Create packet
+      
+
+      sf_uart0_pkt_send(pkt);
+      
+      /* Sleep 1000 ticks */
+      tn_task_sleep(1000);
    }
 }

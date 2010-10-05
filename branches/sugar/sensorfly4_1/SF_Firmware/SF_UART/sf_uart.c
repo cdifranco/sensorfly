@@ -117,44 +117,20 @@ void sf_uart0_int_handler()
 }
 
 
-void sf_uart0_enqueue(unsigned char * buf, int size)
-{
-  int tx_bytes; // byte number of transmission
-  int rc; //-- return code
-  unsigned char * tx_buf; // transmission buffer
-  unsigned int data;
-  unsigned char * ptr = buf;
-  int nbytes = size;
-  if(ptr == NULL)
-    return;
-  
-  //-- for Tx UART FIFO treshold = 0 -> load = UART_FIFO_SIZE
-  tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
-  // cut the data length into 16
-  if(nbytes > UART_FIFO_SIZE)
-     tx_bytes = UART_FIFO_SIZE;
-  else
-     tx_bytes = nbytes;  
-  int i;
-  for(i = 0; i < tx_bytes; i++)
-      rU0THR = buf[i];
-  tn_sem_signal(&semTxUART0);
-}
-
-
-void sf_uart0_str_enqueue(unsigned char * buf)
-{
-   if(buf == NULL || buf[0] == 0)
-      return;
-   sf_uart0_enqueue(buf, strlen((char*)buf));
-}
-
 void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes = (char *)pkt;
-    int __length = 16;
-    sf_uart0_enqueue(pkt_bytes, __length);
-
+    uint8_t __length = 16;
+    
+    tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
+    
+    // cut the data length into FIFO_SIZE
+    if(__length > UART_FIFO_SIZE)
+      __length = UART_FIFO_SIZE;
+    
+    for(i = 0; i < __length; i++)
+    rU0THR = buf[i];
+    tn_sem_signal(&semTxUART0);
 }
 
 // receive from uart

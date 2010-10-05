@@ -84,8 +84,6 @@ typedef struct _UARTDRV
   int pos;
 } UARTDRV;
 
-void sf_uart0_enqueue(unsigned char * buf, int size);
-void sf_uart0_str_enqueue(unsigned char * buf);
 void sf_uart0_pkt_send(Packet *pkt);
 int  sf_uart0_rx(unsigned char * buf, unsigned char in_byte, int max_buf_size);
 int  sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte);

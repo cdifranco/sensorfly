@@ -235,22 +235,3 @@ void sf_network_tx_enqueue(unsigned char * buf, int size)
 {
     sf_uart0_enqueue(buf,size);
 }
-
-Packet *sf_network_create_testing_packet(void)
-{
-    Packet *pkt = (Packet *)malloc(sizeof(Packet));
-		
-    // 
-    PByte8T temp[2]	= {0,1};	
-    pkt->id = 1;
-    memcpy(pkt->dest, temp, 2);
-    temp[1]= 2;		
-    memcpy(pkt->src, temp, 2);
-    pkt->type = 'd';
-  
-    //
-    PByte8T temp2[6] = "abc~";
-    memcpy(pkt->pktdata, temp2, 6);
-    pkt->checksum = 0;		
-    return pkt;
-}

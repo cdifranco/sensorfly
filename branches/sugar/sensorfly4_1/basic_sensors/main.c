@@ -26,12 +26,12 @@
 // Local declarations
 //-----------------------------------------------------------------------------
 #define  TASK_APP_PRIORITY   5
-#define  TASK_APP_STK_SIZE  128
+#define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
 void task_app_func(void * par);
-
+extern UARTDRV drvUART0;
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -45,6 +45,7 @@ int main(void)
 {
 
    sf_fly_command = 'f';
+
    hardware_init();
 
    tn_start_system(); //-- Never returns
@@ -60,7 +61,7 @@ int main(void)
 void  tn_app_init()
 {
 
-   //sf_network_init();
+    sf_network_init();
 
    //--- Flight Controller task
    sf_flightcontroller_task_init();
@@ -85,30 +86,46 @@ void  tn_app_init()
 */
 void task_app_func(void * par)
 {
-   unsigned short Blink = 1;
+    unsigned short Blink = 1;
+    
+//    /* for packet testing*/
+     Packet *pkt = sf_network_create_testing_packet();
+//     Packet * receive_pkt;
+    /* for string testing*/
+//       char * buffer = "abcdefghijklmnopqr\n";
+    
+    /* Prevent compiler warning */
+    par = par;
+    while(1)
+    {
+        if (Blink & 1)
+        {
+           sf_led_on();
+        }
+        else
+        {
+           sf_led_off();
+        }   
+        
+        Blink = Blink ^ 1;
+        
+        /* receive from ARM*/    
+        sf_network_wait_until_rx();
+        Packet * receivebuf = (Packet *)drvUART0.buf;
+//        
+//        if (drvUART0.buf != NULL)
+//        {
+//          buf =(char *)drvUART0.buf;
+//        }
+//        receive_pkt = (Packet *)buf;  
 
-   char * buf = "Hello World\n";
-
-   /* Prevent compiler warning */
-   par = par;
-   
-   while(1)
-   {
-      if (Blink & 1)
-      {
-         sf_led_on();
-      }
-      else
-      {
-         sf_led_off();
-      }   
-      
-      Blink = Blink ^ 1;
-
-      //sf_network_tx_enqueue(buf, strlen(buf));
-      //sf_network_tx_send();
-      
-      /* Sleep 1000 ticks */
-      tn_task_sleep(1000);
+         /** string send testing*/
+//       int buflen = strlen(buffer);        
+//       sf_network_tx_enqueue(buffer,buflen);
+        
+//         sf_uart0_pkt_send(pkt);
+        
+        /* Sleep 1000 ticks */
+        tn_task_sleep(1000);
    }
 }

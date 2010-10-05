@@ -108,10 +108,8 @@ void APLCallback (MyMsgT *msg)
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
-						//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
 						printf("%s",serial_print_buffer);
-						//ranging_start_flag = TRUE;
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
@@ -120,10 +118,8 @@ void APLCallback (MyMsgT *msg)
 						break;
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */
-						//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
 						printf("%s",serial_print_buffer);
-						//ranging_start_flag = TRUE;
 						break;
 					default : break;
 				}
@@ -148,13 +144,9 @@ void APLCallback (MyMsgT *msg)
 								
 		case PD_RANGING_INDICATION:
 		case PD_RANGING_FAST_INDICATION:
-				LED0 (LED_OFF);
 				upRangingMsg = (RangingPIB*) msg->data;
-
-				//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
 				sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
 				printf("%s",serial_print_buffer);
-				//ranging_start_flag = TRUE;
 				break;
 
 default:				break;
@@ -268,3 +260,4 @@ void APLPoll (void)
 	}
 
 }
+

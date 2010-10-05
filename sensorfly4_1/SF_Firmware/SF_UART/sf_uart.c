@@ -129,7 +129,8 @@ void sf_uart0_pkt_send(Packet *pkt)
       __length = UART_FIFO_SIZE;
     
     for(i = 0; i < __length; i++)
-    rU0THR = pkt_bytes[i];
+      rU0THR = pkt_bytes[i];
+
     tn_sem_signal(&semTxUART0);
 }
 

@@ -56,11 +56,11 @@ void     * queueTxUART0Mem[QUEUE_TX_UART0_SIZE];
 //---   defined in the file tn_port.h
 
 TN_FMP RxUART0MemPool;
-#define RxUART0MemPoolItemSize   (UART_FIFO_SIZE)
+#define RxUART0MemPoolItemSize   (16)
 unsigned int memRxUART0MemPool[QUEUE_RX_UART0_SIZE * (RxUART0MemPoolItemSize/ sizeof(int))];
 
 TN_FMP TxUART0MemPool;
-#define TxUART0MemPoolItemSize   (UART_FIFO_SIZE)
+#define TxUART0MemPoolItemSize   (16)
 unsigned int memTxUART0MemPool[QUEUE_TX_UART0_SIZE * (TxUART0MemPoolItemSize/ sizeof(int))];
 
 //-----------------------------------------------------------------------------
@@ -133,7 +133,7 @@ void sf_network_wait_until_rx()
   int nbytes;
   unsigned int rx_block;
   unsigned int mem_addr;
-  unsigned char * rx_mem;
+  unsigned char * rx_mem;//the data shall be put here and can be get from here
       
   rc = tn_queue_receive(&queueRxUART0, (void **)&rx_block, TN_WAIT_INFINITE);
   if(rc == TERR_NO_ERR)
@@ -152,10 +152,47 @@ void sf_network_wait_until_rx()
         if(nbytes > 0)
         {
            // payload processing
+
         }
      }
+
      tn_fmem_release(&RxUART0MemPool,(void*)rx_mem);
   }
+}
+
+
+void sf_network_pkt_wait_until_rx()
+{
+//  int rc;
+//  int i;
+//  int len;
+//  int nbytes;
+//  unsigned int rx_block;
+//  unsigned int mem_addr;
+//  unsigned char * rx_mem;//the data shall be put here and can be get from here
+//      
+//  rc = tn_queue_receive(&queueRxUART0, (void **)&rx_block, TN_WAIT_INFINITE);
+//  if(rc == TERR_NO_ERR)
+//  {
+//       
+//      //--- Unpack len & addr
+//  
+//     len = ((unsigned int)rx_block) >> 24;
+//     mem_addr = (((unsigned int)&memRxUART0MemPool[0]) & 0xFF000000) |
+//                               (((unsigned int)rx_block) & 0x00FFFFFF);
+//     rx_mem = (unsigned char *) mem_addr;
+//  
+//     for(i = 0; i < len; i++)
+//     {
+//        nbytes = sf_uart0_pkt_rx(&drvUART0, rx_mem[i]);
+//        if(nbytes > 0)
+//        {
+//           // payload processing
+//
+//        }
+//     }
+//     tn_fmem_release(&RxUART0MemPool,(void*)rx_mem);
+//  }
 }
 
 
@@ -196,5 +233,24 @@ void sf_network_tx_send()
 */
 void sf_network_tx_enqueue(unsigned char * buf, int size)
 {
-  sf_uart0_enqueue(buf,size);
+    sf_uart0_enqueue(buf,size);
+}
+
+Packet *sf_network_create_testing_packet(void)
+{
+    Packet *pkt = (Packet *)malloc(sizeof(Packet));
+		
+    // 
+    PByte8T temp[2]	= {0,1};	
+    pkt->id = 1;
+    memcpy(pkt->dest, temp, 2);
+    temp[1]= 2;		
+    memcpy(pkt->src, temp, 2);
+    pkt->type = 'd';
+  
+    //
+    PByte8T temp2[6] = "abc~";
+    memcpy(pkt->pktdata, temp2, 6);
+    pkt->checksum = 0;		
+    return pkt;
 }

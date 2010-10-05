@@ -234,27 +234,19 @@ void APLPoll (void)
 	
 	static MyByte8T packets_sent = 0xFF;
 	MyByte8T power = 0;
-	
-	/* In chat mode collect all user input and transmit it to the peer device */
-	/** now only chat mode in this layer is needed*/
-	if(!kbhit())
-	{
-		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
-		{
-			// Timeout reset packet
-		    apl->len = 0;
-		}
-		return;
-	}
-	/* reset timer */
-	apl->hwclock = hwclock ();
-
 	Packet * pktArm2Radio;
+	printf("before get packet\n");
 	if (GetPacket())
 	{
 		pktArm2Radio = (Packet *)downMsg.data;
-		apl->dest = pktArm2Radio->dest;
-		apl->src = pktArm2Radio->src;
+		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+		PrintPacket(pktArm2Radio);
+		SendBuffer();
+	}
+	else
+	{
+		printf("not get any packet");
 	}
 
 }
@@ -265,6 +257,7 @@ void APLPoll (void)
  */
 int GetPacket (void)
 {
+	printf("start get packet \n");
 	//states:
 	//0:wait
 	//1:receive
@@ -287,22 +280,30 @@ int GetPacket (void)
 		{
 			case 0 :
 					if (c == START_BYTE)
+					{
+						/* reset timer */
+						apl->hwclock = hwclock ();
+
 						state = 1;
+					}
+					break;
 			case 1 :
 					if (c == ESC_BYTE)
 						state = 2;
-					else if (c == STOP_BYTE)
-					{
-						state = 3;
+					else if (c == STOP_BYTE)	//stop(received)
 						return GET_PACKET_SUCCESS;
-					}
 					else
 						downMsg.data[apl->len++] = c;
+					break;
 			case 2 :
 					state = 1;
 					downMsg.data[apl->len++] = c;
+					break;
+			default :
+					break;
 		}
 	}
+	apl->len = 0;
 	return GET_PACKET_FAILURE;
 }
 

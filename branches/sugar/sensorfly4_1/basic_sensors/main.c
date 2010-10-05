@@ -101,14 +101,23 @@ void task_app_func(void * par)
         
         Blink = Blink ^ 1;
         
-        /* receive from ARM*/    
-//        sf_network_wait_until_rx();
-//        Packet * receivebuf = (Packet *)drvUART0.buf;
+      //receive from ARM    
+//      sf_network_wait_until_rx();
+//      Packet * receivebuf = (Packet *)drvUART0.buf;
 
       // Create packet
-      
+      pkt.id = 1;
+      pkt.type = PKT_TYPE_DATA;
+      pkt.checksum = 0;
+      pkt.src = 1;
+      pkt.dest = 2;
+      uint32_t i;
+      for (i = 0; i<6; i++)
+      {
+          pkt.pktdata[i] = 'a'+i;
+      }
 
-      sf_uart0_pkt_send(pkt);
+      sf_uart0_pkt_send(&pkt);
       
       /* Sleep 1000 ticks */
       tn_task_sleep(1000);

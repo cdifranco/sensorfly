@@ -32,12 +32,6 @@
 #include	"led.h"
 #include	"packet.h"
 
-#define GUI 1
-#ifdef GUI
-#	define GUI_CHAR putchar ('#')
-#else
-#	define GUI_CHAR
-#endif
 /**
  * @def TIME_OUT
  * @brief Idle time before sending data.
@@ -104,10 +98,8 @@ void APLCallback (MyMsgT *msg)
 {
 	MyChar8T serial_print_buffer[32];
 	
-	static MyByte8T lastAddr[6];
+	MyInt16T i;
 	
-	static MyByte8T lastPacketTag = 0;
-    MyInt16T i;
 	switch (msg->prim)
 	{
 		case PD_DATA_CONFIRM: 	
@@ -145,32 +137,20 @@ void APLCallback (MyMsgT *msg)
 				break;
 
 		case PD_DATA_INDICATION:
-
-					if (memcmp (msg->addr, lastAddr, 6) != 0)
-					{
-						memcpy (lastAddr, msg->addr, 6);
-						GUI_CHAR;
-						printf ("\n%d> ", msg->addr[5]);
-					}
-
-					/**  string testing */
+                    // Check if packet is for this node
+                    if(memcmp(msg->addr,apl->src,6) != 0)
+                    {
+                       break;
+                    }
+                    
+					// Check length of packet
+					
+					// Send packet to arm
 					for (i = 0; i < msg->len; i++)
 					{
 						putchar (msg->data[i]);
-						if (msg->data[i] == 0x0d)
-						{
-							putchar (0x0a);
-#	ifdef GUI
-							putchar (0x0d);
-#	endif
-						}
 					}
-					//printf("checking : %s\n",msg->data);
-
-					/**  packet testing*/
-					//Packet *pkt = (Packet *)msg->data;
-					//PrintPacket(pkt);
-
+					
 				break;
 								
 		case PD_RANGING_INDICATION:
@@ -198,8 +178,8 @@ default:				break;
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,1};
-	MyByte8T		d_address[] = {0,0,0,0,0,2};
+	MyByte8T		s_address[] = {0,0,0,0,0,2};
+	MyByte8T		d_address[] = {0,0,0,0,0,1};
 
     apl = &aplM;
 

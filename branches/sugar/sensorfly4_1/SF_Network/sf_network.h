@@ -32,9 +32,9 @@ typedef struct
   uint8_t id;
   uint8_t type;	// r--> ranging; d--> data; s-->setting 
   uint8_t checksum;
-  uint16_t dest; // with 6 characters MAC Address
-  uint16_t src;	// with 6 characters MAC Address
-  uint8_t pktdata[6];
+  uint8_t dest; // with 6 characters MAC Address
+  uint8_t src;	// with 6 characters MAC Address
+  uint8_t length;
 } Packet;
 
 

@@ -127,35 +127,31 @@ char * encode(Packet * pkt)
     char buf[16];
     uint32_t i,j=0;
     uint8_t __length = 6;
-    buf[0] = START_BYTE;
-    for (i = 0; i< __length; i++ )
-    { 
-       if (*(((char *)pkt)+j) == START_BYTE || *(((char *)pkt)+j) == STOP_BYTE || *(((char *)pkt)+j) == ESC_BYTE)
-       {
-           buf[i]=ESC_BYTE;
-           __length++;
-           i++;
-       }
-       j++;
-       buf[i]=*(((char *)pkt)+i);
-    }
+   
     return buf;
 }
 
 
 void sf_uart0_pkt_send(Packet *pkt)
 {
-    char * pkt_bytes = encode(pkt);
+    char * pkt_bytes =(char *)pkt;
     uint8_t __length = 6;
-    uint32_t i;
+    uint8_t i;
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
     // cut the data length into FIFO_SIZE
     if(__length > UART_FIFO_SIZE)
       __length = UART_FIFO_SIZE;
-    
-    for(i = 0; i < __length; i++)
-      rU0THR = pkt_bytes[i];
+
+    rU0THR = START_BYTE;
+    for (i = 0; i< __length; i++ )
+    { 
+       if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE)
+       {
+           rU0THR ==ESC_BYTE;
+       }
+       rU0THR =pkt_bytes[i];
+    }
 
     tn_sem_signal(&semTxUART0);
 }

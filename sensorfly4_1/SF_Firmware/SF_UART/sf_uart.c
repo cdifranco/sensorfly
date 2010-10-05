@@ -121,7 +121,7 @@ void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes = (char *)pkt;
     uint8_t __length = 16;
-    
+    uint32_t i;
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
     // cut the data length into FIFO_SIZE
@@ -129,7 +129,7 @@ void sf_uart0_pkt_send(Packet *pkt)
       __length = UART_FIFO_SIZE;
     
     for(i = 0; i < __length; i++)
-    rU0THR = buf[i];
+    rU0THR = pkt_bytes[i];
     tn_sem_signal(&semTxUART0);
 }
 

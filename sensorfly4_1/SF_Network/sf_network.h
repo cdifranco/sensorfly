@@ -41,5 +41,4 @@ typedef struct
 void sf_network_init();
 void sf_network_wait_until_rx();
 void sf_network_tx_send();
-
 #endif /* SF_NETWORK_H_ */

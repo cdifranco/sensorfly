@@ -1,7 +1,9 @@
 <!DOCTYPE CrossStudio_for_ARM_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints/>
+ <Breakpoints>
+  <BreakpointListItem line="105" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="/home/jennifer/workspace/psj/sugar/sensorfly4_1/basic_sensors/main.c" expression="" />
+ </Breakpoints>
  <ExecutionCountWindow/>
  <Memory1>
   <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
@@ -17,6 +19,11 @@
  </Memory4>
  <Project>
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Firmware" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Network" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;TNKernel" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -46,6 +53,13 @@
  <Watch4>
   <Watches active="0" update="Never" />
  </Watch4>
- <Files/>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/basic_sensors/main.c" y="104" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="94" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="26" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Network/sf_network.h" y="44" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Network/sf_network.h" left="0" selected="0" name="unnamed" top="15" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="49" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" y="2" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="29" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Network/sf_network.c" y="127" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Network/sf_network.c" left="0" selected="0" name="unnamed" top="61" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/TNKernel/tn_dqueue.c" y="254" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/TNKernel/tn_dqueue.c" left="0" selected="0" name="unnamed" top="244" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.h" y="0" path="/home/jennifer/workspace/psj/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.h" left="0" selected="0" name="unnamed" top="21" />
+ </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

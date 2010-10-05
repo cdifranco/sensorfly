@@ -139,8 +139,7 @@ void sf_network_wait_until_rx()
   if(rc == TERR_NO_ERR)
   {
        
-      //--- Unpack len & addr
-  
+     //--- Unpack len & addr
      len = ((unsigned int)rx_block) >> 24;
      mem_addr = (((unsigned int)&memRxUART0MemPool[0]) & 0xFF000000) |
                                (((unsigned int)rx_block) & 0x00FFFFFF);
@@ -226,12 +225,3 @@ void sf_network_tx_send()
   }
 }
 
-/*! \fn 
-    \brief
-    \param
-    \return
-*/
-void sf_network_tx_enqueue(unsigned char * buf, int size)
-{
-    sf_uart0_enqueue(buf,size);
-}

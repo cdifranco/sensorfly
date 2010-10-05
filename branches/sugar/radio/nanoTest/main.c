@@ -155,8 +155,10 @@ int	main(int ac, char *av[])
 
 	while(1)
 	{
-		//printf("i am aaa testing\n");
+		printf("i am aaa testing\n");
 		//PrintPacket(pkt_receive);			// sub tesk 1
+		int i;
+		for (i=0; i<10000; i++);
 		/*
 		 * call application periodically
 		 */

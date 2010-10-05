@@ -247,41 +247,6 @@ void SendBuffer (void)
 	// Set RTS
 }
 
-
-#define CONFIG_ALIVE_LED 1
-#ifdef CONFIG_ALIVE_LED
-#include "led.h"
-/**
- * @brief Periodicaly flash one LED.
- *
- * Hartbeat to indicate a normal running application
- */
-/****************************************************************************/
-void IsAlive (void)
-/****************************************************************************/
-{
-	static	int	flag = 0;
-	static	unsigned long	last = 0;
-	unsigned long	now;
-
-	now = hwclock();
-	if(now - last > 500)
-	{
-		last = now;
-		if(flag == 0)
-		{
-			flag = 1;
-			LED_ALIVE (LED_ON);
-		}
-		else
-		{
-			flag = 0;
-			LED_ALIVE (LED_OFF);
-		}
-	}
-}
-#endif
-
 /**
  * @brief Monitors user input.
  *

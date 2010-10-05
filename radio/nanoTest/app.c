@@ -32,6 +32,11 @@
 #include	"led.h"
 #include	"packet.h"
 
+
+#define START_BYTE  0xFF
+#define ESC_BYTE    0x1B
+#define STOP_BYTE   0xEF   
+
 /**
  * @def TIME_OUT
  * @brief Idle time before sending data.
@@ -40,16 +45,7 @@
  * new data and sends all collected data to the preset device.
  *
  */
-#define TIME_OUT  20
-/**
- * @def PROMPT
- * @brief Prompt for command line.
- *
- * This string is used to indicate that the application is ready for new
- * input through the command line.
- *
- */
-#define	PROMPT	"nn> "
+#define TIME_OUT  40
 /**
  * @def SendMsg
  * @brief Data request to the next lower layer.
@@ -81,9 +77,6 @@ MyMsgT downMsg;
 /** @brief Message structure for payload of received ranging packets.  */
 RangingPIB *upRangingMsg;
 
-
-MyInt16T packets_received;
-MyInt16T packets_to_send;
 
 /**
  * @brief Process incoming messages.
@@ -245,27 +238,14 @@ void APLPoll (void)
 	static MyByte8T packets_sent = 0xFF;
 	MyByte8T power = 0;
 	
-	//int i, j;
-
-#	ifdef CONFIG_ALIVE_LED
-	IsAlive ();
-#	endif
-	
 	/* In chat mode collect all user input and transmit it to the peer device */
 	/** now only chat mode in this layer is needed*/
 	if(!kbhit())
 	{
 		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
 		{
-			Packet *Arm2Radio = (Packet *)downMsg.data;
-			// set src and dest by Packet
-			memcpy(&(apl->src[4]), Arm2Radio->src, 2);
-			memcpy(&(apl->dest[4]), Arm2Radio->dest, 2);
-			//printf("length of the packet1: %d \n",apl->len);
-			if(apl->len == 16)
-			{
-				SendBuffer ();
-			}
+			// Timeout reset packet
+		    apl->len = 0;
 		}
 		return;
 	}
@@ -274,42 +254,17 @@ void APLPoll (void)
 
 	while (kbhit())
 	{
-//	int i;
-//	for (i=0; i<16; i++)
-//	{
 		c = getchar ();
-		if (c == 0x1b)
-		{
-			apl->len = 0;
-			printf ("\nEnd of chat mode.\n");
-			/* switch off receiver */
-			downMsg.prim = PLME_SET_REQUEST;
-			downMsg.attribute = PHY_RX_CMD;
-			downMsg.value = PHY_TRX_OFF;
-
-
-			PLMESap (&downMsg);
-			return;
-		}
-
-#			ifdef GUI
-		if( c != 0x0d )
-#			endif
+		
+		// check if start byte
+		// check if stop byte
+		// remove escape
+		
 		
 		/** print out what is sending out byte by byte (for sender is a must)*/
-		putchar (c);
+		//putchar (c);
 
 		downMsg.data[apl->len++] = (MyByte8T)c;
 	}
-
-	if (apl->len >= CONFIG_PAYLOAD_LEN - 1)
-	{
-		Packet *Arm2Radio = (Packet *)downMsg.data;
-		// set src and dest by Packet
-		memcpy(&(apl->src[4]), Arm2Radio->src, 2);
-		memcpy(&(apl->dest[4]), Arm2Radio->dest, 2);
-		SendBuffer ();
-	}
-
 
 }

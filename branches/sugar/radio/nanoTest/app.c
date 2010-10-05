@@ -30,6 +30,7 @@
 #include	"phy.h"
 #include 	"nnspi.h"
 #include	"led.h"
+#include	"packet.h"
 
 #define GUI 1
 #ifdef GUI
@@ -74,15 +75,7 @@ typedef struct
 	MyDword32T hwclock; 	/**< Timestamp to determine a timeout condition for a data request */
 	MyAddrT    dest;		/**< MAC address of the peer device */
 	MyAddrT    src;		/**< MAC address of this device */
-	MyByte8T   mode;		/**< Distinguish between configuration mode and communication mode */
-	MyByte8T   help;		/**< Print the help text only once or when requested */
 	MyByte8T 	len;		/**< Number of bytes in send buffer */
-
-	MyByte8T   key[4];		/**< Current key state */
-	MyByte8T 	tkey[4];	/**< Last key state to toggle the state */
-	MyByte8T   skey_k1;
-	MyByte8T   skey_k2;
-	MyByte8T   skey_k3;
 } AplMemT;
 
 /** @brief Memory for all layer configuration settings.  */
@@ -115,7 +108,6 @@ void APLCallback (MyMsgT *msg)
 	
 	static MyByte8T lastPacketTag = 0;
     MyInt16T i;
-
 	switch (msg->prim)
 	{
 		case PD_DATA_CONFIRM: 	
@@ -123,86 +115,76 @@ void APLCallback (MyMsgT *msg)
 							  	break;
 		case PD_RANGING_CONFIRM:
 		case PD_RANGING_FAST_CONFIRM:	
-								upRangingMsg = (RangingPIB*) msg->data;
-								switch(msg->status)
-								{
-									case PHY_SUCCESS	: 
-										/* hwack received, ranging start successfully */
-										break;
-									case PHY_NO_ACK		: 
-										if (apl->mode == 0) break;
-										/* no hwack received, ranging didnt start */
-										//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
-										sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-										printf("%s",serial_print_buffer); 
-										//ranging_start_flag = TRUE;
-										break;
-									case PHY_BUSY 		: 
-									case PHY_BUSY_TX 	:
-										/* measurement is allready running (BUSY), wait
-											for PD_RANGING_INDICATION first! */
-										break;
-									case PHY_CONFIGURATION_ERROR :
-										if (apl->mode == 0) break;
-										/* driver isnt correct initialized for ranging */
-										//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
-										sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-										printf("%s",serial_print_buffer); 
-										//ranging_start_flag = TRUE;
-										break;
-									default : break;
-								}
-								break;
+				upRangingMsg = (RangingPIB*) msg->data;
+				switch(msg->status)
+				{
+					case PHY_SUCCESS	:
+						/* hwack received, ranging start successfully */
+						break;
+					case PHY_NO_ACK		:
+						/* no hwack received, ranging didnt start */
+						//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
+						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s",serial_print_buffer);
+						//ranging_start_flag = TRUE;
+						break;
+					case PHY_BUSY 		:
+					case PHY_BUSY_TX 	:
+						/* measurement is allready running (BUSY), wait
+							for PD_RANGING_INDICATION first! */
+						break;
+					case PHY_CONFIGURATION_ERROR :
+						/* driver isnt correct initialized for ranging */
+						//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
+						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s",serial_print_buffer);
+						//ranging_start_flag = TRUE;
+						break;
+					default : break;
+				}
+				break;
 
 		case PD_DATA_INDICATION:
-								if (apl->mode == 1)
-								{
-									if (memcmp (msg->addr, lastAddr, 6) != 0)
-									{
-										memcpy (lastAddr, msg->addr, 6);
-										GUI_CHAR;
-										printf ("\n%d> ", msg->addr[5]);
-									}
-									GUI_CHAR;
-									for (i = 0; i < msg->len; i++)
-									{
-										putchar (msg->data[i]);
-										if (msg->data[i] == 0x0d)
-										{
-											putchar (0x0a);
-#											ifdef GUI
-											putchar (0x0d);
-#											endif
-										}
-									}
-								}
-								if (apl->mode == 5)
-								{
-									
-									if(msg->data[0] != lastPacketTag)
-									{ 
-										lastPacketTag = msg->data[0];
-										packets_received++;
-										printf("%d packets received ", packets_received);
-										printf("%d",msg->data[0]);
-										printf("\n");
-									}
-								}
-								break;
+
+					if (memcmp (msg->addr, lastAddr, 6) != 0)
+					{
+						memcpy (lastAddr, msg->addr, 6);
+						GUI_CHAR;
+						printf ("\n%d> ", msg->addr[5]);
+					}
+
+					/**  string testing */
+					for (i = 0; i < msg->len; i++)
+					{
+						putchar (msg->data[i]);
+						if (msg->data[i] == 0x0d)
+						{
+							putchar (0x0a);
+#	ifdef GUI
+							putchar (0x0d);
+#	endif
+						}
+					}
+					//printf("checking : %s\n",msg->data);
+
+					/**  packet testing*/
+					//Packet *pkt = (Packet *)msg->data;
+					//PrintPacket(pkt);
+
+				break;
 								
 		case PD_RANGING_INDICATION:
 		case PD_RANGING_FAST_INDICATION:
-								if (apl->mode == 0) break;
-								LED0 (LED_OFF);
-								upRangingMsg = (RangingPIB*) msg->data;
+				LED0 (LED_OFF);
+				upRangingMsg = (RangingPIB*) msg->data;
 
-								//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
-								sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-								printf("%s",serial_print_buffer); 
-								//ranging_start_flag = TRUE;
-								break;
+				//sprintf(serial_print_buffer,"#%07.2f:%03i:%03i\n",upRangingMsg->distance,msg->addr[0],upRangingMsg->error);
+				sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
+				printf("%s",serial_print_buffer);
+				//ranging_start_flag = TRUE;
+				break;
 
-		default:				break;
+default:				break;
 	}
 }
 
@@ -216,8 +198,8 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,0};
-	MyByte8T		d_address[] = {0,0,0,0,0,1};
+	MyByte8T		s_address[] = {0,0,0,0,0,1};
+	MyByte8T		d_address[] = {0,0,0,0,0,2};
 
     apl = &aplM;
 
@@ -237,30 +219,13 @@ void APLInit(void)
      * They are used by the user interface
      */
     apl->hwclock = 0;
-	apl->mode = 1;
-	apl->help = 0;
 	apl->len = 0;
-
-#	ifdef CONFIG_USE_KEYS
-	apl->key[1] = FALSE;
-	apl->key[2] = FALSE;
-	apl->key[3] = FALSE;
-	apl->tkey[1] = FALSE;
-	apl->tkey[2] = FALSE;
-	apl->tkey[3] = FALSE;
-#	endif /* CONFIG_USE_KEYS */
 
 	/* switch on receiver */
 	downMsg.prim = PLME_SET_REQUEST;
 	downMsg.attribute = PHY_RX_CMD;
 	downMsg.value = PHY_RX_ON;
 	PLMESap (&downMsg);
-
-	// /* switch off receiver */
-	// downMsg.prim = PLME_SET_REQUEST;
-	// downMsg.attribute = PHY_RX_CMD;
-	// downMsg.value = PHY_TRX_OFF;
-	// PLMESap (&downMsg);
 }
 
 /**
@@ -282,26 +247,6 @@ void SendBuffer (void)
 	// Set RTS
 }
 
-
-void SendRange (void)
-{
-	// clear RTS
-	memcpy (downMsg.addr, apl->dest, 6);
-	downMsg.prim = PD_RANGING_REQUEST;
-	apl->len = 0;
-	SendMsg (&downMsg);
-	// Set RTS
-}
-
-void SendFastRange (void)
-{
-	// clear RTS
-	memcpy (downMsg.addr, apl->dest, 6);
-	downMsg.prim = PD_RANGING_FAST_REQUEST;
-	apl->len = 0;
-	SendMsg (&downMsg);
-	// Set RTS
-}
 
 #define CONFIG_ALIVE_LED 1
 #ifdef CONFIG_ALIVE_LED
@@ -360,414 +305,66 @@ void APLPoll (void)
 #	ifdef CONFIG_ALIVE_LED
 	IsAlive ();
 #	endif
-
-#	ifdef CONFIG_USE_KEYS
-	if ((key_k3() == TRUE) || (apl->skey_k1 == TRUE))
-	{
-		apl->skey_k1 = FALSE;
-		if (apl->tkey[3] == FALSE)
-		{
-			apl->tkey[3] = TRUE;
-			if (apl->key[3] == FALSE)
-			{
-				apl->key[3] = TRUE;
-				LED5 (LED_ON);
-
-				DDRF |= 0x02;
-				PORTF |= 0x02;
-				NTRXSetupTRxMode (NA_80MHz, NA_1us, NA_1M_S);
-				PORTF &= ~0x02;
-			}
-			else
-			{
-				apl->key[3] = FALSE;
-				LED5 (LED_OFF);
-			}
-		}
-	}
-	else
-	{
-		apl->tkey[3] = FALSE;
-	}
-
-
-	if ((key_k2() == TRUE) || (apl->skey_k2 == TRUE))
-	{
-		apl->skey_k2 = FALSE;
-		if (apl->tkey[2] == FALSE)
-		{
-			apl->tkey[2] = TRUE;
-			if (apl->key[2] == FALSE)
-			{
-				apl->key[2] = TRUE;
-			}
-			else
-			{
-				apl->key[2] = FALSE;
-			}
-		}
-	}
-	else
-	{
-		apl->key[2] = FALSE;
-		apl->tkey[2] = FALSE;
-	}
-
-	if ((key_k1() == TRUE) || (apl->skey_k3 == TRUE))
-	{
-		apl->skey_k3 = FALSE;
-		if (apl->tkey[1] == FALSE)
-		{
-			apl->tkey[1] = TRUE;
-			if (apl->key[1] == FALSE)
-			{
-				apl->key[1] = TRUE;
-				LED6 (LED_ON);
-			}
-			else
-			{
-				apl->key[1] = FALSE;
-				LED6 (LED_OFF);
-			}
-		}
-	}
-	else
-	{
-		apl->tkey[1] = FALSE;
-	}
-#	endif /* CONFIG_USE_KEYS */
-
-	//printf("Hi this is your radio\n");
 	
-	if (apl->mode == 0)
+	/* In chat mode collect all user input and transmit it to the peer device */
+	/** now only chat mode in this layer is needed*/
+	if(!kbhit())
 	{
-		/* Help text for all available commands */
-		if (apl->help == 0)
+		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
 		{
-			apl->help = 1;
-			GUI_CHAR;
-			printf ("Usage:\n");
-			printf ("src  <mac addr>        set local MAC address\n");
-			printf ("dest <mac addr>        set destination MAC address\n");
-			printf ("sc <n>                 set channel [0 80MHz, 1us, 2.441GHz cf, no FEC]\n");
-			printf ("                                   [1 22MHz, 4us, 2.412GHz cf, no FEC]\n");
-			printf ("                                   [2 22MHz, 4us, 2.442GHz cf, no FEC]\n");
-			printf ("                                   [3 22MHz, 4us, 2.472GHz cf, no FEC]\n");
-			printf ("pow <value>			set power	[0 - 8 ( * 8), -33dBm to 0dBm]\n");
-			printf ("ack <value>			set auto ack [0 False, 1 True]\n");
-
-			printf ("chat                   start communication\n");
-			printf ("rang                   send ranging request\n");
-			printf ("ranf                   send fast ranging request\n");
-			printf ("ptes 			        packet loss test | send packets\n");
-			printf ("plis                   packet loss/ range test | listen packets\n");
-			printf ("help                   this menu\n");
-			printf ("[ESC]                  leave chat mode\n");
-		}
-
-		/* write a promt to mark configuration mode */
-		if(write_prompt)
-		{
-			printf(PROMPT);
-			write_prompt = 0;
-		}
-
-		if(!read_line(buf))
-		{
-			return;
-		}
-
-		write_prompt = 1;
-
-		/* select the requested command by the user and execute it */
-		if(buf[0] != 0)
-		{
-			if (memcmp (buf, "src ", 4) == 0)
-			{
-				apl->src[5] = atoi (&(buf[4]));
-				// NTRXSetStaAddress (app->src);
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_MAC_ADDRESS1;
-				memcpy (downMsg.data, apl->src, 6);
-				PLMESap (&downMsg);
-				puts ("Ok");
-			}
-			else if (memcmp (buf, "dest ", 5) == 0)
-			{
-				apl->dest[5] = atoi (&(buf[5]));
-				puts ("Ok");
-
-			}
-
-
-			if (strncmp (buf, "sc ", 3) == 0)
-			{
-				downMsg.value = (MyByte8T)(atoi (&(buf[3])));
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_LOG_CHANNEL;
-				PLMESap (&downMsg);
-				if (downMsg.status == PHY_SUCCESS)
-				{
-					puts ("Ok");
-				}
-				else
-				{
-					puts ("illegal channel");
-				}
-
-			}
-			else if (strncmp (buf, "pow ", 4) == 0)
-			{
-				power = (MyByte8T)(atoi (&(buf[3])));
-				if (power != 0)
-				{
-					power = (power * 8) - 1;
-				}
-				downMsg.value = power;
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_TX_POWER;
-				PLMESap (&downMsg);
-				if (downMsg.status == PHY_SUCCESS)
-				{
-					puts ("Ok");
-				}
-				else
-				{
-					puts ("invalid value");
-				}
-			}
-			else if (strncmp (buf, "ack ", 4) == 0)
-			{
-				downMsg.value = (MyByte8T)(atoi (&(buf[3])));
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_ARQ;
-				PLMESap (&downMsg);
-				if (downMsg.status == PHY_SUCCESS)
-				{
-					puts ("Ok");
-				}
-				else
-				{
-					puts ("invalid value");
-				}
-			}
-			
-			else if (strncmp (buf, "help", 4) == 0)
-			{
-				apl->help = 0;
-			}
-			else if (strncmp (buf, "chat", 4) == 0)
-			{
-				apl->mode = 1;
-				/* switch on receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
-				PLMESap (&downMsg);
-			}
-			else if (strncmp (buf, "rang", 4) == 0)
-			{
-				apl->mode = 2;
-				/* switch FEC on */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_FEC;
-				downMsg.value = FALSE;
-				PLMESap (&downMsg);
-
-				/* switch on receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
-				PLMESap (&downMsg);
-			}
-			else if (strncmp (buf, "ranf", 4) == 0)
-			{
-				apl->mode = 3;
-				
-				/* switch FEC on */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_FEC;
-				downMsg.value = FALSE;
-				PLMESap (&downMsg);
-				
-				/* switch on receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
-				PLMESap (&downMsg);
-			}
-			else if (strncmp (buf, "ptes", 4) == 0)
-			{
-				apl->mode = 4;
-				packets_received = 0;
-				
-				/* switch on receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
-				PLMESap (&downMsg);
-			}
-			else if (strncmp (buf, "plis", 4) == 0)
-			{
-				apl->mode = 5;
-				packets_received = 0;
-				
-				/* switch on receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_RX_ON;
-				PLMESap (&downMsg);
-			}
-			downMsg.len = 0;
-		}
-	}
-	else if (apl->mode == 1)
-	{
-		/* In chat mode collect all user input and transmit it to the peer device */
-		if(!kbhit())
-		{
-			if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
+			Packet *Arm2Radio = (Packet *)downMsg.data;
+			// set src and dest by Packet
+			memcpy(&(apl->src[4]), Arm2Radio->src, 2);
+			memcpy(&(apl->dest[4]), Arm2Radio->dest, 2);
+			//printf("length of the packet1: %d \n",apl->len);
+			if(apl->len == 16)
 			{
 				SendBuffer ();
 			}
+		}
+		return;
+	}
+	/* reset timer */
+	apl->hwclock = hwclock ();
+
+	while (kbhit())
+	{
+//	int i;
+//	for (i=0; i<16; i++)
+//	{
+		c = getchar ();
+		if (c == 0x1b)
+		{
+			apl->len = 0;
+			printf ("\nEnd of chat mode.\n");
+			/* switch off receiver */
+			downMsg.prim = PLME_SET_REQUEST;
+			downMsg.attribute = PHY_RX_CMD;
+			downMsg.value = PHY_TRX_OFF;
+
+
+			PLMESap (&downMsg);
 			return;
 		}
-		/* reset timer */
-		apl->hwclock = hwclock ();
-		while (kbhit())
-		{
-			c = getchar ();
-			if (c == 0x1b)
-			{
-				apl->mode = 0;
-				apl->len = 0;
-				printf ("\nEnd of chat mode.\n");
-				/* switch off receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_TRX_OFF;
-				PLMESap (&downMsg);
-				return;
-			}
 
 #			ifdef GUI
-			if( c != 0x0d )
+		if( c != 0x0d )
 #			endif
-				putchar (c);
-
-			downMsg.data[apl->len++] = (MyByte8T)c;
-		}
-
-		if (apl->len >= CONFIG_PAYLOAD_LEN - 1)
-		{
-			SendBuffer ();
-		}
-	}
-	else if (apl->mode == 2) 
-	{
-		/* In ptes mode sends 100 range to peer */
 		
-		if ((apl->hwclock + TIME_OUT < hwclock ()) && (packets_sent < 101))
-		{
-			packets_sent++;
-			SendRange ();
-			/* reset timer */
-			apl->hwclock = hwclock ();
-		}
+		/** print out what is sending out byte by byte (for sender is a must)*/
+		putchar (c);
 
-		if(packets_sent >= 101) 
-		{
-			printf("Sent %d range reqs.\n", packets_sent-1);
-			packets_sent = 0;
-			apl->mode = 0;
-			apl->len = 0;
-			printf ("\nEnd of range test.\n");
-			/* switch off receiver */
-			downMsg.prim = PLME_SET_REQUEST;
-			downMsg.attribute = PHY_RX_CMD;
-			downMsg.value = PHY_TRX_OFF;
-			PLMESap (&downMsg);
-		}
-		return;
-		
+		downMsg.data[apl->len++] = (MyByte8T)c;
 	}
-	else if (apl->mode == 3)
+
+	if (apl->len >= CONFIG_PAYLOAD_LEN - 1)
 	{
-			/* In ptes mode sends 100 range to peer */
-
-			if ((apl->hwclock + TIME_OUT < hwclock ()) && (packets_sent < 101))
-			{
-				packets_sent++;
-				SendFastRange ();
-				/* reset timer */
-				apl->hwclock = hwclock ();
-			}
-
-			if(packets_sent >= 101) 
-			{
-				printf("Sent %d range reqs.\n", packets_sent);
-				packets_sent = 0;
-				apl->mode = 0;
-				apl->len = 0;
-				printf ("\nEnd of range test.\n");
-				/* switch off receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_TRX_OFF;
-				PLMESap (&downMsg);
-			}
-			return;
+		Packet *Arm2Radio = (Packet *)downMsg.data;
+		// set src and dest by Packet
+		memcpy(&(apl->src[4]), Arm2Radio->src, 2);
+		memcpy(&(apl->dest[4]), Arm2Radio->dest, 2);
+		SendBuffer ();
 	}
-	else if (apl->mode == 4)
-	{
-		/* In ptes mode sends 100 packets to peer */
-		
-		if( (apl->len == 0) && (packets_sent < 100) )
-		{
-			downMsg.data[apl->len++] = packets_sent;
-		}
-		
-		if ((apl->hwclock + TIME_OUT < hwclock ()) && (apl->len > 0))
-		{
-			packets_sent++;
-			SendBuffer ();
-			/* reset timer */
-			apl->hwclock = hwclock ();
-		}
 
-		if(packets_sent >= 100) 
-		{
-			printf("Sent %d packets.\n", packets_sent);
-			packets_sent = 0;
-			apl->mode = 0;
-			apl->len = 0;
-			printf ("\nEnd of packet test.\n");
-			/* switch off receiver */
-			downMsg.prim = PLME_SET_REQUEST;
-			downMsg.attribute = PHY_RX_CMD;
-			downMsg.value = PHY_TRX_OFF;
-			PLMESap (&downMsg);
-		}
-		return;
 
-	}
-	else if (apl->mode == 5)
-	{
-		while (kbhit())
-		{
-			c = getchar ();
-			if (c == 0x1b)
-			{
-				apl->mode = 0;
-				apl->len = 0;
-				printf ("\nEnd of chat mode.\n");
-				/* switch off receiver */
-				downMsg.prim = PLME_SET_REQUEST;
-				downMsg.attribute = PHY_RX_CMD;
-				downMsg.value = PHY_TRX_OFF;
-				PLMESap (&downMsg);
-				return;
-			}
-		}
-	}
 }

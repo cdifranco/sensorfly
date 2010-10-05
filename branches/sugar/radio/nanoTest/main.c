@@ -30,6 +30,7 @@
 #include    "ntrxtypes.h"
 #include    "hwclock.h"
 #include	"phy.h"
+#include 	"packet.h"
 
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
@@ -101,8 +102,8 @@ int	main(int ac, char *av[])
 	clock_prescale_set(1);
 
 	/*
-     * LEDs are on Port C off avr board
-     */
+   * LEDs are on Port C off avr board
+   */
 	LED0_DIR |= LED0_PIN;
 	LED0 (LED_OFF);
 
@@ -116,9 +117,9 @@ int	main(int ac, char *av[])
 	LED3 (LED_OFF);
 
 	/*
-     * Initialize the timer for periodic tasks
-     * or time supervized actions
-     */
+   * Initialize the timer for periodic tasks
+   * or time supervized actions
+   */
 	hwclock_init();
 
 #	ifdef	CONFIG_CONSOLE
@@ -139,22 +140,30 @@ int	main(int ac, char *av[])
 #	endif
 
 	/*
-     * initialize user application
-     */
+   * initialize user application
+   */
 	APLInit();
 
 	/*
 	 * SYSTEM MAIN LOOP
 	 */
+
+	/** sub task 1: define a specific packet and send it back to computer*/
+	//Packet *pkt_testing = CreateTestingPacket();	
+	//char * pkt_bytes =(char *)pkt_testing;
+	//Packet *pkt_receive = (Packet *)pkt_bytes;
+
 	while(1)
 	{
+		//printf("i am aaa testing\n");
+		//PrintPacket(pkt_receive);			// sub tesk 1
 		/*
 		 * call application periodically
-         */		
-		APLPoll ();
+		 */
+		APLPoll ();			// sub tesk 2
 		/*
-         * Check for incomming packets
-         */
+		 * Check for incomming packets
+		 */
 		PHYPoll ();
 	}
 	return	0;

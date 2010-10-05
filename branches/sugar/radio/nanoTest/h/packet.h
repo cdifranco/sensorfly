@@ -16,12 +16,12 @@ typedef unsigned char PByte8T;// Byte used in Packet
 
 typedef struct
 {
-  int16_t id;
-  PByte8T type;	// r--> ranging; d--> data; s-->setting 
-  PByte8T checksum;
-  PByte8T dest[2]; // with 6 characters MAC Address
-  PByte8T src[2];	// with 6 characters MAC Address
-  PByte8T data[30];
+  uint8_t id;
+  uint8_t type;	// r--> ranging; d--> data; s-->setting
+  uint8_t checksum;
+  uint8_t dest; // with 6 characters MAC Address
+  uint8_t src;	// with 6 characters MAC Address
+  uint8_t length;
 } Packet;
 
 Packet *CreateTestingPacket(void);

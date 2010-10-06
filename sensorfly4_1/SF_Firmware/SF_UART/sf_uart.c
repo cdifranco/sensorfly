@@ -37,6 +37,18 @@
 #define STOP_BYTE   0xEF   
 
 
+
+extern UARTDRV drvUART0;
+extern int __pkt_rx_flag;
+extern int state;
+extern int debug;
+
+//-------- Events --------------------------
+//TN_EVENT eventRxUART0;
+//uint32_t eventPattern;
+
+
+
 void sf_uart0_init()
 {
   //-- Pins P0.0-TXD0 & P0.1-RXD0
@@ -70,6 +82,11 @@ void sf_uart0_init()
 
   // init RTS to high
   sf_uart0_rts_set();
+
+  __pkt_rx_flag = 0;
+  state = 0;
+  debug = 0;
+
 }
 
 void sf_uart0_int_handler()
@@ -79,22 +96,61 @@ void sf_uart0_int_handler()
   register int i;
   unsigned int status;
   unsigned char * rx_buf;
-  
+
   status = rU0IIR;  // Reset Int Request Source
   
   status &= (0x7 <<1);
   
   /* RX */
-  
-  if(status == RX_INT || status == TO_INT)
-  {
-    i = UART_FIFO_SIZE;
-    while((rU0LSR & 0x01) && (i--)) //-- Rx FIFO not empty
-    {
-       data = rU0RBR;
-    }
-  
-  }
+    if(status == RX_INT || status == TO_INT)
+        {
+          while((rU0LSR & 0x01)) //-- Rx FIFO not empty
+          {
+              data = rU0RBR;
+              switch (state)
+              {
+                  case 0 :
+                      if (data == START_BYTE)
+                      {
+                            state = 1;
+                      }
+                      break;
+                  case 1 :
+                      if (data == ESC_BYTE)
+                      {
+                            state = 2;
+                      }
+                      else if (data == STOP_BYTE)	//stop(received)
+                      {
+                             state = 0;
+                             // initiate events
+                             debug++;
+                              __pkt_rx_flag = 1;
+                      }
+                      else
+                      {
+                             drvUART0.buf[drvUART0.pos] =(unsigned char)data;
+                             drvUART0.pos++; 
+                             debug++;
+                      }
+                      break;
+                  case 2 :
+                      state = 1;
+                      drvUART0.buf[drvUART0.pos] =(unsigned char)data;
+                      drvUART0.pos++;
+                      debug++;
+                      break;
+                  default :
+                      break;
+              }
+          }
+          
+          if (drvUART0.pos > drvUART0.max_buf_size)
+          {
+              drvUART0.pos = 0;
+          }
+        }
+     
   
   /* TX */
   
@@ -133,6 +189,18 @@ void sf_uart0_pkt_send(Packet *pkt)
     rU0THR = STOP_BYTE;
     
     tn_sem_signal(&semTxUART0);
+}
+
+void sf_uart0_pkt_receive()
+{
+    // get the packet and check the length of the packet
+    if (__pkt_rx_flag)
+    {
+        //Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
+        char * bufRadio2Arm = (char *)drvUART0.buf;
+        __pkt_rx_flag = 0;
+    }
+    
 }
 
 // receive from uart

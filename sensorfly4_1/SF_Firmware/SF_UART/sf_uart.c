@@ -186,15 +186,6 @@ int sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte)
   return 0;
 }
 
-/**
- * TODO: add packet receive code 
- */
-int sf_uart0_pkt_rx(Packet *pkt, unsigned char in_byte[4])
-{
- 
-  return 0;
-}
-
 
 /*! \fn 
     \brief

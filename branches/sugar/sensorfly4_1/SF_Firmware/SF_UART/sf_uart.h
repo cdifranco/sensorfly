@@ -99,5 +99,5 @@ void sf_uart0_int_handler();
 void sf_uart0_cts_wait();
 void sf_uart0_rts_set();
 void sf_uart0_rts_clr();
-
+void sf_uart0_pkt_receive();
 #endif /* SF_UART_H_ */

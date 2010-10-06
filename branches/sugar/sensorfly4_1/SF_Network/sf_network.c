@@ -30,6 +30,7 @@
 UARTDRV drvUART0;
 unsigned char gUART0PayloadBuf[UART0_RX_PAYLOAD_BUF_SIZE];
 
+
 //-------- Semaphores -----------------------
 
 TN_SEM  semTxUART0;
@@ -81,6 +82,10 @@ void  sf_network_init()
    drvUART0.max_buf_size = UART0_RX_PAYLOAD_BUF_SIZE;
    drvUART0.pos          = 0;
 
+//   /* Install UART0 with priority 1 */
+//   tn_irq_install(UART0_ID, 1, sf_uart0_int_handler);
+
+
     //--- Semaphores
 
    semTxUART0.id_sem = 0;
@@ -125,68 +130,12 @@ void  sf_network_init()
 
 }
 
-void sf_network_wait_until_rx()
+void sf_network_pkt_send(Packet *pkt)
 {
-  int rc;
-  int i;
-  int len;
-  int nbytes;
-  unsigned int rx_block;
-  unsigned int mem_addr;
-  unsigned char * rx_mem;//the data shall be put here and can be get from here
-      
-  rc = tn_queue_receive(&queueRxUART0, (void **)&rx_block, TN_WAIT_INFINITE);
-  if(rc == TERR_NO_ERR)
-  {
-       
-     //--- Unpack len & addr
-     len = ((unsigned int)rx_block) >> 24;
-     mem_addr = (((unsigned int)&memRxUART0MemPool[0]) & 0xFF000000) |
-                               (((unsigned int)rx_block) & 0x00FFFFFF);
-     rx_mem = (unsigned char *) mem_addr;
-  
-     for(i = 0; i < len; i++)
-     {
-        nbytes = sf_uart0_str_rx(&drvUART0, rx_mem[i]);
-        if(nbytes > 0)
-        {
-           // payload processing
-
-        }
-     }
-
-     tn_fmem_release(&RxUART0MemPool,(void*)rx_mem);
-  }
+    sf_uart0_pkt_send(pkt);
 }
 
-
-void sf_network_tx_send()
+void sf_network_pkt_receive()
 {
-  int rc;
-  int i;
-  int len;
-  unsigned int tx_block;
-  unsigned int mem_addr;
-  unsigned char * tx_mem;
-  
-  rc = tn_queue_receive(&queueTxUART0, (void **)&tx_block, TN_WAIT_INFINITE);
-  if(rc == TERR_NO_ERR)
-  {
-     //-- Wait for radio CTS
-     // sf_uart0_cts_wait();
-     
-     //-- Wait UART Tx FIFO interrupt (here - UART Tx FIFO is empty)
-  
-     tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
-  
-     len = ((unsigned int)tx_block) >> 24;
-     mem_addr = (((unsigned int)&memTxUART0MemPool[0]) & 0xFF000000) |
-             (((unsigned int)tx_block) & 0x00FFFFFF);
-     tx_mem = (unsigned char *) mem_addr;
-     for(i = 0; i < len; i++)
-        rU0THR = tx_mem[i];
-  
-     tn_fmem_release(&TxUART0MemPool,(void*)tx_mem);
-  }
+    sf_uart0_pkt_receive();
 }
-

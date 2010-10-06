@@ -22,6 +22,7 @@
 #include    "ntrxtypes.h"
 #include	"usart.h"
 #include	"avrport.h"
+#include    "app.h"
 
 #include 	<avr/io.h>
 #include 	<avr/interrupt.h>
@@ -29,12 +30,23 @@
 #define ENTER_TASK {unsigned char cSREG=SREG; cli();
 #define LEAVE_TASK  SREG=cSREG; sei();}
 
+
+#define START_BYTE  0xFF
+#define ESC_BYTE    0x1B
+#define STOP_BYTE   0xEF 
+
+
 volatile MyByte8T serBuffer;
 volatile MyByte8T full;
 
 int	_getchar(FILE *stream);
 int	_putchar(char c, FILE *stream);
 static FILE stdinouterr = FDEV_SETUP_STREAM (_putchar, _getchar, _FDEV_SETUP_RW );
+
+extern AplMemT *apl;
+extern uint8_t state;
+extern uint8_t __pkt_rx_flag;
+extern MyMsgT downMsg;
 
 /**
  * interrupt USART1_REC:
@@ -47,6 +59,40 @@ SIGNAL(AVR_USART_RECV)
 {
 	serBuffer = AVR_UDR1;
 	full = 1;
+	
+	//states:
+	//0:wait
+	//1:receive
+	//2:escape
+	//3:stop(received)
+	switch (state)
+	{
+		case 0 :
+				if (serBuffer == START_BYTE)
+				{
+					/* reset timer */
+					apl->hwclock = hwclock ();
+					state = 1;
+				}
+				break;
+		case 1 :
+				if (serBuffer == ESC_BYTE)
+					state = 2;
+				else if (serBuffer == STOP_BYTE)	//stop(received)
+				{
+				   state = 0;
+				   __pkt_rx_flag = 1;
+				}
+				else
+					downMsg.data[apl->len++] = serBuffer;
+				break;
+		case 2 :
+				state = 1;
+				downMsg.data[apl->len++] = serBuffer;
+				break;
+		default :
+				break;
+	}	
 }
 
 /**

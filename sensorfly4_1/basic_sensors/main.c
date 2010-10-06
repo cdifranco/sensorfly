@@ -111,13 +111,16 @@ void task_app_func(void * par)
       pkt.checksum = 0;
       pkt.src = 1;
       pkt.dest = 2;
-      pkt.length = 6;
+      pkt.length = 16;
+      pkt.data[0] = 'x';
+      pkt.data[1] = 'y';
       
+       
       // Send pkt
       sf_uart0_pkt_send(&pkt);
       
       /* Sleep 1000 ticks */
-      tn_task_sleep(1000);
+      tn_task_sleep(5000);
    }
 }
 

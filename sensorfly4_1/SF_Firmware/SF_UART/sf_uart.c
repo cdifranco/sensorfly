@@ -88,32 +88,12 @@ void sf_uart0_int_handler()
   
   if(status == RX_INT || status == TO_INT)
   {
-    rc = tn_fmem_get_ipolling(&RxUART0MemPool, (void **) &rx_buf);
-    if(rc != TERR_NO_ERR)
-       rx_buf = NULL;
-  
-    rc = 0;
     i = UART_FIFO_SIZE;
     while((rU0LSR & 0x01) && (i--)) //-- Rx FIFO not empty
     {
        data = rU0RBR;
-
-//-----------------------------------------------------------------------------
-       if(rx_buf)
-          rx_buf[rc++] = (unsigned char)data;
     }
   
-    if(rc > 0)
-    {
-       //--- Pack length & address
-       data = (rc << 24) | (((unsigned int)rx_buf) & 0x00FFFFFF);
-       data = tn_queue_isend_polling(&queueRxUART0, (void *) data);
-       if(data != TERR_NO_ERR)
-          rc = 0;
-    }
-  
-    if(rc == 0 && rx_buf)
-       tn_fmem_irelease(&RxUART0MemPool, (void *) rx_buf);
   }
   
   /* TX */
@@ -125,24 +105,33 @@ void sf_uart0_int_handler()
 void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;
-    uint8_t __length = 6;
+    
     uint8_t i;
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
     // cut the data length into FIFO_SIZE
-    if(__length > UART_FIFO_SIZE)
-      __length = UART_FIFO_SIZE;
+    if(pkt->length > UART_FIFO_SIZE)
+      pkt->length = UART_FIFO_SIZE;
 
+    
+    tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
     rU0THR = START_BYTE;
-    for (i = 0; i< __length; i++ )
+
+    for (i = 0; i< pkt->length; i++ )
     { 
        if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE)
        {
-           rU0THR ==ESC_BYTE;
+          
+           tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
+           rU0THR = ESC_BYTE;
        }
-       rU0THR =pkt_bytes[i];
+      
+       tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
+       rU0THR = pkt_bytes[i];
     }
 
+    rU0THR = STOP_BYTE;
+    
     tn_sem_signal(&semTxUART0);
 }
 

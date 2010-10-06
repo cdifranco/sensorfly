@@ -111,11 +111,11 @@ void APLCallback (MyMsgT *msg)
 				break;
 
 		case PD_DATA_INDICATION:
-                    // Check if packet is for this node
-                    if(memcmp(msg->addr,apl->src,6) != 0)
-                    {
-                       break;
-                    }
+          // Check if packet is for this node
+          if(memcmp(msg->addr,apl->src,6) != 0)
+          {
+             break;
+          }
                     
 					// Check length of packet
 					

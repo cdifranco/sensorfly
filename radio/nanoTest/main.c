@@ -149,16 +149,45 @@ int	main(int ac, char *av[])
 	 */
 
 	/** sub task 1: define a specific packet and send it back to computer*/
-	//Packet *pkt_testing = CreateTestingPacket();	
-	//char * pkt_bytes =(char *)pkt_testing;
-	//Packet *pkt_receive = (Packet *)pkt_bytes;
-
+	Packet * pkt;
+	pkt->id = 1;
+	pkt->dest = 1;
+	pkt->src = 2;
+	pkt->type = PKT_TYPE_DATA;
+	pkt->checksum = 0;
+	pkt->length = 8;
+	pkt->data[0]='a';
+	pkt->data[1]='b';
+	char buf[10];
+	
+	
 	while(1)
 	{
+/*
+		int i;
+		
+		buf[0] = START_BYTE;
+		buf[9] = STOP_BYTE;
+		
+		for (i = 1; i<9; i++)
+		{
+			buf[i] = 'a';
+		}
+	
+		for (i = 0; i< 10; i++)
+		{
+				if (buf[i] == START_BYTE || buf[i] == ESC_BYTE || buf[i] == STOP_BYTE)
+				{
+						putchar(ESC_BYTE);
+				}
+				putchar(buf[i]);
+
+		}
+*/
 		/*
 		 * call application periodically
 		 */
-		APLPoll ();			// sub tesk 2
+		APLPoll ();	
 		/*
 		 * Check for incomming packets
 		 */

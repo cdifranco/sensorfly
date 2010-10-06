@@ -11,6 +11,11 @@
  * 09-28-2010
  */
 
+#define PKT_TYPE_RANGING 'r'
+#define PKT_TYPE_DATA    'd'
+#define PKT_TYPE_SETTING 's'
+
+
 typedef struct
 {
   uint8_t id;
@@ -19,7 +24,7 @@ typedef struct
   uint8_t dest; // with 6 characters MAC Address
   uint8_t src;	// with 6 characters MAC Address
   uint8_t length;
-  uint8_t data[122];
+  uint8_t data[2];
 } Packet;
 
 void PrintPacket(Packet *pkt);

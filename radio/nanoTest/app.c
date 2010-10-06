@@ -30,12 +30,7 @@
 #include	"phy.h"
 #include 	"nnspi.h"
 #include	"led.h"
-#include	"packet.h"
-
-
-#define START_BYTE  0xFF
-#define ESC_BYTE    0x1B
-#define STOP_BYTE   0xEF   
+#include	"packet.h"  
 
 /**
  * @def TIME_OUT
@@ -45,7 +40,7 @@
  * new data and sends all collected data to the preset device.
  *
  */
-#define TIME_OUT  40
+#define TIME_OUT  100
 /**
  * @def SendMsg
  * @brief Data request to the next lower layer.
@@ -54,24 +49,6 @@
  *
  */
 #define SendMsg PDSap
-
-/** @brief Structure type for all layer configuration settings
- *
- * To be IEEE layer complient, all configuration data is stored
- * in one data structure.
- */
-
-#define GET_PACKET_FAILURE 0
-#define GET_PACKET_SUCCESS 1
-
-
-typedef struct
-{
-	MyDword32T hwclock; 	/**< Timestamp to determine a timeout condition for a data request */
-	MyAddrT    dest;		/**< MAC address of the peer device */
-	MyAddrT    src;		/**< MAC address of this device */
-	MyByte8T 	len;		/**< Number of bytes in send buffer */
-} AplMemT;
 
 /** @brief Memory for all layer configuration settings.  */
 AplMemT aplM;
@@ -82,6 +59,9 @@ MyMsgT downMsg;
 /** @brief Message structure for payload of received ranging packets.  */
 RangingPIB *upRangingMsg;
 
+
+uint8_t state = 0;
+volatile uint8_t __pkt_rx_flag = 0;
 
 /**
  * @brief Process incoming messages.
@@ -235,75 +215,22 @@ void APLPoll (void)
 	static MyByte8T packets_sent = 0xFF;
 	MyByte8T power = 0;
 	Packet * pktArm2Radio;
-	printf("before get packet\n");
-	if (GetPacket())
+	
+	if (__pkt_rx_flag)
 	{
 		pktArm2Radio = (Packet *)downMsg.data;
 		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
 		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
 		PrintPacket(pktArm2Radio);
 		SendBuffer();
+		__pkt_rx_flag = 0;
 	}
-	else
-	{
-		printf("not get any packet");
-	}
-
-}
-
-
-/*
- * State Machine getting the packet from ARM
- */
-int GetPacket (void)
-{
-	printf("start get packet \n");
-	//states:
-	//0:wait
-	//1:receive
-	//2:escape
-	//3:stop(received)
-	char state = 0;
-	char c;
-	while (kbhit())
-	{
-		c = getchar ();
-
-		//Time is out
-		if (apl->hwclock + TIME_OUT < hwclock ())
-		{
-			apl->len = 0;
-			return GET_PACKET_FAILURE;
-		}
-
-		switch (state)
-		{
-			case 0 :
-					if (c == START_BYTE)
-					{
-						/* reset timer */
-						apl->hwclock = hwclock ();
-
-						state = 1;
-					}
-					break;
-			case 1 :
-					if (c == ESC_BYTE)
-						state = 2;
-					else if (c == STOP_BYTE)	//stop(received)
-						return GET_PACKET_SUCCESS;
-					else
-						downMsg.data[apl->len++] = c;
-					break;
-			case 2 :
-					state = 1;
-					downMsg.data[apl->len++] = c;
-					break;
-			default :
-					break;
-		}
-	}
-	apl->len = 0;
-	return GET_PACKET_FAILURE;
+	
+	//Time is out
+    //    if (apl->hwclock + TIME_OUT < hwclock ())
+    //    {
+    //    	apl->len = 0;
+    //    	state = 0;
+    //    }
 }
 

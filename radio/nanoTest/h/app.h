@@ -22,6 +22,21 @@
 
 #include "ntrxtypes.h"
 
+/** @brief Structure type for all layer configuration settings
+ *
+ * To be IEEE layer complient, all configuration data is stored
+ * in one data structure.
+ */
+
+typedef struct
+{
+	MyDword32T hwclock; 	/**< Timestamp to determine a timeout condition for a data request */
+	MyAddrT    dest;		/**< MAC address of the peer device */
+	MyAddrT    src;		/**< MAC address of this device */
+	MyByte8T 	len;		/**< Number of bytes in send buffer */
+} AplMemT;
+
+
 void APLMECallback (MyMsgT *msg);
 void APLCallback (MyMsgT *msg);
 void APLInit (void);

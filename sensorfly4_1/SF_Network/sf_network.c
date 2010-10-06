@@ -160,41 +160,6 @@ void sf_network_wait_until_rx()
 }
 
 
-void sf_network_pkt_wait_until_rx()
-{
-//  int rc;
-//  int i;
-//  int len;
-//  int nbytes;
-//  unsigned int rx_block;
-//  unsigned int mem_addr;
-//  unsigned char * rx_mem;//the data shall be put here and can be get from here
-//      
-//  rc = tn_queue_receive(&queueRxUART0, (void **)&rx_block, TN_WAIT_INFINITE);
-//  if(rc == TERR_NO_ERR)
-//  {
-//       
-//      //--- Unpack len & addr
-//  
-//     len = ((unsigned int)rx_block) >> 24;
-//     mem_addr = (((unsigned int)&memRxUART0MemPool[0]) & 0xFF000000) |
-//                               (((unsigned int)rx_block) & 0x00FFFFFF);
-//     rx_mem = (unsigned char *) mem_addr;
-//  
-//     for(i = 0; i < len; i++)
-//     {
-//        nbytes = sf_uart0_pkt_rx(&drvUART0, rx_mem[i]);
-//        if(nbytes > 0)
-//        {
-//           // payload processing
-//
-//        }
-//     }
-//     tn_fmem_release(&RxUART0MemPool,(void*)rx_mem);
-//  }
-}
-
-
 void sf_network_tx_send()
 {
   int rc;

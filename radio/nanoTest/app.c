@@ -58,7 +58,7 @@ AplMemT *apl;
 MyMsgT downMsg;
 /** @brief Message structure for payload of received ranging packets.  */
 RangingPIB *upRangingMsg;
-
+Packet * pkt_rx;
 
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
@@ -90,21 +90,23 @@ void APLCallback (MyMsgT *msg)
 				{
 					case PHY_SUCCESS	:
 						/* hwack received, ranging start successfully */
+						//printf("ranging start successfully \n");
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s",serial_print_buffer);
+						printf("ranging did not start : %s \n",serial_print_buffer);
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
 						/* measurement is allready running (BUSY), wait
 							for PD_RANGING_INDICATION first! */
+						//printf("ranging~~\n");
 						break;
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s",serial_print_buffer);
+						printf("initialization error : %s \n",serial_print_buffer);
 						break;
 					default : break;
 				}
@@ -112,21 +114,19 @@ void APLCallback (MyMsgT *msg)
 
 		case PD_DATA_INDICATION:
           // Check if packet is for this node
-         
 					if(memcmp(msg->addr,apl->src,6) != 0)
           {
 							printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
 							break;
           }                  
 					// Check length of packet
-					Packet * pkt_rx = (Packet *)msg->data;
+					pkt_rx = (Packet *)msg->data;
 					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
 					{
 							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
 							break;
 					}
-					
-					// Send packet to arm
+					// Send packet to ARM
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
@@ -142,9 +142,38 @@ void APLCallback (MyMsgT *msg)
 								
 		case PD_RANGING_INDICATION:
 		case PD_RANGING_FAST_INDICATION:
-				upRangingMsg = (RangingPIB*) msg->data;
-				sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-				printf("%s",serial_print_buffer);
+						// getting the ranging result data
+						upRangingMsg = (RangingPIB*) msg->data;
+						
+						// create pkt that will send to ARM
+						Packet pktRadio2Arm;
+						memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
+						memcpy(&(pktRadio2Arm.data[4]), &(upRangingMsg->error), 1);
+						pktRadio2Arm.id = 0; // set id 0 pkt as ranging pkt
+						pktRadio2Arm.type = PKT_TYPE_RANGING;
+						pktRadio2Arm.checksum = 0;
+						pktRadio2Arm.dest = 0; // set dest = 0 only when it is ranging
+						pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
+						pktRadio2Arm.length = 9; // only contains distance and error info = 3 bytes
+						Packet * pkt_temp = &(pktRadio2Arm);
+						
+						//  packet testing
+						//PrintRangingPacket(pkt_temp);
+
+						// send the encoded pkt up to ARM	byte by byte
+						char * bufRadio2Arm = (char *)pkt_temp;
+						int i;
+						putchar(START_BYTE);
+						for (i = 0; i< 9; i++)
+						{
+								if (bufRadio2Arm[i] == START_BYTE || bufRadio2Arm[i] == ESC_BYTE || bufRadio2Arm[i] == STOP_BYTE)
+								{
+										putchar(ESC_BYTE);
+								}
+								putchar(bufRadio2Arm[i]);
+						}
+						putchar(STOP_BYTE);		
+	
 				break;
 
 default:				break;
@@ -210,6 +239,16 @@ void SendBuffer (void)
 	// Set RTS
 }
 
+void SendRange (void)
+{
+	// clear RTS
+	memcpy (downMsg.addr, apl->dest, 6);
+	downMsg.prim = PD_RANGING_REQUEST;
+	apl->len = 0;
+	SendMsg (&downMsg);
+	// Set RTS
+}
+
 /**
  * @brief Monitors user input.
  *
@@ -220,27 +259,48 @@ void SendBuffer (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-		static	char buf[CONFIG_CONSOLE_LINE_SIZE];
-		static	int write_prompt = 1;
+		//static	char buf[CONFIG_CONSOLE_LINE_SIZE];
+		//static	int write_prompt = 1;
 	
-		MyInt16T c;
+		//MyInt16T c;
 	
-		static MyByte8T packets_sent = 0xFF;
-		MyByte8T power = 0;
+		//static MyByte8T packets_sent = 0xFF;
+		//MyByte8T power = 0;
 		Packet * pktArm2Radio;
 
-/*
-		// Get pkt from ARM --> cannot apply in receiver--> collision perhaps
+
+		// Get pkt from ARM --> only apply in sender
 		if (__pkt_rx_flag)
 		{
+				// set src and dest based on pkt info
 				pktArm2Radio = (Packet *)downMsg.data;
 				memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
 				memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
-				PrintPacket(pktArm2Radio);
-				SendBuffer();
+				//PrintPacket(pktArm2Radio);
+				// decide with type of packet is sending
+				if (pktArm2Radio->type == PKT_TYPE_DATA)
+				{
+						//printf("packet type: data \n");
+						// send the data
+						SendBuffer();
+				} 
+				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+				{
+						//printf("packet type: ranging \n");
+						// send ranging pkt
+						SendRange();
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+				{
+						printf("packet type: setting \n");			
+				}
+				else 
+				{
+						printf("packet type error: %c \n", pktArm2Radio->type);
+				} 
+
 				__pkt_rx_flag = 0;
 		}
-*/
 
 
 /* AVR 2 ARM Test
@@ -270,4 +330,3 @@ void APLPoll (void)
 */
 
 }
-

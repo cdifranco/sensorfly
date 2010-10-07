@@ -104,20 +104,20 @@ void task_app_func(void * par)
         Blink = Blink ^ 1;
         
       //receive from ARM    
-      Packet * pkt_rx = sf_network_pkt_receive();
+//      Packet * pkt_rx = sf_network_pkt_receive();
       
-//      // Create packet
-//      pkt.id = 1;
-//      pkt.type = PKT_TYPE_DATA;
-//      pkt.checksum = 0;
-//      pkt.src = 1;
-//      pkt.dest = 2;
-//      pkt.length = 8;
-//      pkt.data[0] = 'x';
-//      pkt.data[1] = 'y';
-//           
-//      // Send pkt
-//      sf_network_pkt_send(&pkt);
+      // Create packet
+      pkt.id = 1;
+      pkt.type = PKT_TYPE_RANGING;
+      pkt.checksum = 0;
+      pkt.src = 1;
+      pkt.dest = 2;
+      pkt.length = 128;
+      pkt.data[0] = 'x';
+      pkt.data[1] = 'y';
+           
+      // Send pkt
+      sf_network_pkt_send(&pkt);
       
       /* Sleep 5000 ticks */
       tn_task_sleep(5000);

@@ -154,7 +154,7 @@ void APLCallback (MyMsgT *msg)
 						pktRadio2Arm.checksum = 0;
 						pktRadio2Arm.dest = 0; // set dest = 0 only when it is ranging
 						pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
-						pktRadio2Arm.length = 9; // only contains distance and error info = 3 bytes
+						pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 						Packet * pkt_temp = &(pktRadio2Arm);
 						
 						//  packet testing

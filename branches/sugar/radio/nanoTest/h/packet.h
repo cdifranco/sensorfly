@@ -24,9 +24,9 @@ typedef struct
   uint8_t dest; // last char in 6 characters MAC Address
   uint8_t src;	// last char in 6 characters MAC Address
   uint8_t length;
-  uint8_t data[2];
+  uint8_t data[122];
 } Packet;
 
 void PrintPacket(Packet *pkt);
-
+void PrintRangingPacket(Packet *pkt);
 #endif /* PACKET_H */

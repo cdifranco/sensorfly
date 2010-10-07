@@ -115,11 +115,16 @@ void APLCallback (MyMsgT *msg)
          
 					if(memcmp(msg->addr,apl->src,6) != 0)
           {
-						printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
-             break;
+							printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
+							break;
           }                  
 					// Check length of packet
-					
+					Packet * pkt_rx = (Packet *)msg->data;
+					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
+					{
+							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
+							break;
+					}
 					
 					// Send packet to arm
 					putchar(START_BYTE);
@@ -238,7 +243,7 @@ void APLPoll (void)
 */
 
 
-/*
+/* AVR 2 ARM Test
 		// Send pkt from AVR to ARM
 		Packet * pkt;
 		pkt->id = 'a';

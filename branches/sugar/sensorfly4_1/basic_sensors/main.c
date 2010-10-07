@@ -116,7 +116,7 @@ void task_app_func(void * par)
 //      pkt.checksum = 0;
 //      pkt.src = 1;
 //      pkt.dest = 2;
-//      pkt.length = 16;
+//      pkt.length = 8;
 //      pkt.data[0] = 'x';
 //      pkt.data[1] = 'y';
 //      

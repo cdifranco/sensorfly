@@ -157,11 +157,6 @@ int	_getchar(FILE *stream)
  */
 int	_putchar(char c, FILE *stream)
 {
-	if(c == '\n')
-	{
-		while((AVR_UCSR1A & (1 << AVR_UDRE1)) == 0);
-		AVR_UDR1 = '\r';
-	}
 
 	while((AVR_UCSR1A & (1 << AVR_UDRE1)) == 0);
 	AVR_UDR1 = c;

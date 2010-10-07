@@ -104,11 +104,7 @@ void task_app_func(void * par)
         Blink = Blink ^ 1;
         
       //receive from ARM    
-      sf_network_pkt_receive();
-//      Packet * receivebuf = (Packet *)drvUART0.buf;
-//      char * test =(char *)drvUART0.buf;
-      
-      
+      Packet * pkt_rx = sf_network_pkt_receive();
       
 //      // Create packet
 //      pkt.id = 1;
@@ -119,12 +115,11 @@ void task_app_func(void * par)
 //      pkt.length = 8;
 //      pkt.data[0] = 'x';
 //      pkt.data[1] = 'y';
-//      
-//       
+//           
 //      // Send pkt
 //      sf_network_pkt_send(&pkt);
       
-      /* Sleep 1000 ticks */
+      /* Sleep 5000 ticks */
       tn_task_sleep(5000);
    }
 }

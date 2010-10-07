@@ -86,7 +86,6 @@ void sf_uart0_init()
   eventRxUART0.id_event = 17;
   tn_event_create(&eventRxUART0,TN_EVENT_ATTR_SINGLE,0x00000000);
   tn_event_clear(&eventRxUART0,0x00000000);
-  //__pkt_rx_flag = 0;
   state = 0;
 
 }
@@ -126,7 +125,6 @@ void sf_uart0_int_handler()
                       {
                              state = 0;
                              tn_event_iset(&eventRxUART0,0x00000001);
-                             //__pkt_rx_flag = 1;
                       }
                       else
                       {
@@ -190,72 +188,20 @@ void sf_uart0_pkt_send(Packet *pkt)
     tn_sem_signal(&semTxUART0);
 }
 
-void sf_uart0_pkt_receive()
+Packet * sf_uart0_pkt_receive()
 {
     // get the packet and check the length of the packet
-    //while (!__pkt_rx_flag){};
-    int rw;
+    int rw;   // result of system waiting
+    Packet * pktRadio2Arm;
     rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
     if (rw == TERR_NO_ERR)
     {
-        Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
-        //char * bufRadio2Arm = (char *)drvUART0.buf;
-        //__pkt_rx_flag = 0;
+        // get the packet from the buffer
+        pktRadio2Arm = (Packet *)drvUART0.buf;
         tn_event_clear(&eventRxUART0,0x00000000);
     }
+    return pktRadio2Arm;
 }
-
-// receive from uart
-int sf_uart0_rx(unsigned char * buf, unsigned char in_byte, int max_buf_size)
-{
-  static int pos = 0;
-  int tmp;
-  
-  if(in_byte == '\r' || in_byte == '\n') //-- We ignore empty str here
-  {
-    tmp = pos;
-    pos = 0;
-    return tmp;
-  }
-  else
-  {
-    buf[pos] = in_byte;
-    pos++;
-    if(pos >= max_buf_size) //-- Too many symbols
-    {
-       tmp = pos;
-       pos = 0;
-       return tmp;
-    }
-  }
-  return 0;
-}
-
-
-int sf_uart0_str_rx(UARTDRV * ud, unsigned char in_byte)
-{
-  int tmp;
-  
-  if(in_byte == '\r' || in_byte == '\n') //-- We ignore empty str here
-  {
-    tmp = ud->pos;
-    ud->pos = 0;
-    return tmp;
-  }
-  else
-  {
-    ud->buf[ud->pos] = in_byte;
-    ud->pos++;
-    if(ud->pos >= ud->max_buf_size) //-- Too many symbols
-    {
-       tmp = ud->pos;
-       ud->pos = 0;
-       return tmp;
-    }
-  }
-  return 0;
-}
-
 
 /*! \fn 
     \brief

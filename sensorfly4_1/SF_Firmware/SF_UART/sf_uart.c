@@ -41,7 +41,6 @@
 extern UARTDRV drvUART0;
 extern int __pkt_rx_flag;
 extern int state;
-extern int debug;
 
 //-------- Events --------------------------
 //TN_EVENT eventRxUART0;
@@ -85,7 +84,6 @@ void sf_uart0_init()
 
   __pkt_rx_flag = 0;
   state = 0;
-  debug = 0;
 
 }
 
@@ -123,22 +121,18 @@ void sf_uart0_int_handler()
                       else if (data == STOP_BYTE)	//stop(received)
                       {
                              state = 0;
-                             // initiate events
-                             debug++;
-                              __pkt_rx_flag = 1;
+                             __pkt_rx_flag = 1;
                       }
                       else
                       {
                              drvUART0.buf[drvUART0.pos] =(unsigned char)data;
-                             drvUART0.pos++; 
-                             debug++;
+                             drvUART0.pos++;                              
                       }
                       break;
                   case 2 :
                       state = 1;
                       drvUART0.buf[drvUART0.pos] =(unsigned char)data;
-                      drvUART0.pos++;
-                      debug++;
+                      drvUART0.pos++;                   
                       break;
                   default :
                       break;
@@ -194,13 +188,11 @@ void sf_uart0_pkt_send(Packet *pkt)
 void sf_uart0_pkt_receive()
 {
     // get the packet and check the length of the packet
-    if (__pkt_rx_flag)
-    {
-        //Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
-        char * bufRadio2Arm = (char *)drvUART0.buf;
-        __pkt_rx_flag = 0;
-    }
-    
+    while (!__pkt_rx_flag){};
+    Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
+    //char * bufRadio2Arm = (char *)drvUART0.buf;
+    __pkt_rx_flag = 0;
+
 }
 
 // receive from uart

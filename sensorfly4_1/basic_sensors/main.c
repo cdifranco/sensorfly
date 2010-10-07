@@ -34,7 +34,6 @@ void task_app_func(void * par);
 extern UARTDRV drvUART0;
 int __pkt_rx_flag;
 int state;
-int debug;
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -104,26 +103,26 @@ void task_app_func(void * par)
         
         Blink = Blink ^ 1;
         
-//      //receive from ARM    
-//      sf_network_pkt_receive();
-//      //Packet * receivebuf = (Packet *)drvUART0.buf;
+      //receive from ARM    
+      sf_network_pkt_receive();
+//      Packet * receivebuf = (Packet *)drvUART0.buf;
 //      char * test =(char *)drvUART0.buf;
       
       
       
-      // Create packet
-      pkt.id = 1;
-      pkt.type = PKT_TYPE_DATA;
-      pkt.checksum = 0;
-      pkt.src = 1;
-      pkt.dest = 2;
-      pkt.length = 16;
-      pkt.data[0] = 'x';
-      pkt.data[1] = 'y';
-      
-       
-      // Send pkt
-      sf_network_pkt_send(&pkt);
+//      // Create packet
+//      pkt.id = 1;
+//      pkt.type = PKT_TYPE_DATA;
+//      pkt.checksum = 0;
+//      pkt.src = 1;
+//      pkt.dest = 2;
+//      pkt.length = 16;
+//      pkt.data[0] = 'x';
+//      pkt.data[1] = 'y';
+//      
+//       
+//      // Send pkt
+//      sf_network_pkt_send(&pkt);
       
       /* Sleep 1000 ticks */
       tn_task_sleep(5000);

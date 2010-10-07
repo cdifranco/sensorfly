@@ -43,8 +43,8 @@ extern int __pkt_rx_flag;
 extern int state;
 
 //-------- Events --------------------------
-//TN_EVENT eventRxUART0;
-//uint32_t eventPattern;
+TN_EVENT eventRxUART0;
+uint32_t eventPattern;
 
 
 
@@ -82,7 +82,11 @@ void sf_uart0_init()
   // init RTS to high
   sf_uart0_rts_set();
 
-  __pkt_rx_flag = 0;
+  // set up event flag
+  eventRxUART0.id_event = 17;
+  tn_event_create(&eventRxUART0,TN_EVENT_ATTR_SINGLE,0x00000000);
+  tn_event_clear(&eventRxUART0,0x00000000);
+  //__pkt_rx_flag = 0;
   state = 0;
 
 }
@@ -121,7 +125,8 @@ void sf_uart0_int_handler()
                       else if (data == STOP_BYTE)	//stop(received)
                       {
                              state = 0;
-                             __pkt_rx_flag = 1;
+                             tn_event_iset(&eventRxUART0,0x00000001);
+                             //__pkt_rx_flag = 1;
                       }
                       else
                       {
@@ -188,11 +193,16 @@ void sf_uart0_pkt_send(Packet *pkt)
 void sf_uart0_pkt_receive()
 {
     // get the packet and check the length of the packet
-    while (!__pkt_rx_flag){};
-    Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
-    //char * bufRadio2Arm = (char *)drvUART0.buf;
-    __pkt_rx_flag = 0;
-
+    //while (!__pkt_rx_flag){};
+    int rw;
+    rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
+    if (rw == TERR_NO_ERR)
+    {
+        Packet * pktRadio2Arm = (Packet *)drvUART0.buf;
+        //char * bufRadio2Arm = (char *)drvUART0.buf;
+        //__pkt_rx_flag = 0;
+        tn_event_clear(&eventRxUART0,0x00000000);
+    }
 }
 
 // receive from uart

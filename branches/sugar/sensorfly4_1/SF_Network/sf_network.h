@@ -40,6 +40,6 @@ typedef struct
 
 
 void sf_network_init();
-void sf_network_pkt_receive();
+Packet * sf_network_pkt_receive();
 void sf_network_pkt_send(Packet *pkt);
 #endif /* SF_NETWORK_H_ */

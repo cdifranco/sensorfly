@@ -98,44 +98,14 @@ void  sf_network_init()
                            1,   //-- Start value
                            1);  //-- Max value
 
-   //--- Queues
-
-   queueRxUART0.id_dque = 0;
-   tn_queue_create(&queueRxUART0,       //-- Ptr to already existing TN_DQUE
-                  &queueRxUART0Mem[0],  //-- Ptr to already existing array of void * to store data queue entries.Can be NULL
-                  QUEUE_RX_UART0_SIZE   //-- Capacity of data queue(num entries).Can be 0
-                  );
-
-   queueTxUART0.id_dque = 0;
-   tn_queue_create(&queueTxUART0,       //-- Ptr to already existing TN_DQUE
-                  &queueTxUART0Mem[0],  //-- Ptr to already existing array of void * to store data queue entries.Can be NULL
-                  QUEUE_TX_UART0_SIZE   //-- Capacity of data queue(num entries).Can be 0
-                  );
-
-   //--- Memory pools
-
-   RxUART0MemPool.id_fmp = 0;
-   tn_fmem_create(&RxUART0MemPool,
-                 (void *)&memRxUART0MemPool[0], // start_addr
-                 RxUART0MemPoolItemSize,
-                 QUEUE_RX_UART0_SIZE
-                 );
-   
-   TxUART0MemPool.id_fmp = 0;
-   tn_fmem_create(&TxUART0MemPool,
-                 (void *)&memTxUART0MemPool[0], // start_addr
-                 TxUART0MemPoolItemSize,
-                 QUEUE_TX_UART0_SIZE
-                 );
-
 }
 
-void sf_network_pkt_send(Packet *pkt)
+void sf_network_pkt_send(Packet * pkt)
 {
     sf_uart0_pkt_send(pkt);
 }
 
-void sf_network_pkt_receive()
+Packet * sf_network_pkt_receive()
 {
     sf_uart0_pkt_receive();
 }

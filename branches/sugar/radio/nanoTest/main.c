@@ -148,13 +148,8 @@ int	main(int ac, char *av[])
 	/*
 	 * SYSTEM MAIN LOOP
 	 */
-
-	/** sub task 1: define a specific packet and send it back to computer*/
-
-	
 	while(1)
 	{
-	
 		int i;
 		for (i=0; i<10000; i++);
 		/*

@@ -112,11 +112,12 @@ void APLCallback (MyMsgT *msg)
 
 		case PD_DATA_INDICATION:
           // Check if packet is for this node
-          if(memcmp(msg->addr,apl->src,6) != 0)
+         
+					if(memcmp(msg->addr,apl->src,6) != 0)
           {
+						printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
              break;
-          }
-                    
+          }                  
 					// Check length of packet
 					
 					
@@ -222,18 +223,23 @@ void APLPoll (void)
 		static MyByte8T packets_sent = 0xFF;
 		MyByte8T power = 0;
 		Packet * pktArm2Radio;
-	
+
+/*
+		// Get pkt from ARM --> cannot apply in receiver--> collision perhaps
 		if (__pkt_rx_flag)
 		{
 				pktArm2Radio = (Packet *)downMsg.data;
-				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
-				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+				memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
+				memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
 				PrintPacket(pktArm2Radio);
 				SendBuffer();
 				__pkt_rx_flag = 0;
 		}
-	
-/*		// Sending pkt from AVR to ARM
+*/
+
+
+/*
+		// Send pkt from AVR to ARM
 		Packet * pkt;
 		pkt->id = 'a';
 		pkt->dest = 'b';
@@ -245,9 +251,7 @@ void APLPoll (void)
 		pkt->data[1]='i';
 		char * buf2 = (char *)pkt;
 	
-		int i,j;
-	
-
+		int i;
 		putchar(START_BYTE);
 		for (i = 0; i< 10; i++)
 		{
@@ -256,7 +260,6 @@ void APLPoll (void)
 						putchar(ESC_BYTE);
 				}
 				putchar(buf2[i]);
-
 		}
 		putchar(STOP_BYTE);	
 */

@@ -228,7 +228,7 @@ void APLPoll (void)
 				pktArm2Radio = (Packet *)downMsg.data;
 				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
 				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
-				//PrintPacket(pktArm2Radio);
+				PrintPacket(pktArm2Radio);
 				SendBuffer();
 				__pkt_rx_flag = 0;
 		}

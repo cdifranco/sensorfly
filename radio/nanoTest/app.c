@@ -119,11 +119,18 @@ void APLCallback (MyMsgT *msg)
                     
 					// Check length of packet
 					
+					
 					// Send packet to arm
+					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
-						putchar (msg->data[i]);
+							if (msg->data[i] == START_BYTE || msg->data[i] == ESC_BYTE || msg->data[i] == STOP_BYTE)
+							{
+									putchar(ESC_BYTE);				
+							}
+							putchar (msg->data[i]);
 					}
+					putchar(STOP_BYTE);
 					
 				break;
 								
@@ -207,30 +214,52 @@ void SendBuffer (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-	static	char buf[CONFIG_CONSOLE_LINE_SIZE];
-	static	int write_prompt = 1;
+		static	char buf[CONFIG_CONSOLE_LINE_SIZE];
+		static	int write_prompt = 1;
 	
-	MyInt16T c;
+		MyInt16T c;
 	
-	static MyByte8T packets_sent = 0xFF;
-	MyByte8T power = 0;
-	Packet * pktArm2Radio;
+		static MyByte8T packets_sent = 0xFF;
+		MyByte8T power = 0;
+		Packet * pktArm2Radio;
 	
-	if (__pkt_rx_flag)
-	{
-		pktArm2Radio = (Packet *)downMsg.data;
-		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
-		memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
-		PrintPacket(pktArm2Radio);
-		SendBuffer();
-		__pkt_rx_flag = 0;
-	}
+		if (__pkt_rx_flag)
+		{
+				pktArm2Radio = (Packet *)downMsg.data;
+				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+				memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+				//PrintPacket(pktArm2Radio);
+				SendBuffer();
+				__pkt_rx_flag = 0;
+		}
 	
-	//Time is out
-    //    if (apl->hwclock + TIME_OUT < hwclock ())
-    //    {
-    //    	apl->len = 0;
-    //    	state = 0;
-    //    }
+/*		// Sending pkt from AVR to ARM
+		Packet * pkt;
+		pkt->id = 'a';
+		pkt->dest = 'b';
+		pkt->src = 'c';
+		pkt->type = PKT_TYPE_DATA;
+		pkt->checksum = 'e';
+		pkt->length = 'f';
+		pkt->data[0]='h';
+		pkt->data[1]='i';
+		char * buf2 = (char *)pkt;
+	
+		int i,j;
+	
+
+		putchar(START_BYTE);
+		for (i = 0; i< 10; i++)
+		{
+				if (buf2[i] == START_BYTE || buf2[i] == ESC_BYTE || buf2[i] == STOP_BYTE)
+				{
+						putchar(ESC_BYTE);
+				}
+				putchar(buf2[i]);
+
+		}
+		putchar(STOP_BYTE);	
+*/
+
 }
 

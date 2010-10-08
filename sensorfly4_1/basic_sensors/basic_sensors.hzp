@@ -42,9 +42,11 @@
         <file file_name="../SF_Network/sf_network.c"/>
         <file file_name="../SF_Network/sf_network.h"/>
       </folder>
-      <folder Name="SF_FlightController">
+      <folder Name="SF_FlightController" file_name="">
         <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
         <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
+        <file file_name="../SF_FlightController/fuzzy_control.c"/>
+        <file file_name="../SF_FlightController/fuzzy_control.h"/>
       </folder>
     </folder>
     <folder Name="System Files">

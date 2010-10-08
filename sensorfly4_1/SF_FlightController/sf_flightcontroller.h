@@ -19,7 +19,7 @@
 
 #ifndef SF_FLIGHTCONTROLLER_H_
 #define SF_FLIGHTCONTROLLER_H_
-
+#include "fuzzy_control.h"
 #include "../SF_Firmware/SF_Drives/sf_drive.h"
 #include "../SF_Firmware/SF_Sensors/sf_sonic.h"
 #include "../SF_Firmware/SF_Sensors/sf_gyro.h"
@@ -28,20 +28,12 @@
 // Task flight controller
 //-----------------------------------------------------------------------------
 #define  TASK_FLIGHTCONTROLLER_PRIORITY   1
-#define  TASK_FLIGHTCONTROLLER_STK_SIZE  256
-
-//-----------------------------------------------------------------------------
-// Task Get Heading
-//-----------------------------------------------------------------------------
-#define  TASK_GET_HEADING_PRIORITY   1
-#define  TASK_GET_HEADING_STK_SIZE  128
+#define  TASK_FLIGHTCONTROLLER_STK_SIZE  128
 
 //-----------------------------------------------------------------------------
 // Initialization
 //-----------------------------------------------------------------------------
 void  sf_flightcontroller_task_init(void);
-int16_t sf_heading_controller();
-int32_t get_gyro_zero();
 
 //-----------------------------------------------------------------------------
 // Navigation API

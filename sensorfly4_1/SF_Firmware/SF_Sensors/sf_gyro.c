@@ -28,7 +28,7 @@
 
 #define PINSEL1_ADC01_EN (1 << 24)
 #define PINSEL1_ADC02_EN (1 << 26)
-#define AUTO_ZERO_SEL (1 << 17) //Gyro's AZ on P1.17
+
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ uint32_t sf_sensor_gyro_z_get()
 
 	rAD0CR = 0x00;
 	return val;
-}\
+}
 
 /*! \fn uint32_t sf_sensor_gyro_z45_get() 
     \brief Get z-axis high resolution gyro reading (z x 4.5)
@@ -91,22 +91,4 @@ uint32_t sf_sensor_gyro_z45_get()
     val = (val >> 6) & 0x03FF;                        // Shift ADC Result to Integer
     rAD0CR = 0x00;
     return val;
-}
-
-/*! \fn void  sf_sensor_gyro_auto_zero()
-    \brief Reset the gyro's zero for better range when using high resolution readings.
-    \param none
-    \return none
-*/
-void sf_sensor_gyro_auto_zero(){
-    rIO1DIR |= AUTO_ZERO_SEL;
-    rIO1SET |= AUTO_ZERO_SEL;
-    unsigned short wait = 0;
-    while(wait < 7000){
-      //TODO: Find a better way to wait 7ms!
-      //Gyro auto zero time is 7ms. 
-      //Loop here to wait before clearing register. Diego 06072010
-      wait++;
-    }
-    rIO1CLR = AUTO_ZERO_SEL;
 }

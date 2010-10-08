@@ -1,3 +1,0 @@
-make clean
-make
-avrdude -p m644 -P usb -c avrispmkII -U flash:w:main.hex

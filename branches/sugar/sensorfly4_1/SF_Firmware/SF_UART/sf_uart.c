@@ -27,15 +27,16 @@
 #define TX_INT    (0x1<<1)
 
 // Pin 0.21
-#define CTS_MASK (1<<22)
+#define CTS_MASK (1<<21)
 // Pin 0.20
-#define RTS_MASK (1<<21)
+#define RTS_MASK (1<<20)
 
 // encode bytes
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF   
 
+extern TN_EVENT ctsSet;
 
 
 extern UARTDRV drvUART0;
@@ -53,7 +54,7 @@ void sf_uart0_init()
   //-- Pins P0.0-TXD0 & P0.1-RXD0
   rPINSEL0 |=   1 |  (1<<2);
 
-  // Pins 0.20 and 0.21 RTS(output) & CTS(input)
+  // Pins 0.20 and 0.21 RTS(input) & CTS(output)
   rIO0DIR |= (1 << 21);
 
   // enable access to divisor latch regs
@@ -79,8 +80,8 @@ void sf_uart0_init()
   //-- 1 stop bit, 8 bit chars
   rU0LCR = 0x13;
 
-  // init RTS to high
-  sf_uart0_rts_set();
+  // init CTS to high
+  sf_uart0_cts_set(1);
 
   // set up event flag
   eventRxUART0.id_event = 17;
@@ -90,7 +91,7 @@ void sf_uart0_init()
 
 }
 
-void sf_uart0_int_handler()
+void sf_uart0_int_handler(void)
 {
   register int rc;
   register int data;
@@ -159,6 +160,11 @@ void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;
     uint8_t i;
+
+    unsigned int p_flags_pattern;
+    //-- Send RTS and wait for radio CTS
+    tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
+
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
     // cut the data length into FIFO_SIZE
@@ -201,29 +207,43 @@ Packet * sf_uart0_pkt_receive()
     \param
     \return
 */
-void sf_uart0_cts_wait()
-{
-  volatile uint32_t flag;
-  flag = rIO0PIN;
-  while(~(flag & CTS_MASK));
-}
+//void sf_uart0_rts_and_wait_cts(void)
+//{
+//  volatile uint32_t flag;
+//  do
+//  {
+//    flag = rIO0PIN;
+//  }while(!(flag & RTS_MASK));
+//}
+//
+///*! \fn 
+//    \brief
+//    \param
+//    \return
+//*/
+//void sf_uart0_cts_wait()
+//{
+//  volatile uint32_t flag;
+//  flag = rIO0PIN;
+//  while(!(flag & CTS_MASK));
+//}
 
 /*! \fn 
     \brief
     \param
     \return
 */
-void sf_uart0_rts_set()
+void sf_uart0_cts_set (uint32_t new_state)
 {
-  rIO0CLR |= RTS_MASK;
-}
-
-/*! \fn 
-    \brief
-    \param
-    \return
-*/
-void sf_uart0_rts_clr()
-{
-  rIO0SET |= RTS_MASK;
+  switch (new_state)
+  {
+    case 0:
+            rIO0CLR |= CTS_MASK;
+            break;
+    case 1:
+            rIO0SET |= CTS_MASK;
+            break;
+    default:
+            break;
+  }
 }

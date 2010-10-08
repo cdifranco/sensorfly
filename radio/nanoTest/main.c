@@ -117,6 +117,12 @@ int	main(int ac, char *av[])
 	LED3_DIR |= LED3_PIN;
 	LED3 (LED_OFF);
 
+	/* Initialize direction of pins for flow control for comm with the ARM */
+	CTS_DIR  |= CTS_PIN;	//output
+	RTS_DIR  &= ~RTS_PIN;	//input
+	//pull up
+	RTS_PORT |= RTS_PIN;
+
 	/*
    * Initialize the timer for periodic tasks
    * or time supervized actions
@@ -148,10 +154,16 @@ int	main(int ac, char *av[])
 	/*
 	 * SYSTEM MAIN LOOP
 	 */
+	int flag = 1;
 	while(1)
 	{
+		CTSSet(flag);
+
+		flag = !flag;
+
 		int i;
 		for (i=0; i<10000; i++);
+
 		/*
 		 * call application periodically
 		 */

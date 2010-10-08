@@ -69,6 +69,16 @@
 #define AVR_SPIF	SPIF
 #endif
 
+//Flow control for communications with ARM:
+//cts and rts are defined from point of view of DTE (the arm) rather than DCE (the radio).
+#define CTS_DIR		DDRA
+#define CTS_PORT	PORTA
+#define	CTS_PIN		( 1 << PORTA5 )
+
+#define RTS_DIR		DDRA
+#define RTS_PORT	PORTA
+#define RTS_PIN		( 1 << PORTA4 )
+
 #define PONRESET_PORT	PORTD
 #define PONRESET_DIR	DDRD
 #define PONRESET_PIN	( 1 << PORTD3 )

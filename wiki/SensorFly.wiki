@@ -1,4 +1,4 @@
 #summary What is SensorFly?
 #labels Featured
 
-The SensorFly is a novel low-cost controlled-mobile aerial sensor networking platform. A flock of these 29g autonomous helicopter nodes with communication, ranging and collaborative path determination capabilities, can be extremely useful in sensing survivors after disasters or adversaries in urban combat scenarios.
+SensorFly is a novel low-cost controlled-mobile aerial sensor networking platform. A flock of these 29g autonomous helicopter nodes with communication, ranging and collaborative path determination capabilities, can be extremely useful in sensing survivors after disasters or adversaries in urban combat scenarios.

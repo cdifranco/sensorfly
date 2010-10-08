@@ -1,0 +1,66 @@
+<!DOCTYPE CrossStudio_for_ARM_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints>
+  <BreakpointListItem line="3" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/basic_sensors/main.c" expression="" />
+  <BreakpointListItem line="51" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/common/sf_user.c" expression="" />
+ </Breakpoints>
+ <ExecutionCountWindow/>
+ <Memory1>
+  <MemoryWindow autoEvaluate="0" addressText="&amp;i" numColumns="8" sizeText="sizeof(i)" dataSize="4" radix="10" addressSpace="" />
+ </Memory1>
+ <Memory2>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory2>
+ <Memory3>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory3>
+ <Memory4>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory4>
+ <Project>
+  <ProjectSessionItem path="basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_FlightController" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Network" name="unnamed" />
+ </Project>
+ <Register1>
+  <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register1>
+ <Register2>
+  <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register2>
+ <Register3>
+  <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register3>
+ <Register4>
+  <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register4>
+ <TargetWindow programAction="" uploadFileType="" programLoadAddress="" programSize="" uploadFileName="" uploadMemoryInterface="" programFileName="" uploadStartAddress="" programFileType="" uploadSize="" programMemoryInterface="" />
+ <TraceWindow>
+  <Trace enabled="Yes" />
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never" />
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never" />
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never" />
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never" />
+ </Watch4>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/basic_sensors/main.c" y="109" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="97" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" y="75" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_FlightController/sf_flightcontroller.c" left="0" selected="1" name="unnamed" top="98" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/common/sf_user.c" y="78" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/common/sf_user.c" left="0" selected="0" name="unnamed" top="66" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_Firmware/SF_Drives/sf_drive.c" y="65" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_Firmware/SF_Drives/sf_drive.c" left="0" selected="0" name="unnamed" top="54" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/common/tn_irq.c" y="44" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/common/tn_irq.c" left="0" selected="0" name="unnamed" top="26" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_Network/sf_network.c" y="145" path="/Users/Numberone/Desktop/sensorfly_fuzzy 2/sensorfly4_1/SF_Network/sf_network.c" left="0" selected="0" name="unnamed" top="106" />
+ </Files>
+ <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="C:/Documents and Settings/guito/Desktop/sensorfly/sensorfly4_1/basic_sensors/main.c
+/home/diego/Documents/projects/sensorfly_fuzzy/sensorfly4_1/basic_sensors/main.c" fileDialogInitialDirectory="/home/diego/Documents/projects/sensorfly/sensorfly4_1/basic_sensors" fileDialogDefaultFilter="*.hzp" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
+</session>

@@ -181,6 +181,44 @@ default:				break;
 }
 
 /**
+ * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
+ *
+ * This function puts the clear to send pin to high or low, depending on the argument
+ * .
+ */
+/***************************************************************************/
+void CTSSet (int new_state)
+/***************************************************************************/
+{
+	switch (new_state) {
+	   case 0:
+	      CTS_PORT &= ~CTS_PIN;
+	      break;
+	   case 1:
+          CTS_PORT |= CTS_PIN;
+	      break;
+	   default: //we should never reach here
+	   //puts("Error: incorrect cts signal"); //commented out to save string space
+	   break;
+	}
+}
+
+/**
+ * @brief Request to send to ARM and wait the ARM to Clear to send
+ * .
+ */
+/***************************************************************************/
+void RTSAndWaitCTS (void)
+/***************************************************************************/
+{
+	volatile uint32_t flag;
+	do
+	{
+	flag = PINA;
+	}while(!(flag & RTS_PIN));
+}
+
+/**
  * @brief Initialization of modul variables.
  *
  * Initialize the application variables. APPInit is called after
@@ -218,6 +256,8 @@ void APLInit(void)
 	downMsg.attribute = PHY_RX_CMD;
 	downMsg.value = PHY_RX_ON;
 	PLMESap (&downMsg);
+
+	CTSSet(0);
 }
 
 /**
@@ -231,12 +271,16 @@ void SendBuffer (void)
 /***************************************************************************/
 {
 	// clear RTS
+	//CTSSet(0);
+
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
 	SendMsg (&downMsg);
+
 	// Set RTS
+	//CTSSet(1);
 }
 
 void SendRange (void)
@@ -309,6 +353,21 @@ void APLPoll (void)
 		pkt->data[1]='i';
 		char * buf2 = (char *)pkt;
 	
+		printf("I wanna send now.\n");
+		RTSAndWaitCTS();
+		printf("I can send now!!!!!!!!!!!!!!!!!!!!!!!1\n");
+
+		if (__pkt_rx_flag)
+		{//stop
+			pktArm2Radio = (Packet *)downMsg.data;
+			memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+			memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+			PrintPacket(pktArm2Radio);
+			SendBuffer();
+			__pkt_rx_flag = 0;
+			//start
+		}
+		
 		int i;
 		putchar(START_BYTE);
 		for (i = 0; i< 10; i++)

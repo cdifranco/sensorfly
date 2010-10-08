@@ -34,6 +34,9 @@ void task_app_func(void * par);
 extern UARTDRV drvUART0;
 int __pkt_rx_flag;
 int state;
+int counter = 0;
+float pkt_rx_percent = 0;
+int pkt_id = 100;
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -84,10 +87,10 @@ void  tn_app_init()
 */
 void task_app_func(void * par)
 {
-    Packet pkt;
+    
 
     unsigned short Blink = 1;
-    
+    Packet pkt;
     /* Prevent compiler warning */
     par = par;
     while(1)
@@ -105,22 +108,42 @@ void task_app_func(void * par)
         
       //receive from ARM    
 //      Packet * pkt_rx = sf_network_pkt_receive();
-      
-      // Create packet
-      pkt.id = 1;
-      pkt.type = PKT_TYPE_RANGING;
-      pkt.checksum = 0;
-      pkt.src = 1;
-      pkt.dest = 2;
-      pkt.length = 128;
-      pkt.data[0] = 'x';
-      pkt.data[1] = 'y';
-           
-      // Send pkt
-      sf_network_pkt_send(&pkt);
-      
+/*
+      if (pkt_rx != NULL)
+      {
+          // get percentage of the packet received
+          if (pkt_rx->id < pkt_id) 
+          {
+              pkt_rx_percent = counter/100.00;
+              pkt_id = pkt_rx->id;
+              counter = 0;
+          }
+          else
+          {
+              counter++;
+          }
+      }
+*/
+
+       
+        // Create packet
+        pkt.id = counter;
+        pkt.type = PKT_TYPE_RANGING;
+        pkt.checksum = 0;
+        pkt.src = 1;
+        pkt.dest = 2;
+        pkt.length = 16;
+        pkt.data[0] = 'x';
+        pkt.data[1] = 'y';
+             
+        // Send pkt
+      sf_network_pkt_send(&pkt);         
+
       /* Sleep 5000 ticks */
       tn_task_sleep(5000);
+      counter++;
+      if (counter == 100) counter = 0;
+
    }
 }
 

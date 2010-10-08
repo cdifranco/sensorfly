@@ -109,3 +109,8 @@ Packet * sf_network_pkt_receive()
 {
     sf_uart0_pkt_receive();
 }
+
+void sf_network_pkt_release()
+{
+    // release the drvUART buffer
+}

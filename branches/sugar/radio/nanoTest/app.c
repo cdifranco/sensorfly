@@ -158,8 +158,8 @@ void APLCallback (MyMsgT *msg)
 						Packet * pkt_temp = &(pktRadio2Arm);
 						
 						//  packet testing
-						//PrintRangingPacket(pkt_temp);
-
+						PrintRangingPacket(pkt_temp);
+/*
 						// send the encoded pkt up to ARM	byte by byte
 						char * bufRadio2Arm = (char *)pkt_temp;
 						int i;
@@ -173,7 +173,7 @@ void APLCallback (MyMsgT *msg)
 								putchar(bufRadio2Arm[i]);
 						}
 						putchar(STOP_BYTE);		
-	
+*/	
 				break;
 
 default:				break;
@@ -190,10 +190,10 @@ default:				break;
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,2};
-	MyByte8T		d_address[] = {0,0,0,0,0,1};
+	MyByte8T		s_address[] = {0,0,0,0,0,1};
+	MyByte8T		d_address[] = {0,0,0,0,0,2};
 
-    apl = &aplM;
+  apl = &aplM;
 
 	/*
      * for this simple demo transmitter and receiver
@@ -259,15 +259,14 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-		//static	char buf[CONFIG_CONSOLE_LINE_SIZE];
-		//static	int write_prompt = 1;
+		static	char buf[CONFIG_CONSOLE_LINE_SIZE];
+		static	int write_prompt = 1;
 	
-		//MyInt16T c;
+		MyInt16T c;
 	
 		//static MyByte8T packets_sent = 0xFF;
-		//MyByte8T power = 0;
+		MyByte8T power = 0;
 		Packet * pktArm2Radio;
-
 
 		// Get pkt from ARM --> only apply in sender
 		if (__pkt_rx_flag)
@@ -276,23 +275,17 @@ void APLPoll (void)
 				pktArm2Radio = (Packet *)downMsg.data;
 				memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
 				memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
-				//PrintPacket(pktArm2Radio);
+				PrintPacket(pktArm2Radio);
 				// decide with type of packet is sending
 				if (pktArm2Radio->type == PKT_TYPE_DATA)
 				{
-						//printf("packet type: data \n");
 						// send the data
 						SendBuffer();
 				} 
 				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
 				{
-						//printf("packet type: ranging \n");
 						// send ranging pkt
 						SendRange();
-				}
-				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-				{
-						printf("packet type: setting \n");			
 				}
 				else 
 				{

@@ -104,7 +104,7 @@ void sf_uart0_int_handler()
   
   /* RX */
     if(status == RX_INT || status == TO_INT)
-        {
+    {
           while((rU0LSR & 0x01)) //-- Rx FIFO not empty
           {
               data = rU0RBR;
@@ -146,7 +146,7 @@ void sf_uart0_int_handler()
           {
               drvUART0.pos = 0;
           }
-        }
+    }
      
   
   /* TX */
@@ -158,7 +158,6 @@ void sf_uart0_int_handler()
 void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;
-    
     uint8_t i;
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
@@ -166,25 +165,19 @@ void sf_uart0_pkt_send(Packet *pkt)
     if(pkt->length > UART_FIFO_SIZE)
       pkt->length = UART_FIFO_SIZE;
 
-    
     tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
     rU0THR = START_BYTE;
-
     for (i = 0; i< pkt->length; i++ )
     { 
        if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE)
        {
-          
            tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
            rU0THR = ESC_BYTE;
        }
-      
        tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
        rU0THR = pkt_bytes[i];
     }
-
     rU0THR = STOP_BYTE;
-    
     tn_sem_signal(&semTxUART0);
 }
 

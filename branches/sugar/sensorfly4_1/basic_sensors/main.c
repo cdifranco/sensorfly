@@ -28,6 +28,11 @@
 #define  TASK_APP_PRIORITY   5
 #define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
 
+// Pin 0.21
+#define CTS_MASK (1<<21)
+// Pin 0.20
+#define RTS_MASK (1<<20)
+
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
 void task_app_func(void * par);
@@ -95,16 +100,16 @@ void task_app_func(void * par)
     par = par;
     while(1)
     {
-        if (Blink & 1)
-        {
-           sf_led_on();
-        }
-        else
-        {
-           sf_led_off();
-        }   
+//        if (Blink & 1)
+//        {
+//           sf_led_on();
+//        }
+//        else
+//        {
+//           sf_led_off();
+//        }   
         
-        Blink = Blink ^ 1;
+//        Blink = Blink ^ 1;
         
       //receive from ARM    
 //      Packet * pkt_rx = sf_network_pkt_receive();
@@ -125,7 +130,6 @@ void task_app_func(void * par)
       }
 */
 
-       
         // Create packet
         pkt.id = counter;
         pkt.type = PKT_TYPE_RANGING;
@@ -140,7 +144,7 @@ void task_app_func(void * par)
       sf_network_pkt_send(&pkt);         
 
       /* Sleep 5000 ticks */
-      tn_task_sleep(5000);
+      tn_task_sleep(10);
       counter++;
       if (counter == 100) counter = 0;
 

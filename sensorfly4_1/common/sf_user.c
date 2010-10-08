@@ -4,6 +4,10 @@
 #include "../common/sensorfly.h"
 #include "../common/tn_irq.h"
 
+// Pin 0.21
+#define CTS_MASK (1<<21)
+// Pin 0.20
+#define RTS_MASK (1<<20)
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
@@ -12,6 +16,7 @@ typedef void (*IRQ_FUNC)(void);
 
 extern void tn_arm_enable_interrupts(void);
 
+TN_EVENT ctsSet;
 /*=========================================================================*/
 /*  DEFINE: Definition of all local Procedures                             */
 /*=========================================================================*/
@@ -38,6 +43,35 @@ void sf_timer0_int_handler (void)
    tn_tick_int_processing();
 }
 
+
+void sf_cts_int_handler(void)
+{
+   static unsigned short Blink = 1;
+
+      if (Blink & 1)
+        {
+           sf_led_on();
+        }
+        else
+        {
+           sf_led_off();
+        }   
+
+         Blink = Blink ^ 1;
+
+ 
+
+  volatile uint32_t flag;
+  flag = rIO0PIN & RTS_MASK;
+  if(flag)
+     tn_event_set(&ctsSet, 0x00000001);
+  else
+     tn_event_clear(&ctsSet, 0x00000000);
+      
+      rEXTINT |= (1 << 3);
+   
+}
+
 /*=========================================================================*/
 /*  DEFINE: All code exported                                              */
 /*=========================================================================*/
@@ -62,7 +96,7 @@ void hardware_init (void)
   // Set P0.0-0.31 as input
   rIO0DIR = 0x000000;	
   rIO0CLR = 0x000000;
-  
+
   // Set P1.0-1.31 as input
   rIO1DIR = 0x000000;
   rIO1CLR = 0x000000;
@@ -101,7 +135,17 @@ void hardware_init (void)
   
   /* Install timer0 with priority 2 */
   tn_irq_install(TIMER0_ID, 2, sf_timer0_int_handler);
-  
+
+
+  rEXTMODE |= (1<<3);
+  rEXTPOLAR |= (1<<3);
+  rPINSEL1 |= ((1 << 9) | (1 << 8));
+  /* Create event of CTS SET */
+  tn_event_create(&ctsSet, TN_EVENT_ATTR_SINGLE, 0x00000000);
+  tn_event_clear(&ctsSet, 0x00000000);  
+  //tn_event_set(&ctsSet, 0x00000001);
+  /* Install ENT3 with priority 3 */
+  tn_irq_install(CTS_ID, 3, sf_cts_int_handler);
   
   /* Initialize LED */
   sf_led_init();
@@ -124,11 +168,14 @@ void hardware_init (void)
 void tn_cpu_int_enable (void)
 {
    /* Enable UART0 interrupt */
-   VICIntEnable = (1<<UART0_ID);
+   VICIntEnable |= (1<<UART0_ID);
 
    /* Enable Timer0 interrupt */
-   VICIntEnable = (1<<TIMER0_ID);
-   
+   VICIntEnable |= (1<<TIMER0_ID);
+
+   /* Enable CTS interrupt */
+   VICIntEnable |= (1<<CTS_ID);
+
    tn_arm_enable_interrupts();
 }
 

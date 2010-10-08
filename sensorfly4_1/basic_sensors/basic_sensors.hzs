@@ -1,7 +1,9 @@
 <!DOCTYPE CrossStudio_for_ARM_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints/>
+ <Breakpoints>
+  <BreakpointListItem line="106" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" expression="" />
+ </Breakpoints>
  <ExecutionCountWindow/>
  <Memory1>
   <MemoryWindow autoEvaluate="0" addressText="0x40000a58" numColumns="8" sizeText="10" dataSize="1" radix="16" addressSpace="" />
@@ -41,14 +43,8 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Never" >
-   <Watchpoint linenumber="108" radix="-1" name="sf_network_wait_until_rx" expression="sf_network_wait_until_rx" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" />
-   <Watchpoint linenumber="89" radix="16" name="debug" expression="debug" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" />
-   <Watchpoint linenumber="110" radix="-1" name="drvUART0" expression="drvUART0" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" />
-   <Watchpoint linenumber="200" radix="-1" name="bufRadio2Arm" expression="bufRadio2Arm" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" />
    <Watchpoint linenumber="37" radix="-1" name="state" expression="state" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" />
-   <Watchpoint evalMode="1" linenumber="110" evalType="1" radix="-1" name="test" expression="test" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" />
-   <Watchpoint linenumber="197" radix="-1" name="__pkt_rx_flag" expression="__pkt_rx_flag" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" />
-   <Watchpoint evalMode="1" linenumber="203" evalType="1" radix="-1" name="pktRadio2Arm" expression="pktRadio2Arm" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" />
+   <Watchpoint linenumber="112" radix="-1" name="drvUART0" expression="drvUART0" filename="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" />
   </Watches>
  </Watch1>
  <Watch2>
@@ -61,11 +57,13 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="6" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" y="110" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="105" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="25" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.c" y="134" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.c" left="0" selected="0" name="unnamed" top="123" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="8" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" y="198" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" left="0" selected="0" name="unnamed" top="186" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="1" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_tasks.c" y="204" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_tasks.c" left="0" selected="0" name="unnamed" top="194" />
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="38" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.h" y="43" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.h" left="0" selected="0" name="unnamed" top="27" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" y="48" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/basic_sensors/main.c" left="0" selected="1" name="unnamed" top="101" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.c" y="109" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.c" left="0" selected="0" name="unnamed" top="108" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" y="188" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Firmware/SF_UART/sf_uart.c" left="0" selected="0" name="unnamed" top="99" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_tasks.c" y="204" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_tasks.c" left="0" selected="0" name="unnamed" top="194" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.h" y="43" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/SF_Network/sf_network.h" left="0" selected="0" name="unnamed" top="39" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_event.c" y="102" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn_event.c" left="0" selected="0" name="unnamed" top="134" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn.c" y="163" path="/home/jennifer/workspace/svn_origin/sugar/sensorfly4_1/TNKernel/tn.c" left="0" selected="0" name="unnamed" top="153" />
  </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="/Users/aveekpurohit/sensorfly/trunk/sensorfly4_1/SF_FlightController" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

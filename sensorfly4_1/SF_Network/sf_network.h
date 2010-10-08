@@ -35,11 +35,14 @@ typedef struct
   uint8_t dest; // with 6 characters MAC Address
   uint8_t src;	// with 6 characters MAC Address
   uint8_t length;
-  uint8_t data[122];
+  uint8_t data[10];
 } Packet;
 
 
 void sf_network_init();
 Packet * sf_network_pkt_receive();
 void sf_network_pkt_send(Packet *pkt);
+void sf_network_pkt_release();
+
+
 #endif /* SF_NETWORK_H_ */

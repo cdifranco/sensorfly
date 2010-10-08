@@ -34,6 +34,7 @@ char sf_fly_command;
 //-----------------------------------------------------------------------------
 #define TIMER0_ID 4
 #define UART0_ID 6
+#define CTS_ID 17
 
 
 #endif /* SF_SENSORFLY_H_ */

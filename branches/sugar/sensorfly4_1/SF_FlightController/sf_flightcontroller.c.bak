@@ -34,7 +34,6 @@ uint32_t sf_hover_controller(uint32_t d_val);
 int32_t sf_spin_controller(uint32_t spin);
 
 //Events
-extern TN_EVENT flightControllerEventFlag;
 uint32_t flightControllerEvent;
 
 //-----------------------------------------------------------------------------
@@ -77,56 +76,46 @@ void task_flightcontroller_func(void * par)
    int32_t cwLoad, ccwLoad;
    int rw;   // result of system waiting
    
-   rw = tn_event_wait(&flightControllerEventFlag,0x01,TN_EVENT_WCOND_OR,&flightControllerEvent,TN_WAIT_INFINITE);
+   rw = tn_event_wait(&eventRxUART0,0x01,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
    /* Prevent compiler warning */
    par = par;
    sf_drive_duty_set(0, 0);
    tn_task_sleep(30000);
    set_spin_zero(sf_sensor_gyro_z_get());
- 
+
    while(1)
-   {  
-     //wait on event. the flightControllerEvent is set to occur at a 100Hz frequency. This is governed by timer1 in sf_user.c
-      rw = tn_event_wait(&flightControllerEventFlag,0x01,TN_EVENT_WCOND_OR,&flightControllerEvent,TN_WAIT_INFINITE);
+   {     
+
+      // First order filter params
+      const int a1 = 1;
+      const int b1 = 3;
+      if(timer > 20000){
+        sf_drive_duty_set(0,0);
+        break;
+      }
+      static uint32_t sonicLast = 0;
+
+      // Get sensor readings
+      s = sf_sensor_sonic_get();
+      z = sf_sensor_gyro_z_get();
+
+      // Filter sonic readings
+      s = ((a1 * s) + (b1 * sonicLast))/(a1 + b1);
+      sonicLast = s;
       
-      if (rw == TERR_NO_ERR)
-      {
-    
-            // First order filter params
-            const int a1 = 1;
-            const int b1 = 3;
-    
-            if(timer > 20000)
-            {
-              sf_drive_duty_set(0,0);
-              break;
-            }
-            static uint32_t sonicLast = 0;
-      
-            // Get sensor readings
-            s = sf_sensor_sonic_get();
-            z = sf_sensor_gyro_z_get();
-      
-            // Filter sonic readings
-            s = ((a1 * s) + (b1 * sonicLast))/(a1 + b1);
-            sonicLast = s;
-            
-            crispify(s, z);
-            cwLoad = cw_load();
-            ccwLoad = ccw_load();
-      
-            ip = sf_hover_controller(s);
-            //diff = sf_spin_controller(z);
-      
-            //sf_drive_duty_set(ip - diff, ip + diff);
-            sf_drive_duty_set(75 + ccwLoad, 75 + cwLoad);
-            timer++;
-            /* Sleep 10 ticks */
-            //tn_task_sleep(10);
-            //clear the event flag once flight controller has executed
-            tn_event_clear(&flightControllerEventFlag,0x00);
-       }
-    }
+      crispify(s, z);
+      cwLoad = cw_load();
+      ccwLoad = ccw_load();
+
+      ip = sf_hover_controller(s);
+      //diff = sf_spin_controller(z);
+
+      //sf_drive_duty_set(ip - diff, ip + diff);
+      sf_drive_duty_set(75 + ccwLoad, 75 + cwLoad);
+      timer++;
+      /* Sleep 10 ticks */
+      tn_task_sleep(10);
+   }
 }
 
 /*! \fn uint32_t sf_hover_controller(uint32_t d_val)

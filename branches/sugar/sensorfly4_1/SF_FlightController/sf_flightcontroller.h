@@ -19,7 +19,7 @@
 
 #ifndef SF_FLIGHTCONTROLLER_H_
 #define SF_FLIGHTCONTROLLER_H_
-
+#include "fuzzy_control.h"
 #include "../SF_Firmware/SF_Drives/sf_drive.h"
 #include "../SF_Firmware/SF_Sensors/sf_sonic.h"
 #include "../SF_Firmware/SF_Sensors/sf_gyro.h"

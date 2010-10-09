@@ -1,0 +1,175 @@
+#include "fuzzy_control.h"
+
+/** Fuzzification*/
+
+/** Membership Functions: Triangular*/
+
+//Arrays containing coefficients of defuzzification equation y = ax + b
+//for three different output modes(slow,neutral,fast) for cw and ccw motors.
+int32_t cwA[]  = {0, 0, 0}; //{slow, neutral, fast}
+int32_t cwB[]  = {10, 30, 50};
+int32_t ccwA[] = {0, 0, 0};
+int32_t ccwB[] = {10, 30, 50};
+
+
+int32_t mf_spin_cw[MF_TYPE]     = {SPIN_SATURATION_LOW, -10, 0};
+int32_t mf_spin_static[MF_TYPE] = {-4, 0, 4 };
+int32_t mf_spin_ccw[MF_TYPE]    = {0 , 10, SPIN_SATURATION_HIGH};
+
+int32_t mf_height_low[MF_TYPE]   = {HEIGHT_SATURATION_LOW, -10, 0};
+int32_t mf_height_right[MF_TYPE] = {-8, 0, 8};
+int32_t mf_height_high[MF_TYPE]  = {0, 10, HEIGHT_SATURATION_HIGH};
+
+int32_t* mfs_spin[]   = {mf_spin_cw, mf_spin_static, mf_spin_ccw};
+int32_t* mfs_height[] = {mf_height_low, mf_height_right, mf_height_high};
+
+
+uint32_t trimf_weight_height(int32_t x, int32_t mf[]){
+  int32_t rightVertex, middleVertex, leftVertex, min = MF_MIN_OUT, weight = 0;
+
+  rightVertex  = mf[MF_RIGHTVERTEX];
+  middleVertex = mf[MF_MIDDLEVERTEX];
+  leftVertex   = mf[MF_LEFTVERTEX];
+  
+  if(x <= HEIGHT_SATURATION_LOW || x >= HEIGHT_SATURATION_HIGH)
+    return weight = (int32_t) MF_MAX_OUT;
+  
+  if(x > rightVertex || x < leftVertex)
+    return weight = (int32_t) MF_MIN_OUT;
+
+  if(x < middleVertex)
+    weight = ((MF_MAX_OUT - MF_MIN_OUT)/(middleVertex - leftVertex))*(x - leftVertex);
+  else
+    weight = ((MF_MAX_OUT - MF_MIN_OUT)/(rightVertex - middleVertex))*(rightVertex - x);
+  
+  if(weight < 0)
+    weight *= -1;
+
+  return weight;
+}
+
+uint32_t trimf_weight_spin(int32_t x, int32_t mf[]){
+  int32_t rightVertex, middleVertex, leftVertex, min = MF_MIN_OUT, weight = 0;
+
+  rightVertex  = mf[MF_RIGHTVERTEX];
+  middleVertex = mf[MF_MIDDLEVERTEX];
+  leftVertex   = mf[MF_LEFTVERTEX];
+  
+  if(x <= SPIN_SATURATION_LOW || x >= SPIN_SATURATION_HIGH)
+    return weight = (int32_t) MF_MAX_OUT;
+  
+  if(x > rightVertex || x < leftVertex)
+    return weight = (int32_t) MF_MIN_OUT;
+
+  if(x < middleVertex)
+    weight = ((MF_MAX_OUT - MF_MIN_OUT)/(middleVertex - leftVertex))*(x - leftVertex);
+  else
+    weight = ((MF_MAX_OUT - MF_MIN_OUT)/(rightVertex - middleVertex))*(rightVertex - x);
+  
+  if(weight < 0)
+    weight *= -1;
+
+  return weight;
+}
+
+//TSK1 Deffuzification functions
+int32_t cwY(int32_t x, uint32_t mode){
+  return (cwA[mode]*x + cwB[mode]);  
+}
+
+uint32_t ccwY(uint32_t x, uint32_t mode){
+  return (ccwA[mode]*x + ccwB[mode]);   
+}
+
+//RULES
+uint32_t spin_rules_output[2] = {0,0};
+
+void spin_rules(uint32_t lingVar){
+ 
+  switch(lingVar){
+    case SPIN_CW: //spinning cw
+      spin_rules_output[MOTOR_CW] = MOTOR_NEUTRAL; // cwMotor neutral
+      spin_rules_output[MOTOR_CCW] = MOTOR_FAST; // ccwMotor fast
+      break;
+    case SPIN_NONE: //no spin
+      spin_rules_output[MOTOR_CW] = MOTOR_NEUTRAL; //neutral cwMotor
+      spin_rules_output[MOTOR_CCW] = MOTOR_NEUTRAL; // neutral ccwMotor
+      break;
+    case SPIN_CCW: //spinning ccw
+      spin_rules_output[MOTOR_CW] = MOTOR_FAST;
+      spin_rules_output[MOTOR_CCW] = MOTOR_NEUTRAL;
+      break;
+    default:
+      spin_rules_output[MOTOR_CW] = MOTOR_NEUTRAL;
+      spin_rules_output[MOTOR_CCW] = MOTOR_NEUTRAL;
+  }
+}
+
+uint32_t height_rules_output[2] = {0, 0};
+
+void height_rules(uint32_t lingVar){
+
+  switch(lingVar){
+    case HEIGHT_LOW: //flying low
+      height_rules_output[MOTOR_CW] = MOTOR_FAST; // cwMotor neutral
+      height_rules_output[MOTOR_CCW] = MOTOR_FAST; // ccwMotor fast
+      break;
+    case HEIGHT_RIGHT: //flying right
+      height_rules_output[MOTOR_CW] = MOTOR_NEUTRAL; //neutral cwMotor
+      height_rules_output[MOTOR_CCW] = MOTOR_NEUTRAL; // neutral ccwMotor
+      break;
+    case HEIGHT_HIGH: //flying high
+      height_rules_output[MOTOR_CW] = MOTOR_SLOW;
+      height_rules_output[MOTOR_CCW] = MOTOR_SLOW;
+      break;
+    default:
+      height_rules_output[MOTOR_CW] = MOTOR_NEUTRAL;
+      height_rules_output[MOTOR_CCW] = MOTOR_NEUTRAL;
+  }
+
+}
+
+
+/**Defuzzification*/
+static uint32_t load[2] = {0, 0};
+
+uint32_t cw_load(void){
+  return load[MOTOR_CW];
+}
+
+uint32_t ccw_load(void){
+  return load[MOTOR_CCW];
+}
+static int32_t sigHiteErr = 0;
+
+void crispify(uint32_t height, uint32_t spin){
+  uint32_t i = 0, spin_weight_sum = 0, height_weight_sum = 0, height_cw_motor_sum = 0, height_ccw_motor_sum = 0,
+  spin_cw_motor_sum = 0, spin_ccw_motor_sum = 0, currentWeight;// height_motor_speed[2], spin_motor_speed[2];
+  
+  int32_t spinErr = spin - SPIN_TARGET, heightErr = height - HEIGHT_TARGET;
+
+ for(i = 0; i < MF_TOTAL; i++){
+    height_rules(i);
+    //height_motor_speed = *height_rules_output;
+    currentWeight = trimf_weight_height(heightErr, mfs_height[i]);
+    height_cw_motor_sum   += currentWeight*cwY(heightErr,height_rules_output[MOTOR_CW]);
+    height_ccw_motor_sum  += currentWeight*cwY(heightErr,height_rules_output[MOTOR_CCW]);
+    height_weight_sum     += currentWeight;
+
+    spin_rules(i);
+    //spin_motor_speed = spin_rules_output;
+    currentWeight = trimf_weight_spin(spinErr, mfs_spin[i]);
+    spin_cw_motor_sum     += currentWeight*cwY(spinErr,spin_rules_output[MOTOR_CW]);
+    spin_ccw_motor_sum    += currentWeight*cwY(spinErr,spin_rules_output[MOTOR_CCW]);
+    spin_weight_sum       += currentWeight;
+ }
+
+ //Normalizing
+ height_cw_motor_sum /= height_weight_sum;
+ height_ccw_motor_sum /= height_weight_sum;
+ spin_cw_motor_sum /= spin_weight_sum;
+ spin_ccw_motor_sum /= spin_weight_sum;
+
+ load[MOTOR_CW] = height_cw_motor_sum + spin_cw_motor_sum;
+ load[MOTOR_CCW] = height_ccw_motor_sum + spin_ccw_motor_sum;
+}

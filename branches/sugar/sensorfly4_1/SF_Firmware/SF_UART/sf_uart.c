@@ -34,7 +34,9 @@
 // encode bytes
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
-#define STOP_BYTE   0xEF   
+#define STOP_BYTE   0xEF  
+ 
+ #define  RTS_CTS_ENABLE 1
 
 extern TN_EVENT ctsSet;
 
@@ -81,14 +83,16 @@ void sf_uart0_init()
   rU0LCR = 0x13;
 
   // init CTS to high
+#ifdef  RTS_CTS_ENABLE
   sf_uart0_cts_set(1);
+#endif
 
   // set up event flag
   eventRxUART0.id_event = 17;
   tn_event_create(&eventRxUART0,TN_EVENT_ATTR_SINGLE,0x00000000);
   tn_event_clear(&eventRxUART0,0x00000000);
   state = 0;
-
+  
 }
 
 void sf_uart0_int_handler(void)
@@ -160,10 +164,6 @@ void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;
     uint8_t i;
-
-    unsigned int p_flags_pattern;
-    //-- Send RTS and wait for radio CTS
-    tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
 
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     

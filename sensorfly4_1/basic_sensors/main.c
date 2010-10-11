@@ -27,7 +27,7 @@
 //-----------------------------------------------------------------------------
 #define  TASK_APP_PRIORITY   5
 #define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
-#define  RTS_CTS_ENABLE 1 // enable rts & cts
+//#define  RTS_CTS_ENABLE 1 // enable rts & cts
 
 // Pin 0.21
 #define CTS_MASK (1<<21)
@@ -101,6 +101,7 @@ void task_app_func(void * par)
     par = par;
     while(1)
     {
+
         if (Blink & 1)
         {
            sf_led_on();
@@ -144,7 +145,7 @@ void task_app_func(void * par)
         }
         
       /* Sleep 5000 ticks */
-      tn_task_sleep(2500);
+      tn_task_sleep(10);
 
       counter++;
       total_pkt++; 

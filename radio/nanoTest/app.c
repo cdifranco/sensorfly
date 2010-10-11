@@ -50,6 +50,8 @@
  */
 #define SendMsg PDSap
 
+#define RTS_CTS_ENABLE 1
+
 /** @brief Memory for all layer configuration settings.  */
 AplMemT aplM;
 /** @brief Pointer to memory for all layer configuration settings.  */
@@ -63,6 +65,46 @@ Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
 
+
+/**
+ * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
+ *
+ * This function puts the clear to send pin to high or low, depending on the argument
+ * .
+ */
+/***************************************************************************/
+void CTSSet (int new_state)
+/***************************************************************************/
+{
+	switch (new_state) {
+	   case 0:
+	      CTS_PORT &= ~CTS_PIN;
+	      break;
+	   case 1:
+          CTS_PORT |= CTS_PIN;
+	      break;
+	   default: //we should never reach here
+	   //puts("Error: incorrect cts signal"); //commented out to save string space
+	   break;
+	}
+}
+
+/**
+ * @brief Request to send to ARM and wait the ARM to Clear to send
+ * .
+ */
+/***************************************************************************/
+void RTSAndWaitCTS (void)
+/***************************************************************************/
+{
+	volatile uint32_t flag;
+	do
+	{
+		flag = PINA;
+	}while(!(flag & RTS_PIN));
+}
+
+
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -74,6 +116,10 @@ volatile uint8_t __pkt_rx_flag = 0;
 void APLCallback (MyMsgT *msg)
 /**************************************************************************/
 {
+#ifdef RTS_CTS_ENABLE
+	CTSSet(0);
+#endif
+
 	MyChar8T serial_print_buffer[32];
 	
 	MyInt16T i;
@@ -115,10 +161,10 @@ void APLCallback (MyMsgT *msg)
 		case PD_DATA_INDICATION:
           // Check if packet is for this node
 					if(memcmp(msg->addr,apl->src,6) != 0)
-          {
+					{
 							printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
 							break;
-          }                  
+					}
 					// Check length of packet
 					pkt_rx = (Packet *)msg->data;
 					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
@@ -142,80 +188,46 @@ void APLCallback (MyMsgT *msg)
 								
 		case PD_RANGING_INDICATION:
 		case PD_RANGING_FAST_INDICATION:
-						// getting the ranging result data
-						upRangingMsg = (RangingPIB*) msg->data;
-						
-						// create pkt that will send to ARM
-						Packet pktRadio2Arm;
-						memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
-						memcpy(&(pktRadio2Arm.data[4]), &(upRangingMsg->error), 1);
-						pktRadio2Arm.id = 0; // set id 0 pkt as ranging pkt
-						pktRadio2Arm.type = PKT_TYPE_RANGING;
-						pktRadio2Arm.checksum = 0;
-						pktRadio2Arm.dest = 0; // set dest = 0 only when it is ranging
-						pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
-						pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
-						Packet * pkt_temp = &(pktRadio2Arm);
-						
-						//  packet testing
-						PrintRangingPacket(pkt_temp);
+					// getting the ranging result data
+					upRangingMsg = (RangingPIB*) msg->data;
+
+					// create pkt that will send to ARM
+					Packet pktRadio2Arm;
+					memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
+					memcpy(&(pktRadio2Arm.data[4]), &(upRangingMsg->error), 1);
+					pktRadio2Arm.id = 0; // set id 0 pkt as ranging pkt
+					pktRadio2Arm.type = PKT_TYPE_RANGING;
+					pktRadio2Arm.checksum = 0;
+					pktRadio2Arm.dest = 0; // set dest = 0 only when it is ranging
+					pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
+					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
+					Packet * pkt_temp = &(pktRadio2Arm);
+
+					//  packet testing
+					PrintRangingPacket(pkt_temp);
 /*
-						// send the encoded pkt up to ARM	byte by byte
-						char * bufRadio2Arm = (char *)pkt_temp;
-						int i;
-						putchar(START_BYTE);
-						for (i = 0; i< 9; i++)
-						{
-								if (bufRadio2Arm[i] == START_BYTE || bufRadio2Arm[i] == ESC_BYTE || bufRadio2Arm[i] == STOP_BYTE)
-								{
-										putchar(ESC_BYTE);
-								}
-								putchar(bufRadio2Arm[i]);
-						}
-						putchar(STOP_BYTE);		
+					// send the encoded pkt up to ARM	byte by byte
+					char * bufRadio2Arm = (char *)pkt_temp;
+					int i;
+					putchar(START_BYTE);
+					for (i = 0; i< 9; i++)
+					{
+							if (bufRadio2Arm[i] == START_BYTE || bufRadio2Arm[i] == ESC_BYTE || bufRadio2Arm[i] == STOP_BYTE)
+							{
+									putchar(ESC_BYTE);
+							}
+							putchar(bufRadio2Arm[i]);
+					}
+					putchar(STOP_BYTE);
 */	
 				break;
 
-default:				break;
+		default:				break;
 	}
-}
 
-/**
- * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
- *
- * This function puts the clear to send pin to high or low, depending on the argument
- * .
- */
-/***************************************************************************/
-void CTSSet (int new_state)
-/***************************************************************************/
-{
-	switch (new_state) {
-	   case 0:
-	      CTS_PORT &= ~CTS_PIN;
-	      break;
-	   case 1:
-          CTS_PORT |= CTS_PIN;
-	      break;
-	   default: //we should never reach here
-	   //puts("Error: incorrect cts signal"); //commented out to save string space
-	   break;
-	}
-}
-
-/**
- * @brief Request to send to ARM and wait the ARM to Clear to send
- * .
- */
-/***************************************************************************/
-void RTSAndWaitCTS (void)
-/***************************************************************************/
-{
-	volatile uint32_t flag;
-	do
-	{
-	flag = PINA;
-	}while(!(flag & RTS_PIN));
+#ifdef RTS_CTS_ENABLE
+	CTSSet(1);
+#endif
 }
 
 /**
@@ -231,7 +243,7 @@ void APLInit(void)
 	MyByte8T		s_address[] = {0,0,0,0,0,1};
 	MyByte8T		d_address[] = {0,0,0,0,0,2};
 
-  apl = &aplM;
+	apl = &aplM;
 
 	/*
      * for this simple demo transmitter and receiver
@@ -257,7 +269,9 @@ void APLInit(void)
 	downMsg.value = PHY_RX_ON;
 	PLMESap (&downMsg);
 
-	CTSSet(0);
+#ifdef RTS_CTS_ENABLE
+	CTSSet(1);
+#endif
 }
 
 /**
@@ -270,27 +284,19 @@ void APLInit(void)
 void SendBuffer (void)
 /***************************************************************************/
 {
-	// clear RTS
-	//CTSSet(0);
-
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
 	SendMsg (&downMsg);
-
-	// Set RTS
-	//CTSSet(1);
 }
 
 void SendRange (void)
 {
-	// clear RTS
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_RANGING_REQUEST;
 	apl->len = 0;
 	SendMsg (&downMsg);
-	// Set RTS
 }
 
 /**
@@ -315,70 +321,34 @@ void APLPoll (void)
 		// Get pkt from ARM --> only apply in sender
 		if (__pkt_rx_flag)
 		{
-				// set src and dest based on pkt info
-				pktArm2Radio = (Packet *)downMsg.data;
-				memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-				memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
-				PrintPacket(pktArm2Radio);
-				// decide with type of packet is sending
-				if (pktArm2Radio->type == PKT_TYPE_DATA)
-				{
-						// send the data
-						SendBuffer();
-				} 
-				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-				{
-						// send ranging pkt
-						SendRange();
-				}
-				else 
-				{
-						printf("packet type error: %c \n", pktArm2Radio->type);
-				} 
-
-				__pkt_rx_flag = 0;
-		}
-
-
-/* AVR 2 ARM Test
-		// Send pkt from AVR to ARM
-		Packet * pkt;
-		pkt->id = 'a';
-		pkt->dest = 'b';
-		pkt->src = 'c';
-		pkt->type = PKT_TYPE_DATA;
-		pkt->checksum = 'e';
-		pkt->length = 'f';
-		pkt->data[0]='h';
-		pkt->data[1]='i';
-		char * buf2 = (char *)pkt;
-	
-		printf("I wanna send now.\n");
-		RTSAndWaitCTS();
-		printf("I can send now!!!!!!!!!!!!!!!!!!!!!!!1\n");
-
-		if (__pkt_rx_flag)
-		{//stop
+#ifdef RTS_CTS_ENABLE
+			CTSSet(0);
+#endif
+			// set src and dest based on pkt info
 			pktArm2Radio = (Packet *)downMsg.data;
-			memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
-			memcpy(&(apl->dest[4]), pktArm2Radio->dest, 2);
+			memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
+			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
 			PrintPacket(pktArm2Radio);
-			SendBuffer();
+			// decide with type of packet is sending
+			if (pktArm2Radio->type == PKT_TYPE_DATA)
+			{
+					// send the data
+					SendBuffer();
+			}
+			else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+			{
+					// send ranging pkt
+					SendRange();
+			}
+			else
+			{
+					printf("packet type error: %c \n", pktArm2Radio->type);
+			}
+
 			__pkt_rx_flag = 0;
-			//start
+#ifdef RTS_CTS_ENABLE
+			CTSSet(1);
+#endif
 		}
-		
-		int i;
-		putchar(START_BYTE);
-		for (i = 0; i< 10; i++)
-		{
-				if (buf2[i] == START_BYTE || buf2[i] == ESC_BYTE || buf2[i] == STOP_BYTE)
-				{
-						putchar(ESC_BYTE);
-				}
-				putchar(buf2[i]);
-		}
-		putchar(STOP_BYTE);	
-*/
 
 }

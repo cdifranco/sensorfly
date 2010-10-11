@@ -240,8 +240,8 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,1};
-	MyByte8T		d_address[] = {0,0,0,0,0,2};
+	MyByte8T		s_address[] = {0,0,0,0,0,2};
+	MyByte8T		d_address[] = {0,0,0,0,0,1};
 
 	apl = &aplM;
 
@@ -260,7 +260,7 @@ void APLInit(void)
 	/* These variables are used by the demo application.
      * They are used by the user interface
      */
-    apl->hwclock = 0;
+  apl->hwclock = 0;
 	apl->len = 0;
 
 	/* switch on receiver */
@@ -309,18 +309,8 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-		static	char buf[CONFIG_CONSOLE_LINE_SIZE];
-		static	int write_prompt = 1;
-	
-		MyInt16T c;
-	
-		//static MyByte8T packets_sent = 0xFF;
-		MyByte8T power = 0;
 		Packet * pktArm2Radio;
 
-		// Get pkt from ARM --> only apply in sender
-		if (__pkt_rx_flag)
-		{
 #ifdef RTS_CTS_ENABLE
 			CTSSet(0);
 #endif
@@ -350,5 +340,4 @@ void APLPoll (void)
 			CTSSet(1);
 #endif
 		}
-
 }

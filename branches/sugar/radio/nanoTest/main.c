@@ -35,6 +35,7 @@
 
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
+#define RTS_CTS_ENABLE 1
 
 
 #ifdef	CONFIG_CONSOLE
@@ -151,18 +152,16 @@ int	main(int ac, char *av[])
    */
 	APLInit();
 
+//	int flag =1;
 	/*
 	 * SYSTEM MAIN LOOP
 	 */
-	int flag = 1;
 	while(1)
 	{
-		CTSSet(flag);
+//		CTSSet(flag);
+//		flag = !flag;
+//		printf("\n\nhh\n\n");
 
-		flag = !flag;
-
-		int i;
-		for (i=0; i<10000; i++);
 
 		/*
 		 * call application periodically

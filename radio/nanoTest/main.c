@@ -20,35 +20,26 @@
  */
 
 
-#include    <stdio.h>
-#include 		<string.h>
+#include  <stdio.h>
+#include 	<string.h>
 #include 	<avr/sleep.h>
 #include	<avr/wdt.h>
 #include	<avr/power.h>
-#include    "config.h"
+#include  "config.h"
 #include	"led.h"
 #include	"ntrxutil.h"
-#include    "ntrxtypes.h"
-#include    "hwclock.h"
+#include  "ntrxtypes.h"
+#include  "hwclock.h"
 #include	"phy.h"
 #include 	"packet.h"
+#include	"app.h"
+#include    "usart.h"
 
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
 #define RTS_CTS_ENABLE 1
 
-
-#ifdef	CONFIG_CONSOLE
-#include    "usart.h"
-#endif	/* CONFIG_CONSOLE */
-
-extern  void    APLInit(void);
-extern	void	APLPoll(void);
-
-#ifdef CONFIG_WATCHDOG
-#include 	<avr/wdt.h>
-#endif
-
+uint8_t src_address = 2;
 
 /**
  * error_handler:
@@ -89,8 +80,6 @@ void	error_handler(MyInt16T err)
 	}
 }
 
-
-
 /**
  * main:
  *
@@ -121,8 +110,7 @@ int	main(int ac, char *av[])
 	/* Initialize direction of pins for flow control for comm with the ARM */
 	CTS_DIR  |= CTS_PIN;	//output
 	RTS_DIR  &= ~RTS_PIN;	//input
-	//pull up
-	RTS_PORT |= RTS_PIN;
+	RTS_PORT |= RTS_PIN; //pull up
 
 	/*
    * Initialize the timer for periodic tasks

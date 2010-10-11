@@ -172,7 +172,8 @@ void APLCallback (MyMsgT *msg)
 							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
 							break;
 					}
-					// Send packet to ARM
+					// Send packet to ARM byte by byte
+/*
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
@@ -183,7 +184,7 @@ void APLCallback (MyMsgT *msg)
 							putchar (msg->data[i]);
 					}
 					putchar(STOP_BYTE);
-					
+*/					
 				break;
 								
 		case PD_RANGING_INDICATION:

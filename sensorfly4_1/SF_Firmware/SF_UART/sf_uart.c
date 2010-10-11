@@ -164,7 +164,6 @@ void sf_uart0_pkt_send(Packet *pkt)
 {
     char * pkt_bytes =(char *)pkt;
     uint8_t i;
-
     tn_sem_acquire(&semTxUART0,TN_WAIT_INFINITE);
     
     // cut the data length into FIFO_SIZE
@@ -203,35 +202,9 @@ Packet * sf_uart0_pkt_receive()
 }
 
 /*! \fn 
-    \brief
-    \param
-    \return
-*/
-//void sf_uart0_rts_and_wait_cts(void)
-//{
-//  volatile uint32_t flag;
-//  do
-//  {
-//    flag = rIO0PIN;
-//  }while(!(flag & RTS_MASK));
-//}
-//
-///*! \fn 
-//    \brief
-//    \param
-//    \return
-//*/
-//void sf_uart0_cts_wait()
-//{
-//  volatile uint32_t flag;
-//  flag = rIO0PIN;
-//  while(!(flag & CTS_MASK));
-//}
-
-/*! \fn 
-    \brief
-    \param
-    \return
+    \brief set cts on arm side
+    \param new_state
+    \return void
 */
 void sf_uart0_cts_set (uint32_t new_state)
 {

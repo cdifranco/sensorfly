@@ -49,7 +49,6 @@
  *
  */
 #define SendMsg PDSap
-
 #define RTS_CTS_ENABLE 1
 
 /** @brief Memory for all layer configuration settings.  */
@@ -60,11 +59,11 @@ AplMemT *apl;
 MyMsgT downMsg;
 /** @brief Message structure for payload of received ranging packets.  */
 RangingPIB *upRangingMsg;
-Packet * pkt_rx;
 
+Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-
+extern uint8_t src_address;
 
 /**
  * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
@@ -84,7 +83,6 @@ void CTSSet (int new_state)
           CTS_PORT |= CTS_PIN;
 	      break;
 	   default: //we should never reach here
-	   //puts("Error: incorrect cts signal"); //commented out to save string space
 	   break;
 	}
 }
@@ -173,7 +171,6 @@ void APLCallback (MyMsgT *msg)
 							break;
 					}
 					// Send packet to ARM byte by byte
-/*
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
@@ -184,14 +181,13 @@ void APLCallback (MyMsgT *msg)
 							putchar (msg->data[i]);
 					}
 					putchar(STOP_BYTE);
-*/					
+					
 				break;
 								
 		case PD_RANGING_INDICATION:
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
-
 					// create pkt that will send to ARM
 					Packet pktRadio2Arm;
 					memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
@@ -203,10 +199,8 @@ void APLCallback (MyMsgT *msg)
 					pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
 					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 					Packet * pkt_temp = &(pktRadio2Arm);
-
 					//  packet testing
 					PrintRangingPacket(pkt_temp);
-/*
 					// send the encoded pkt up to ARM	byte by byte
 					char * bufRadio2Arm = (char *)pkt_temp;
 					int i;
@@ -220,7 +214,7 @@ void APLCallback (MyMsgT *msg)
 							putchar(bufRadio2Arm[i]);
 					}
 					putchar(STOP_BYTE);
-*/	
+	
 				break;
 
 		default:				break;
@@ -311,6 +305,7 @@ void APLPoll (void)
 /***************************************************************************/
 {
 		Packet * pktArm2Radio;
+
 		if (__pkt_rx_flag)
 		{
 #ifdef RTS_CTS_ENABLE
@@ -319,8 +314,8 @@ void APLPoll (void)
 			// set src and dest based on pkt info
 			pktArm2Radio = (Packet *)downMsg.data;
 			memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
-			PrintPacket(pktArm2Radio);
+			memcpy(&(apl->src[5]), &(src_address), 1);	// src address is determined in main by global variable
+			//PrintPacket(pktArm2Radio); //cannot use when resend the pkt. get confused
 			// decide with type of packet is sending
 			if (pktArm2Radio->type == PKT_TYPE_DATA)
 			{
@@ -342,4 +337,5 @@ void APLPoll (void)
 			CTSSet(1);
 #endif
 		}
+
 }

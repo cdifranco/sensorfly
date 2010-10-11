@@ -111,7 +111,6 @@ void sf_network_pkt_send(Packet * pkt)
     unsigned int p_flags_pattern;
     //-- Send RTS and wait for radio CTS
 
-
     tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
     //sf_led_on();
 

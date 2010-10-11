@@ -40,8 +40,7 @@ TN_SEM  semFifoEmptyTxUART0;
 
 #define  QUEUE_TX_UART0_SIZE      4
 #define  QUEUE_RX_UART0_SIZE      4
-
-#define  RTS_CTS_ENABLE 1
+//#define  RTS_CTS_ENABLE 1
 
    //--- UART1 RX queue
 TN_DQUE  queueRxUART0;
@@ -78,15 +77,10 @@ void  sf_network_init()
    /* Install UART0 with priority 1 */
    tn_irq_install(UART0_ID, 1, sf_uart0_int_handler);
 
-
    //-- UART0 rx drv
    drvUART0.buf          = &gUART0PayloadBuf[0];
    drvUART0.max_buf_size = UART0_RX_PAYLOAD_BUF_SIZE;
    drvUART0.pos          = 0;
-
-//   /* Install UART0 with priority 1 */
-   //tn_irq_install(UART0_ID, 1, sf_uart0_int_handler);
-
 
     //--- Semaphores
 
@@ -109,10 +103,9 @@ void sf_network_pkt_send(Packet * pkt)
 #endif
     
     unsigned int p_flags_pattern;
+    
     //-- Send RTS and wait for radio CTS
-
     tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
-    //sf_led_on();
 
     sf_uart0_pkt_send(pkt);
 

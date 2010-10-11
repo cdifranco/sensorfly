@@ -46,24 +46,8 @@ void sf_timer0_int_handler (void)
 
 void sf_cts_int_handler(void)
 {
-//   static unsigned short Blink = 1;
-//
-//      if (Blink & 1)
-//        {
-//           sf_led_on();
-//        }
-//        else
-//        {
-//           sf_led_off();
-//        }   
-//
-//         Blink = Blink ^ 1;
-//
-
      tn_event_iset(&ctsSet, 0x00000001);
-//      
       rEXTINT |= (1 << 3);   
-      //sf_led_on();
 }
 
 /*=========================================================================*/
@@ -85,7 +69,6 @@ void hardware_init (void)
   */            
   tn_irq_init();
 
-  
   /* Set I/O port directions */
   // Set P0.0-0.31 as input
   rIO0DIR = 0x000000;	

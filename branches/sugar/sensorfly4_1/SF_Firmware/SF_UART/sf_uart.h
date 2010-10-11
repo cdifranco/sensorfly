@@ -100,4 +100,5 @@ void sf_uart0_cts_wait();
 void sf_uart0_rts_set();
 void sf_uart0_rts_clr();
 Packet * sf_uart0_pkt_receive();
+void sf_uart0_cts_set (uint32_t new_state);
 #endif /* SF_UART_H_ */

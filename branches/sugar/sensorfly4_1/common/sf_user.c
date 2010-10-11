@@ -46,30 +46,24 @@ void sf_timer0_int_handler (void)
 
 void sf_cts_int_handler(void)
 {
-   static unsigned short Blink = 1;
+//   static unsigned short Blink = 1;
+//
+//      if (Blink & 1)
+//        {
+//           sf_led_on();
+//        }
+//        else
+//        {
+//           sf_led_off();
+//        }   
+//
+//         Blink = Blink ^ 1;
+//
 
-      if (Blink & 1)
-        {
-           sf_led_on();
-        }
-        else
-        {
-           sf_led_off();
-        }   
-
-         Blink = Blink ^ 1;
-
- 
-
-  volatile uint32_t flag;
-  flag = rIO0PIN & RTS_MASK;
-  if(flag)
-     tn_event_set(&ctsSet, 0x00000001);
-  else
-     tn_event_clear(&ctsSet, 0x00000000);
-      
-      rEXTINT |= (1 << 3);
-   
+     tn_event_iset(&ctsSet, 0x00000001);
+//      
+      rEXTINT |= (1 << 3);   
+      //sf_led_on();
 }
 
 /*=========================================================================*/

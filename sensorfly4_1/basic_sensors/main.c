@@ -38,11 +38,13 @@ unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
 void task_app_func(void * par);
 extern UARTDRV drvUART0;
-int __pkt_rx_flag;
 int state;
 int counter = 0;
 float pkt_rx_percent = 0;
-int pkt_id = 100;
+int total_pkt = 0;
+int pkt_id = 101;
+int receive_pkt_num = 0;
+int rx_flag = 0;
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -52,8 +54,7 @@ int pkt_id = 100;
     \param none
     \return none
 */
-int main(void)
-{
+int main(void){
 
    sf_fly_command = 'f';
 
@@ -93,7 +94,6 @@ void  tn_app_init()
 */
 void task_app_func(void * par)
 {
-    
 
     unsigned short Blink = 1;
     Packet pkt;
@@ -113,52 +113,43 @@ void task_app_func(void * par)
         Blink = Blink ^ 1;
         
       //receive from ARM    
-//      Packet * pkt_rx = sf_network_pkt_receive();
-/*
+      Packet * pkt_rx = sf_network_pkt_receive();
+      
       if (pkt_rx != NULL)
       {
           // get percentage of the packet received
-          if (pkt_rx->id < pkt_id) 
-          {
-              pkt_rx_percent = counter/100.00;
-              pkt_id = pkt_rx->id;
-              counter = 0;
-          }
-          else
-          {
-              counter++;
-          }
+//          if (pkt_rx->id != pkt_id) 
+//          {
+             receive_pkt_num++;
+//             rx_flag++; 
+//             pkt_id = pkt_rx->id;
+//          }
+
+          pkt_rx_percent =  receive_pkt_num/1000.00;
       }
-*/
 
         // Create packet
-        pkt.id = counter;
-        pkt.type = PKT_TYPE_RANGING;
-        pkt.checksum = 0;
-        pkt.src = 1;
-        pkt.dest = 2;
-        pkt.length = 16;
-        pkt.data[0] = 'x';
-        pkt.data[1] = 'y';
-
-//      volatile uint32_t temp1 = rIO0PIN;
-//      volatile uint32_t temp2 = RTS_MASK;
-//      if(temp1 & temp2)
-//      {
-//        sf_led_on();
-//      }
-//      else
-//      {
-//        sf_led_off();
-//      }
-             
-        // Send pkt
-      sf_network_pkt_send(&pkt);         
-
+//        pkt.id = counter;
+//        pkt.type = PKT_TYPE_DATA;
+//        pkt.checksum = 0;
+//        pkt.src = 1;
+//        pkt.dest = 2;
+//        pkt.length = 16;
+//        pkt.data[0] = 'x';
+//        pkt.data[1] = 'y';
+//             
+//        // Send 10000 pkts
+//        if (total_pkt < 1000)
+//        {
+//            sf_network_pkt_send(&pkt);         
+//        }
+        
       /* Sleep 5000 ticks */
-      tn_task_sleep(10);
-      counter++;
-      if (counter == 100) counter = 0;
+      tn_task_sleep(2500);
+
+//      counter++;
+//      total_pkt++; 
+//      if (counter == 100) counter = 0;
 
    }
 }

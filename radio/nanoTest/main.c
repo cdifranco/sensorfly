@@ -151,18 +151,12 @@ int	main(int ac, char *av[])
    * initialize user application
    */
 	APLInit();
-
-//	int flag =1;
 	/*
 	 * SYSTEM MAIN LOOP
 	 */
+
 	while(1)
 	{
-//		CTSSet(flag);
-//		flag = !flag;
-//		printf("\n\nhh\n\n");
-
-
 		/*
 		 * call application periodically
 		 */

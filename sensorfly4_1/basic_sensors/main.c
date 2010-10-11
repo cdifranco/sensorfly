@@ -27,6 +27,7 @@
 //-----------------------------------------------------------------------------
 #define  TASK_APP_PRIORITY   5
 #define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
+#define  RTS_CTS_ENABLE 1
 
 // Pin 0.21
 #define CTS_MASK (1<<21)
@@ -100,16 +101,16 @@ void task_app_func(void * par)
     par = par;
     while(1)
     {
-//        if (Blink & 1)
-//        {
-//           sf_led_on();
-//        }
-//        else
-//        {
-//           sf_led_off();
-//        }   
+        if (Blink & 1)
+        {
+           sf_led_on();
+        }
+        else
+        {
+           sf_led_off();
+        }   
         
-//        Blink = Blink ^ 1;
+        Blink = Blink ^ 1;
         
       //receive from ARM    
 //      Packet * pkt_rx = sf_network_pkt_receive();
@@ -139,6 +140,17 @@ void task_app_func(void * par)
         pkt.length = 16;
         pkt.data[0] = 'x';
         pkt.data[1] = 'y';
+
+//      volatile uint32_t temp1 = rIO0PIN;
+//      volatile uint32_t temp2 = RTS_MASK;
+//      if(temp1 & temp2)
+//      {
+//        sf_led_on();
+//      }
+//      else
+//      {
+//        sf_led_off();
+//      }
              
         // Send pkt
       sf_network_pkt_send(&pkt);         

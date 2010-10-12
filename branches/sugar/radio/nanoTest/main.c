@@ -38,8 +38,7 @@
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
 
-
-uint8_t src_address = 2;
+uint8_t src_address = 3;
 
 /**
  * error_handler:

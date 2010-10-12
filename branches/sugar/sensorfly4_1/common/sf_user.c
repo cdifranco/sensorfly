@@ -113,17 +113,18 @@ void hardware_init (void)
   /* Install timer0 with priority 2 */
   tn_irq_install(TIMER0_ID, 2, sf_timer0_int_handler);
 
-
+#ifdef  RTS_CTS_ENABLE
   rEXTMODE |= (1<<3);
   rEXTPOLAR |= (1<<3);
   rPINSEL1 |= ((1 << 9) | (1 << 8));
   /* Create event of CTS SET */
+
   tn_event_create(&ctsSet, TN_EVENT_ATTR_SINGLE, 0x00000000);
   tn_event_clear(&ctsSet, 0x00000000);  
   //tn_event_set(&ctsSet, 0x00000001);
   /* Install ENT3 with priority 3 */
   tn_irq_install(CTS_ID, 3, sf_cts_int_handler);
-  
+#endif  
   /* Initialize LED */
   sf_led_init();
 
@@ -151,8 +152,9 @@ void tn_cpu_int_enable (void)
    VICIntEnable |= (1<<TIMER0_ID);
 
    /* Enable CTS interrupt */
+#ifdef  RTS_CTS_ENABLE
    VICIntEnable |= (1<<CTS_ID);
-
+#endif
    tn_arm_enable_interrupts();
 }
 

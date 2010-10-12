@@ -157,7 +157,9 @@ int	_getchar(FILE *stream)
  */
 int	_putchar(char c, FILE *stream)
 {
+#ifdef RTS_CTS_ENABLE
 	RTSAndWaitCTS ();
+#endif
 	while((AVR_UCSR1A & (1 << AVR_UDRE1)) == 0);
 	AVR_UDR1 = c;
 

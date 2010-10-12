@@ -27,12 +27,14 @@
 //-----------------------------------------------------------------------------
 #define  TASK_APP_PRIORITY   5
 #define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
-//#define  RTS_CTS_ENABLE 1 // enable rts & cts
 
 // Pin 0.21
 #define CTS_MASK (1<<21)
 // Pin 0.20
 #define RTS_MASK (1<<20)
+
+//#define SENDER 1
+#define RECEIVER 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -97,6 +99,7 @@ void task_app_func(void * par)
 
     unsigned short Blink = 1;
     Packet pkt;
+    int i;
     /* Prevent compiler warning */
     par = par;
     while(1)
@@ -113,43 +116,57 @@ void task_app_func(void * par)
         
         Blink = Blink ^ 1;
         
-      //receive from ARM    
-//      Packet * pkt_rx = sf_network_pkt_receive();
-//      
-//      if (pkt_rx != NULL)
-//      {
-//          // get percentage of the packet received
-//          if (pkt_rx->id != pkt_id) 
-//          {
-//             receive_pkt_num++;
-//             rx_flag++; 
-//             pkt_id = pkt_rx->id;
-//          }
-//          pkt_rx_percent =  receive_pkt_num/1000.00;
-//      }
+      //receive from ARM   
+#ifdef RECEIVER
+      Packet * pkt_rx = sf_network_pkt_receive();
+     
+      /** calculate the rate of packet received*/      
+      if (pkt_rx != NULL)
+      {
+          // get percentage of the packet received
+          if (pkt_rx->id != pkt_id) 
+          {
+             receive_pkt_num++;
+             rx_flag++; 
+             pkt_id = pkt_rx->id;
+          }
+          pkt_rx_percent =  receive_pkt_num/1000.00;
+           sf_network_pkt_release();
+      }
+#endif
+      /** change the pkt and resend it*/
+//      uint8_t temp = pkt_rx->src;
+//      pkt_rx->src = pkt_rx->dest;
+//      pkt_rx->dest = temp;
+//      pkt_rx->data[0] = 'a';
+//      pkt_rx->type = 'd';
+//      sf_network_pkt_send(pkt_rx);    
+//      sf_network_pkt_release();
 
-        // Create packet
-        pkt.id = counter;
-        pkt.type = PKT_TYPE_DATA;
-        pkt.checksum = 0;
-        pkt.src = 1;
-        pkt.dest = 2;
-        pkt.length = 16;
-        pkt.data[0] = 'x';
-        pkt.data[1] = 'y';
-             
-        // Send 10000 pkts
-        if (total_pkt < 1000)
-        {
-            sf_network_pkt_send(&pkt);         
-        }
-        
-      /* Sleep 5000 ticks */
-      tn_task_sleep(10);
-
+      /** test to send the pkt back*/
+      /** create a packet to store the received packet*/
+#ifdef SENDER
+      /** Create packet for sending test*/
+      pkt.id = counter;
+      pkt.type = PKT_TYPE_DATA;
+      pkt.checksum = 0;
+      pkt.src = 1;
+      pkt.dest = 2;
+      pkt.data[0] = 'x';
+      pkt.data[1] = 'y';
+      pkt.length = 16; 
+      if (total_pkt<1000)
+      {
+          sf_network_pkt_send(&pkt); 
+      }
+      total_pkt++;
       counter++;
-      total_pkt++; 
       if (counter == 100) counter = 0;
+
+#endif
+
+      /* Sleep 5000 ticks */
+      tn_task_sleep(2000);
 
    }
 }

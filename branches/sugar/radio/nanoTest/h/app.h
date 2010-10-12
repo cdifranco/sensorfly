@@ -22,6 +22,8 @@
 
 #include "ntrxtypes.h"
 
+//#define RTS_CTS_ENABLE 1
+
 /** @brief Structure type for all layer configuration settings
  *
  * To be IEEE layer complient, all configuration data is stored

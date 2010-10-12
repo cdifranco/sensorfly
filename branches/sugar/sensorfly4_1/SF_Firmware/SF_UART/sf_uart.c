@@ -35,8 +35,6 @@
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF  
- 
- #define  RTS_CTS_ENABLE 1
 
 extern TN_EVENT ctsSet;
 
@@ -128,7 +126,11 @@ void sf_uart0_int_handler(void)
                       }
                       else if (data == STOP_BYTE)	//stop(received)
                       {
+                            #ifdef  RTS_CTS_ENABLE
+    sf_uart0_cts_set(0);
+#endif
                              state = 0;
+                             drvUART0.pos = 0;
                              tn_event_iset(&eventRxUART0,0x00000001);
                       }
                       else
@@ -150,6 +152,7 @@ void sf_uart0_int_handler(void)
           if (drvUART0.pos > drvUART0.max_buf_size)
           {
               drvUART0.pos = 0;
+              state = 0;
           }
     }
      

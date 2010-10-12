@@ -40,7 +40,7 @@ TN_SEM  semFifoEmptyTxUART0;
 
 #define  QUEUE_TX_UART0_SIZE      4
 #define  QUEUE_RX_UART0_SIZE      4
-//#define  RTS_CTS_ENABLE 1
+
 
    //--- UART1 RX queue
 TN_DQUE  queueRxUART0;
@@ -105,12 +105,13 @@ void sf_network_pkt_send(Packet * pkt)
     unsigned int p_flags_pattern;
     
     //-- Send RTS and wait for radio CTS
+#ifdef  RTS_CTS_ENABLE
     tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
-
+#endif
     sf_uart0_pkt_send(pkt);
-
+#ifdef  RTS_CTS_ENABLE
     tn_event_clear(&ctsSet, 0x00000000);
-
+#endif
 #ifdef  RTS_CTS_ENABLE
    sf_uart0_cts_set(1);
 #endif
@@ -119,15 +120,12 @@ void sf_network_pkt_send(Packet * pkt)
 Packet * sf_network_pkt_receive()
 {
     sf_uart0_pkt_receive();
-#ifdef  RTS_CTS_ENABLE
-    sf_uart0_cts_set(0);
-#endif
+
 }
 
 void sf_network_pkt_release()
 {
     // release the drvUART buffer
-
 #ifdef  RTS_CTS_ENABLE
    sf_uart0_cts_set(1);
 #endif

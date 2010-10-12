@@ -26,11 +26,11 @@
 #include 	"keys.h"
 #include 	"ntrxutil.h"
 #include	"hwclock.h"
+#include	"packet.h"
 #include	"app.h"
 #include	"phy.h"
 #include 	"nnspi.h"
 #include	"led.h"
-#include	"packet.h"  
 
 /**
  * @def TIME_OUT
@@ -237,9 +237,6 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
-	MyByte8T		s_address[] = {0,0,0,0,0,2};
-	MyByte8T		d_address[] = {0,0,0,0,0,1};
-
 	apl = &aplM;
 
 	/*
@@ -247,24 +244,18 @@ void APLInit(void)
      * use the same MAC address. This way we need only
      * one executable for both stations.
      */
-	memcpy (apl->src, s_address, 6);
-	memcpy (apl->dest, d_address, 6);
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_MAC_ADDRESS1;
-	memcpy (downMsg.data, s_address, 6);
-	PLMESap (&downMsg);
+	MyAddrT srcAddr = {0};
+	srcAddr[5] = src_address;
+	SetSrcAddr(&srcAddr);
 
 	/* These variables are used by the demo application.
      * They are used by the user interface
      */
-  apl->hwclock = 0;
+	apl->hwclock = 0;
 	apl->len = 0;
 
 	/* switch on receiver */
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_RX_CMD;
-	downMsg.value = PHY_RX_ON;
-	PLMESap (&downMsg);
+	SetStartComm();
 
 #ifdef RTS_CTS_ENABLE
 	CTSSet(1);
@@ -306,37 +297,175 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-		Packet * pktArm2Radio;
-
-		if (__pkt_rx_flag)
+	if (__pkt_rx_flag)
+	{
+#ifdef RTS_CTS_ENABLE
+		CTSSet(0);
+#endif
+		// set src and dest based on pkt info
+		Packet * pktArm2Radio = (Packet *)downMsg.data;
+		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
+		memcpy(&(apl->src[5]), &(src_address), 1);
+		//PrintPacket(pktArm2Radio);
+		// decide with type of packet is sending
+		if (pktArm2Radio->type == PKT_TYPE_DATA)
 		{
-#ifdef RTS_CTS_ENABLE
-			CTSSet(0);
-#endif
-			// set src and dest based on pkt info
-			pktArm2Radio = (Packet *)downMsg.data;
-			memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-			memcpy(&(apl->src[5]), &(src_address), 1);
-			//PrintPacket(pktArm2Radio);
-			// decide with type of packet is sending
-			if (pktArm2Radio->type == PKT_TYPE_DATA)
-			{
-					// send the data
-					SendBuffer();
-			}
-			else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-			{
-					// send ranging pkt
-					SendRange();
-			}
-			else
-			{
-					printf("packet type error: %c \n", pktArm2Radio->type);
-			}
-
-			__pkt_rx_flag = 0;
-#ifdef RTS_CTS_ENABLE
-			CTSSet(1);
-#endif
+				// send the data
+				SendBuffer();
 		}
+		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+		{
+				// send ranging pkt
+				SendRange();
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+		{
+				// set AVR & Radio
+				SetAVR(pktArm2Radio);
+		}
+		else
+		{
+				printf("packet type error: %c \n", pktArm2Radio->type);
+		}
+
+		__pkt_rx_flag = 0;
+#ifdef RTS_CTS_ENABLE
+		CTSSet(1);
+#endif
+	}
+}
+
+/**
+ * @brief set AVR
+ */
+void SetAVR(Packet *setPkt)
+{
+	MyAddrT srcAddr = {0};
+	srcAddr[5] = setPkt->src;
+	SetSrcAddr (&srcAddr);
+}
+
+/**
+ * @brief set local MAC address
+ */
+void SetSrcAddr (MyAddrT *src)
+{
+	src_address = src[5];
+	memcpy(apl->src, src, sizeof(MyAddrT));
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_MAC_ADDRESS1;
+	memcpy (downMsg.data, apl->src, sizeof(MyAddrT));
+	PLMESap (&downMsg);
+}
+
+/**
+ * @brief set destination MAC address
+ */
+void SetDestAddr (MyAddrT *dest)
+{
+	memcpy(apl->dest, dest, sizeof(MyAddrT));
+}
+
+/**
+ * @brief set channel
+ *
+ *channel 0 : 80MHz, 1us, 2.441GHz cf, no FEC
+ *channel 1 : 22MHz, 4us, 2.412GHz cf, no FEC
+ *channel 2 : 22MHz, 4us, 2.442GHz cf, no FEC
+ *channel 3 : 22MHz, 4us, 2.472GHz cf, no FEC
+ *
+ * @return whether changed successfully
+ */
+int SetChannel(MyByte8T channel)
+{
+	downMsg.value = channel;
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_LOG_CHANNEL;
+	PLMESap (&downMsg);
+	if (downMsg.status == PHY_SUCCESS)
+		return 1;
+	else
+		return 0;	//illegal channel
+}
+
+/**
+ * @brief set power
+ *
+ *power	[0 - 8 ( * 8), -33dBm to 0dBm]
+ *
+ * @return whether changed successfully
+ */
+int SetPower(MyByte8T power)
+{
+	if (power != 0)
+		power = (power * 8) - 1;
+	downMsg.value = power;
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_TX_POWER;
+	PLMESap (&downMsg);
+	if (downMsg.status == PHY_SUCCESS)
+		return 1;
+	else
+		return 0;	//invalid value
+}
+
+/**
+ * @brief set auto acknowledgement
+ *
+ * @parameter MyByte8T autoAck [0 False, 1 True]
+ *
+ * @return whether changed successfully
+ */
+int SetAutoAck(MyByte8T autoAck)
+{
+	downMsg.value = autoAck;
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_ARQ;
+	PLMESap (&downMsg);
+	if (downMsg.status == PHY_SUCCESS)
+		return 1;
+	else
+		return 0;	//invalid value
+}
+
+/**
+ * @brief set start communication
+ */
+void SetStartComm(void)
+{
+	/* switch on receiver */
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_RX_CMD;
+	downMsg.value = PHY_RX_ON;
+	PLMESap (&downMsg);
+}
+
+/**
+ * @brief set send ranging request
+ */
+void SetSendRangeReq(void)
+{
+	/* switch FEC on */
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_FEC;
+	downMsg.value = FALSE;
+	PLMESap (&downMsg);
+
+	/* switch on receiver */
+	SetStartComm();
+}
+
+/**
+ * @brief set send fast ranging request
+ */
+void SetSendFastRangeReq(void)
+{
+	/* switch FEC on */
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_FEC;
+	downMsg.value = FALSE;
+	PLMESap (&downMsg);
+
+	/* switch on receiver */
+	SetStartComm();
 }

@@ -22,7 +22,7 @@
 
 #include "ntrxtypes.h"
 
-//#define RTS_CTS_ENABLE 1
+#define RTS_CTS_ENABLE 1
 
 /** @brief Structure type for all layer configuration settings
  *

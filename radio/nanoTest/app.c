@@ -339,5 +339,4 @@ void APLPoll (void)
 			CTSSet(1);
 #endif
 		}
-
 }

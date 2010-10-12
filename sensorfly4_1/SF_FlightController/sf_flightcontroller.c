@@ -73,14 +73,14 @@ void  sf_flightcontroller_task_init()
 */
 void task_flightcontroller_func(void * par)
 {
-   uint32_t s = 0, z = 0, ip = 0, diff = 0, c, timer = 0;
+/*   uint32_t s = 0, z = 0, ip = 0, diff = 0, c, timer = 0;
    int32_t cwLoad, ccwLoad;
    int rw;   // result of system waiting
    
    rw = tn_event_wait(&flightControllerEventFlag,0x01,TN_EVENT_WCOND_OR,&flightControllerEvent,TN_WAIT_INFINITE);
-
+*/
    /* Prevent compiler warning */
-   par = par;
+/*   par = par;
    sf_drive_duty_set(0, 0);
    tn_task_sleep(30000);
    set_spin_zero(sf_sensor_gyro_z_get());
@@ -122,15 +122,14 @@ void task_flightcontroller_func(void * par)
             //sf_drive_duty_set(ip - diff, ip + diff);
             sf_drive_duty_set(75 + ccwLoad, 75 + cwLoad);
             timer++;
-
+*/
 
             /* Sleep 10 ticks */
             //tn_task_sleep(10);
             //clear the event flag once flight controller has executed
-            tn_event_clear(&flightControllerEventFlag,0x00);
+/*            tn_event_clear(&flightControllerEventFlag,0x00);
        }
-    }
-
+    }*/
 }
 
 /*! \fn uint32_t sf_hover_controller(uint32_t d_val)

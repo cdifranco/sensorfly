@@ -307,7 +307,7 @@ void APLPoll (void)
 /***************************************************************************/
 {
 		Packet * pktArm2Radio;
-/*
+
 		if (__pkt_rx_flag)
 		{
 #ifdef RTS_CTS_ENABLE
@@ -339,5 +339,5 @@ void APLPoll (void)
 			CTSSet(1);
 #endif
 		}
-*/
+
 }

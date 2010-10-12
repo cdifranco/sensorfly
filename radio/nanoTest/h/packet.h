@@ -15,8 +15,7 @@
 #define PKT_TYPE_DATA    'd'
 #define PKT_TYPE_SETTING 's'
 
-
-typedef struct
+typedef struct Packet
 {
   uint8_t id;
   uint8_t type;	// r--> ranging; d--> data; s-->setting

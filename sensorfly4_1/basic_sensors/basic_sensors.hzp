@@ -45,6 +45,7 @@
       <folder Name="SF_FlightController">
         <file file_name="../SF_FlightController/sf_flightcontroller.c"/>
         <file file_name="../SF_FlightController/sf_flightcontroller.h"/>
+        <file file_name="../../../../../sensorfly_fuzzy 2/sensorfly4_1/SF_FlightController/fuzzy_control.c"/>
       </folder>
     </folder>
     <folder Name="System Files">

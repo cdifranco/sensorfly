@@ -35,6 +35,7 @@ char sf_fly_command;
 // Interrupt Defines
 //-----------------------------------------------------------------------------
 #define TIMER0_ID 4
+#define TIMER1_ID 5
 #define UART0_ID 6
 #define CTS_ID 17
 

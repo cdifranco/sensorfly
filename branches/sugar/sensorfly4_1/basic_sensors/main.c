@@ -33,8 +33,8 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 
-//#define SENDER 1
-#define RECEIVER 1
+#define SENDER 1
+//#define RECEIVER 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -58,10 +58,10 @@ int rx_flag = 0;
 */
 int main(void){
 
-   sf_fly_command = 'f';
+   //sf_fly_command = 'f';
 
    hardware_init();
-
+   sf_network_init();
    tn_start_system(); //-- Never returns
 
    return 1;
@@ -74,7 +74,7 @@ int main(void){
 */
 void  tn_app_init()
 {
-    sf_network_init();
+    sf_flightcontroller_task_init();
 
    //--- Task application
    task_app.id_task = 0; /*!< Must be 0 for all tasks */

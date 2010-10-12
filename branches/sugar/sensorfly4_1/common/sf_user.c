@@ -17,6 +17,7 @@ typedef void (*IRQ_FUNC)(void);
 extern void tn_arm_enable_interrupts(void);
 
 TN_EVENT ctsSet;
+TN_EVENT flightControllerEventFlag;
 /*=========================================================================*/
 /*  DEFINE: Definition of all local Procedures                             */
 /*=========================================================================*/
@@ -43,6 +44,12 @@ void sf_timer0_int_handler (void)
    tn_tick_int_processing();
 }
 
+void sf_timer1_int_handler (void)
+{
+     /* Clear timer interrupt */
+   rT1IR = 1;
+   tn_event_iset(&flightControllerEventFlag, 0x01);
+}
 
 void sf_cts_int_handler(void)
 {    
@@ -68,6 +75,7 @@ void hardware_init (void)
   * Init the interrupt system first
   */            
   tn_irq_init();
+  rT1CTCR = 0;
 
   /* Set I/O port directions */
   // Set P0.0-0.31 as input
@@ -84,34 +92,50 @@ void hardware_init (void)
   * only init the timer. Setup the Timer0 with a period of 1ms.
   */
   
-  /* Disable Timer0 */
+  /* Disable Timer0, Timer1 */
   rT0TCR = 0;
-  
+  rT1TCR = 0;
   /* 
+
   * Set the prescale counter.
   * This causes the TC to increment on every PCLK when PR = 0
   */
   rT0PR = 0;
-  
-  /*
+  rT1PR = 0;
+
+/*
   * CPU clock of 60MHz and a APB bus clock of 30MHz.
-  * The timer tick will be set to 0.1ms (30MHz / 10KHz = 3000)
+  * The timer0 tick will be set to 0.1ms (30MHz / 10KHz = 3000) 
+  * and timer1 tick to 10ms (30MHZ/100Hz = 300000). timer1 will be used to 
+  * regulate flight controller
   */
   rT0MR0 = (3000-1);
-  
+  rT1MR0 = (300000UL-1);
+
   /*
   * Interrupt on MR0, an interrupt is generated when MR0 matches 
   * the value in the TC.
   *
   * Reset on MR0: the TC will be reset if MR0 matches it.
   */
-  rT0MCR = 0x0003;
-  
-  /* Enable the Timer0 */   
+ rT0MCR = 0x0003;
+ rT1MCR = 0x0003;
+ 
+ /* Enable the Timer0 and Timer1*/   
   rT0TCR = 1;
-  
-  /* Install timer0 with priority 2 */
-  tn_irq_install(TIMER0_ID, 2, sf_timer0_int_handler);
+  rT1TCR = 1;
+   
+  /* Install timer0 with priority 3 */
+  tn_irq_install(TIMER0_ID, 3, sf_timer0_int_handler);
+
+/* Install Timer1 with priority 2 */
+  tn_irq_install(TIMER1_ID, 2, sf_timer1_int_handler);
+
+/*Initialize events here*/
+  tn_event_create(&flightControllerEventFlag, TN_EVENT_ATTR_SINGLE, 0x00);
+  tn_event_clear(&flightControllerEventFlag,0x00);
+
+
 
 #ifdef  RTS_CTS_ENABLE
   rEXTMODE |= (1<<3);
@@ -123,7 +147,7 @@ void hardware_init (void)
   tn_event_clear(&ctsSet, 0x00000000);  
   //tn_event_set(&ctsSet, 0x00000001);
   /* Install ENT3 with priority 3 */
-  tn_irq_install(CTS_ID, 3, sf_cts_int_handler);
+  tn_irq_install(CTS_ID, 4, sf_cts_int_handler);
 #endif  
   /* Initialize LED */
   sf_led_init();
@@ -150,6 +174,9 @@ void tn_cpu_int_enable (void)
 
    /* Enable Timer0 interrupt */
    VICIntEnable |= (1<<TIMER0_ID);
+
+  /* Enable Timer1 interrupt */
+   VICIntEnable |= (1<<TIMER1_ID);
 
    /* Enable CTS interrupt */
 #ifdef  RTS_CTS_ENABLE

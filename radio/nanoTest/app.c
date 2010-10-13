@@ -197,8 +197,9 @@ void APLCallback (MyMsgT *msg)
 					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 					Packet * pkt_temp = &(pktRadio2Arm);
 					/* packet testing */
-					// PrintRangingPacket(pkt_temp);
+					 PrintRangingPacket(pkt_temp);
 					/* send the encoded pkt up to ARM	byte by byte */
+					/*
 					char * bufRadio2Arm = (char *)pkt_temp;
 					int i;
 					cli();
@@ -213,6 +214,7 @@ void APLCallback (MyMsgT *msg)
 					}
 					putchar(STOP_BYTE);
 					sei();
+					*/
 				break;
 
 		default:				break;

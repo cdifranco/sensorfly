@@ -33,7 +33,8 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 11
+// 12-->ranging; 11-->sending; 2-->receiving 
+#define SRC_ADDR 2
 
 //#define SENDER 1
 //#define RECEIVER 1
@@ -106,7 +107,6 @@ void task_app_func(void * par)
     pkt.type = PKT_TYPE_SETTING;
     pkt.checksum = 0;
     pkt.src = SRC_ADDR;
-    pkt.dest = 12;
     pkt.data[0] = '\0';
     sf_network_pkt_send(&pkt); 
     
@@ -116,7 +116,6 @@ void task_app_func(void * par)
     par = par;
     while(1)
     {
-
         if (Blink & 1)
         {
            sf_led_on();
@@ -124,8 +123,7 @@ void task_app_func(void * par)
         else
         {
            sf_led_off();
-        }   
-        
+        }      
         Blink = Blink ^ 1;
         
       //receive from ARM   
@@ -143,7 +141,7 @@ void task_app_func(void * par)
              pkt_id = pkt_rx->id;
           }
           pkt_rx_percent =  receive_pkt_num/1000.00;
-           sf_network_pkt_release();
+          sf_network_pkt_release();
       }
 #endif
 
@@ -153,7 +151,7 @@ void task_app_func(void * par)
       pkt.type = PKT_TYPE_DATA;
       pkt.checksum = 0;
       pkt.src = SRC_ADDR;
-      pkt.dest = 12;
+      pkt.dest = 2;
       pkt.data[0] = 'x';
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
@@ -174,11 +172,12 @@ void task_app_func(void * par)
       pkt.type = PKT_TYPE_RANGING;
       pkt.checksum = 0;
       pkt.src = SRC_ADDR;
-      pkt.dest = 12;
+      pkt.dest = 11;
       pkt.length = sizeof(pkt); 
       sf_network_pkt_send(&pkt); 
       
-
+//      Packet * pkt_rx = sf_network_pkt_receive();
+//      sf_network_pkt_release();
 #endif
 
       /* Sleep 5000 ticks */

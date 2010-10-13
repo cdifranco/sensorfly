@@ -6,16 +6,12 @@
 #ifndef	_PACKET_H
 #define	_PACKET_H
 
-/**
- * This is the packet that shall be sent as a whole
- * 09-28-2010
- */
-
 #define PKT_TYPE_RANGING 'r'
 #define PKT_TYPE_DATA    'd'
 #define PKT_TYPE_SETTING 's'
+#include	"ntrxranging.h"
 
-typedef struct Packet
+typedef struct _Packet
 {
   uint8_t id;
   uint8_t type;	// r--> ranging; d--> data; s-->setting
@@ -28,4 +24,7 @@ typedef struct Packet
 
 void PrintPacket(Packet *pkt);
 void PrintRangingPacket(Packet *pkt);
+void PrintPacketLog(Packet *pkt);
+void PrintRangingLog(uint8_t dest, RangingPIB * ranginginfo);
+
 #endif /* PACKET_H */

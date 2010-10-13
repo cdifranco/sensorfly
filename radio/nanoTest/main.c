@@ -33,7 +33,7 @@
 #include	"phy.h"
 #include 	"packet.h"
 #include	"app.h"
-#include    "usart.h"
+#include  "usart.h"
 
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1

@@ -21,7 +21,6 @@
 #define APP_H
 
 #include "ntrxtypes.h"
-
 #define RTS_CTS_ENABLE 1
 
 /** @brief Structure type for all layer configuration settings
@@ -42,7 +41,10 @@ void APLMECallback (MyMsgT *msg);
 void APLCallback (MyMsgT *msg);
 void APLInit (void);
 void APLPoll (void);
-
+void SetStartComm(void);
+void SendRange (void);
+void SendBuffer (void);
+void SetSrcAddr (uint8_t src);
 void SetAVR(Packet *setPkt);
 void SetSrcAddr (MyAddrT *src);
 void SetDestAddr (MyAddrT *dest);

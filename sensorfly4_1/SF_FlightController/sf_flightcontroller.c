@@ -84,7 +84,7 @@ void task_flightcontroller_func(void * par)
 
    sf_drive_duty_set(0, 0);
    tn_task_sleep(30000);
-   set_spin_zero(sf_sensor_gyro_z_get());
+   //set_spin_zero(sf_sensor_gyro_z_get());
  
    while(1)
    {  
@@ -101,7 +101,7 @@ void task_flightcontroller_func(void * par)
             if(timer > 2000) //fly for 20 sec
             {
               sf_drive_duty_set(0,0);
-              break;
+            //  break;
             }
             static uint32_t sonicLast = 0;
       
@@ -113,9 +113,9 @@ void task_flightcontroller_func(void * par)
             s = ((a1 * s) + (b1 * sonicLast))/(a1 + b1);
             sonicLast = s;
             
-            crispify(s, z);
-            cwLoad = cw_load();
-            ccwLoad = ccw_load();
+           // crispify(s, z);
+            //cwLoad = cw_load();
+            //ccwLoad = ccw_load();
       
             ip = sf_hover_controller(s);
             //diff = sf_spin_controller(z);

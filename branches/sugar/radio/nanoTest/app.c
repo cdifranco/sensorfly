@@ -136,7 +136,7 @@ void APLCallback (MyMsgT *msg)
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("ranging did not start : %s \n",serial_print_buffer);
+						//printf("ranging did not start : %s \n",serial_print_buffer);
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
@@ -146,7 +146,7 @@ void APLCallback (MyMsgT *msg)
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("initialization error : %s \n",serial_print_buffer);
+						//printf("initialization error : %s \n",serial_print_buffer);
 						break;
 					default : break;
 				}
@@ -188,8 +188,9 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
+					PrintRangingLog(apl->dest[5], upRangingMsg);
 					// create pkt that will send to ARM
-					Packet pktRadio2Arm;
+/*					Packet pktRadio2Arm;
 					memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
 					memcpy(&(pktRadio2Arm.data[4]), &(upRangingMsg->error), 1);
 					pktRadio2Arm.id = 0; // set id 0 pkt as ranging pkt
@@ -199,10 +200,8 @@ void APLCallback (MyMsgT *msg)
 					pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
 					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 					Packet * pkt_temp = &(pktRadio2Arm);
-					/* packet testing */
 					PrintRangingPacket(pkt_temp);
-					/* send the encoded pkt up to ARM	byte by byte */
-					/*
+
 					char * bufRadio2Arm = (char *)pkt_temp;
 					int i;
 					cli();
@@ -217,7 +216,7 @@ void APLCallback (MyMsgT *msg)
 					}
 					putchar(STOP_BYTE);
 					sei();
-					*/
+*/
 				break;
 
 		default:				break;

@@ -17,16 +17,16 @@
 /*
  * $Log$
  */
-
+#include 	<avr/io.h>
+#include 	<avr/interrupt.h>
+#include    <stdio.h>
 #include	"config.h"
 #include    "ntrxtypes.h"
 #include	"usart.h"
 #include	"avrport.h"
+#include	"packet.h"
 #include    "app.h"
 
-#include 	<avr/io.h>
-#include 	<avr/interrupt.h>
-#include    <stdio.h>
 #define ENTER_TASK {unsigned char cSREG=SREG; cli();
 #define LEAVE_TASK  SREG=cSREG; sei();}
 

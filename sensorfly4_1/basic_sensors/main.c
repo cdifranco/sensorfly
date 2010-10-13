@@ -99,6 +99,17 @@ void task_app_func(void * par)
 
     unsigned short Blink = 1;
     Packet pkt;
+
+
+    pkt.id = 0;
+    pkt.type = PKT_TYPE_SETTING;
+    pkt.checksum = 7;
+    pkt.src = 8;
+    pkt.data[0] = 'x';
+    pkt.data[1] = 'y';
+    sf_network_pkt_send(&pkt); 
+
+
     int i;
     /* Prevent compiler warning */
     par = par;
@@ -150,11 +161,12 @@ void task_app_func(void * par)
       pkt.id = counter;
       pkt.type = PKT_TYPE_DATA;
       pkt.checksum = 0;
-      pkt.src = 1;
-      pkt.dest = 2;
+      pkt.src = 11;
+      pkt.dest = 22;
       pkt.data[0] = 'x';
       pkt.data[1] = 'y';
-      pkt.length = 16; 
+      pkt.data[2] = '\0';
+      pkt.length = sizeof(Packet); 
       if (total_pkt<1000)
       {
           sf_network_pkt_send(&pkt); 

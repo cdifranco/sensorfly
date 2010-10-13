@@ -31,6 +31,11 @@ UARTDRV drvUART0;
 unsigned char gUART0PayloadBuf[UART0_RX_PAYLOAD_BUF_SIZE];
 
 extern TN_EVENT ctsSet;
+
+// Pin 0.21
+#define CTS_MASK (1<<21)
+// Pin 0.20
+#define RTS_MASK (1<<20)
 //-------- Semaphores -----------------------
 
 TN_SEM  semTxUART0;
@@ -99,21 +104,29 @@ void  sf_network_init()
 void sf_network_pkt_send(Packet * pkt)
 {
 #ifdef  RTS_CTS_ENABLE
-    sf_uart0_cts_set(0);
+    int flag;
+    if(rIO0PIN & CTS_MASK)
+      flag = 1;
+    else
+      flag = 0;
+    if(flag)
+      sf_uart0_cts_set(0);
 #endif
     
     unsigned int p_flags_pattern;
     
     //-- Send RTS and wait for radio CTS
 #ifdef  RTS_CTS_ENABLE
-    tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
+    if(!(rIO0PIN & RTS_MASK))
+       tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
 #endif
     sf_uart0_pkt_send(pkt);
 #ifdef  RTS_CTS_ENABLE
     tn_event_clear(&ctsSet, 0x00000000);
 #endif
 #ifdef  RTS_CTS_ENABLE
-   sf_uart0_cts_set(1);
+    if(flag)
+      sf_uart0_cts_set(1);
 #endif
 }
 

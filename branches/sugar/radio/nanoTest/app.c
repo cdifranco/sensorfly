@@ -63,8 +63,6 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-uint8_t src_address = 0;
-
 /**
  * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
  *
@@ -134,7 +132,6 @@ void APLCallback (MyMsgT *msg)
 				{
 					case PHY_SUCCESS	:
 						/* hwack received, ranging start successfully */
-						//printf("ranging start successfully \n");
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
@@ -145,7 +142,6 @@ void APLCallback (MyMsgT *msg)
 					case PHY_BUSY_TX 	:
 						/* measurement is allready running (BUSY), wait
 							for PD_RANGING_INDICATION first! */
-						//printf("ranging~~\n");
 						break;
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */
@@ -200,9 +196,9 @@ void APLCallback (MyMsgT *msg)
 					pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
 					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 					Packet * pkt_temp = &(pktRadio2Arm);
-					//  packet testing
+					/* packet testing */
 					// PrintRangingPacket(pkt_temp);
-					// send the encoded pkt up to ARM	byte by byte
+					/* send the encoded pkt up to ARM	byte by byte */
 					char * bufRadio2Arm = (char *)pkt_temp;
 					int i;
 					cli();
@@ -238,10 +234,9 @@ void APLInit(void)
 /***************************************************************************/
 {
 	apl = &aplM;
-
 	/* These variables are used by the demo application.
-     * They are used by the user interface
-     */
+   * They are used by the user interface
+   */
 	apl->hwclock = 0;
 	apl->len = 0;
 
@@ -253,15 +248,7 @@ void APLInit(void)
 #endif
 }
 
-/**
- * @brief Prepare message to send.
- *
- * This function initializes the message struct and copies the payload
- * to the payload buffer and requests a data transmission from the lower layer.
- */
-/***************************************************************************/
 void SendBuffer (void)
-/***************************************************************************/
 {
 	memcpy (downMsg.addr, apl->dest, 6);
 	downMsg.prim = PD_DATA_REQUEST;
@@ -278,6 +265,29 @@ void SendRange (void)
 	SendMsg (&downMsg);
 }
 
+void SetStartComm(void)
+{
+	/* switch on receiver */
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_RX_CMD;
+	downMsg.value = PHY_RX_ON;
+	PLMESap (&downMsg);
+}
+
+void SetAVR(Packet *setPkt)
+{
+	SetSrcAddr (&setPkt->src);
+	apl->len = 0;
+}
+
+void SetSrcAddr(uint8_t src)
+{
+	apl->src[5] = src;
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_MAC_ADDRESS1;
+	memcpy (downMsg.data, apl->src, 6);
+	PLMESap (&downMsg);
+}
 /**
  * @brief Monitors user input.
  *
@@ -288,15 +298,14 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-	if (__pkt_rx_flag)
-	{
+		if (__pkt_rx_flag)
+		{
 #ifdef RTS_CTS_ENABLE
 		CTSSet(0);
 #endif
 		// set src and dest based on pkt info
 		Packet *pktArm2Radio = (Packet *)downMsg.data;
 		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-		memcpy(&(apl->src[5]), &(src_address), 1);
 		PrintPacket(pktArm2Radio);
 		// decide with type of packet is sending
 		if (pktArm2Radio->type == PKT_TYPE_DATA)
@@ -313,17 +322,15 @@ void APLPoll (void)
 		{
 			apl->len = 0;
 			// set src addr
-			printf("hhh\n");
 			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
 			downMsg.prim = PLME_SET_REQUEST;
 			downMsg.attribute = PHY_MAC_ADDRESS1;
 			memcpy (downMsg.data, apl->src, 6);
 			PLMESap (&downMsg);
-			printf("hhhh\n");
 		}
 		else
 		{
-			apl->len = 0;
+				apl->len = 0;
 				printf("packet type error: %c \n", pktArm2Radio->type);
 		}
 
@@ -334,137 +341,4 @@ void APLPoll (void)
 	}
 }
 
-/**
- * @brief set AVR
- */
-void SetAVR(Packet *setPkt)
-{
-	MyAddrT srcAddr = {0};
-	srcAddr[5] = setPkt->src;
-	SetSrcAddr (&srcAddr);
-}
 
-/**
- * @brief set local MAC address
- */
-void SetSrcAddr (MyAddrT *src)
-{
-	src_address = src[5];
-	memcpy(apl->src, src, sizeof(MyAddrT));
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_MAC_ADDRESS1;
-	memcpy (downMsg.data, apl->src, sizeof(MyAddrT));
-	PLMESap (&downMsg);
-}
-
-/**
- * @brief set destination MAC address
- */
-void SetDestAddr (MyAddrT *dest)
-{
-	memcpy(apl->dest, dest, sizeof(MyAddrT));
-}
-
-/**
- * @brief set channel
- *
- *channel 0 : 80MHz, 1us, 2.441GHz cf, no FEC
- *channel 1 : 22MHz, 4us, 2.412GHz cf, no FEC
- *channel 2 : 22MHz, 4us, 2.442GHz cf, no FEC
- *channel 3 : 22MHz, 4us, 2.472GHz cf, no FEC
- *
- * @return whether changed successfully
- */
-int SetChannel(MyByte8T channel)
-{
-	downMsg.value = channel;
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_LOG_CHANNEL;
-	PLMESap (&downMsg);
-	if (downMsg.status == PHY_SUCCESS)
-		return 1;
-	else
-		return 0;	//illegal channel
-}
-
-/**
- * @brief set power
- *
- *power	[0 - 8 ( * 8), -33dBm to 0dBm]
- *
- * @return whether changed successfully
- */
-int SetPower(MyByte8T power)
-{
-	if (power != 0)
-		power = (power * 8) - 1;
-	downMsg.value = power;
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_TX_POWER;
-	PLMESap (&downMsg);
-	if (downMsg.status == PHY_SUCCESS)
-		return 1;
-	else
-		return 0;	//invalid value
-}
-
-/**
- * @brief set auto acknowledgement
- *
- * @parameter MyByte8T autoAck [0 False, 1 True]
- *
- * @return whether changed successfully
- */
-int SetAutoAck(MyByte8T autoAck)
-{
-	downMsg.value = autoAck;
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_ARQ;
-	PLMESap (&downMsg);
-	if (downMsg.status == PHY_SUCCESS)
-		return 1;
-	else
-		return 0;	//invalid value
-}
-
-/**
- * @brief set start communication
- */
-void SetStartComm(void)
-{
-	/* switch on receiver */
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_RX_CMD;
-	downMsg.value = PHY_RX_ON;
-	PLMESap (&downMsg);
-}
-
-/**
- * @brief set send ranging request
- */
-void SetSendRangeReq(void)
-{
-	/* switch FEC on */
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_FEC;
-	downMsg.value = FALSE;
-	PLMESap (&downMsg);
-
-	/* switch on receiver */
-	SetStartComm();
-}
-
-/**
- * @brief set send fast ranging request
- */
-void SetSendFastRangeReq(void)
-{
-	/* switch FEC on */
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_FEC;
-	downMsg.value = FALSE;
-	PLMESap (&downMsg);
-
-	/* switch on receiver */
-	SetStartComm();
-}

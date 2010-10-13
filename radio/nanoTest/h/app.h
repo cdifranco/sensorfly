@@ -46,14 +46,7 @@ void SendRange (void);
 void SendBuffer (void);
 void SetSrcAddr (uint8_t src);
 void SetAVR(Packet *setPkt);
-void SetSrcAddr (MyAddrT *src);
-void SetDestAddr (MyAddrT *dest);
-int SetChannel(MyByte8T channel);
-int SetPower(MyByte8T power);
-int SetAutoAck(MyByte8T autoAck);
 void SetStartComm(void);
-void SetSendRangeReq(void);
-void SetSendFastRangeReq(void);
 
 
 #endif /* APPL_H */

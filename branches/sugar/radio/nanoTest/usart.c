@@ -24,17 +24,18 @@
 #include    "ntrxtypes.h"
 #include	"usart.h"
 #include	"avrport.h"
+#include 	<avr/io.h>
+#include 	<avr/interrupt.h>
+#include  <stdio.h>
 #include	"packet.h"
 #include    "app.h"
 
 #define ENTER_TASK {unsigned char cSREG=SREG; cli();
 #define LEAVE_TASK  SREG=cSREG; sei();}
 
-
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF 
-
 
 volatile MyByte8T serBuffer;
 volatile MyByte8T full;
@@ -198,14 +199,14 @@ char    *read_line(char buf[])
     char            c;
 
     if(!kbhit())
-	{
+		{
         return  (char *) 0;
     }
 
     c = getchar();
 
     if(c == '\n' || c == '\r')
-	{
+		{
         putchar('\r');
         putchar('\n');
         buf[cnt] = 0;
@@ -215,9 +216,9 @@ char    *read_line(char buf[])
 	else
 	{
         if(c == '\b' || c == 0x7f)
-		{
+				{
             if(cnt > 0)
-			{
+						{
                 cnt--;
                 putchar('\b');
                 putchar(' ');
@@ -227,9 +228,9 @@ char    *read_line(char buf[])
         }
 
         if(cnt < CONFIG_CONSOLE_LINE_SIZE-1)
-		{
+				{
             if(c >= 0x20 && c < 0x7f)
-			{
+						{
                 buf[cnt++] = c;
                 putchar(c);
             }

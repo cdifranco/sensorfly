@@ -34,7 +34,7 @@
 #define RTS_MASK (1<<20)
 // Source Address
 // 12-->ranging; 11-->sending; 2-->receiving 
-#define SRC_ADDR 2
+#define SRC_ADDR 12
 
 //#define SENDER 1
 //#define RECEIVER 1

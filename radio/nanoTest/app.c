@@ -63,7 +63,7 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-extern uint8_t src_address;
+uint8_t src_address = 0;
 
 /**
  * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
@@ -297,36 +297,42 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-	if (__pkt_rx_flag)
-	{
+
+		Packet * pktArm2Radio;
+
+		if (__pkt_rx_flag)
+		{
+
 #ifdef RTS_CTS_ENABLE
 		CTSSet(0);
 #endif
-		// set src and dest based on pkt info
-		Packet * pktArm2Radio = (Packet *)downMsg.data;
-		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-		memcpy(&(apl->src[5]), &(src_address), 1);
-		//PrintPacket(pktArm2Radio);
-		// decide with type of packet is sending
-		if (pktArm2Radio->type == PKT_TYPE_DATA)
-		{
-				// send the data
-				SendBuffer();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-		{
-				// send ranging pkt
-				SendRange();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-		{
-				// set AVR & Radio
-				SetAVR(pktArm2Radio);
-		}
-		else
-		{
-				printf("packet type error: %c \n", pktArm2Radio->type);
-		}
+
+			// set src and dest based on pkt info
+			pktArm2Radio = (Packet *)downMsg.data;
+			memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
+			memcpy(&(apl->src[5]), &(src_address), 1);
+			// decide with type of packet is sending
+			if (pktArm2Radio->type == PKT_TYPE_DATA)
+			{
+					pktArm2Radio->src = src_address;
+					PrintPacket(pktArm2Radio);
+					// send the data
+					SendBuffer();
+			}
+			else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+			{
+					// send ranging pkt
+					SendRange();
+			}
+			else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+			{
+					printf("setting: %d",pktArm2Radio->src);
+					src_address = pktArm2Radio->src;
+			}
+			else
+			{
+					printf("packet type error: %c \n", pktArm2Radio->type);
+			}
 
 		__pkt_rx_flag = 0;
 #ifdef RTS_CTS_ENABLE

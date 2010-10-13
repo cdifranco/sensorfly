@@ -103,6 +103,7 @@ void  sf_network_init()
 
 void sf_network_pkt_send(Packet * pkt)
 {
+    unsigned int p_flags_pattern;
 #ifdef  RTS_CTS_ENABLE
     int flag;
     if(rIO0PIN & CTS_MASK)
@@ -111,20 +112,18 @@ void sf_network_pkt_send(Packet * pkt)
       flag = 0;
     if(flag)
       sf_uart0_cts_set(0);
-#endif
-    
-    unsigned int p_flags_pattern;
-    
-    //-- Send RTS and wait for radio CTS
-#ifdef  RTS_CTS_ENABLE
+    uint32_t temp1 = rIO0PIN;
+    uint32_t temp2 = RTS_MASK;
     if(!(rIO0PIN & RTS_MASK))
-       tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
+    {
+        tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
+    }
 #endif
+
     sf_uart0_pkt_send(pkt);
+
 #ifdef  RTS_CTS_ENABLE
     tn_event_clear(&ctsSet, 0x00000000);
-#endif
-#ifdef  RTS_CTS_ENABLE
     if(flag)
       sf_uart0_cts_set(1);
 #endif

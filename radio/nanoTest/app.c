@@ -239,15 +239,6 @@ void APLInit(void)
 {
 	apl = &aplM;
 
-	/*
-     * for this simple demo transmitter and receiver
-     * use the same MAC address. This way we need only
-     * one executable for both stations.
-     */
-	MyAddrT srcAddr = {0};
-	srcAddr[5] = src_address;
-	SetSrcAddr(&srcAddr);
-
 	/* These variables are used by the demo application.
      * They are used by the user interface
      */
@@ -297,42 +288,44 @@ void SendRange (void)
 void APLPoll (void)
 /***************************************************************************/
 {
-
-		Packet * pktArm2Radio;
-
-		if (__pkt_rx_flag)
-		{
-
+	if (__pkt_rx_flag)
+	{
 #ifdef RTS_CTS_ENABLE
 		CTSSet(0);
 #endif
-
-			// set src and dest based on pkt info
-			pktArm2Radio = (Packet *)downMsg.data;
-			memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-			memcpy(&(apl->src[5]), &(src_address), 1);
-			// decide with type of packet is sending
-			if (pktArm2Radio->type == PKT_TYPE_DATA)
-			{
-					pktArm2Radio->src = src_address;
-					PrintPacket(pktArm2Radio);
-					// send the data
-					SendBuffer();
-			}
-			else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-			{
-					// send ranging pkt
-					SendRange();
-			}
-			else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-			{
-					printf("setting: %d",pktArm2Radio->src);
-					src_address = pktArm2Radio->src;
-			}
-			else
-			{
-					printf("packet type error: %c \n", pktArm2Radio->type);
-			}
+		// set src and dest based on pkt info
+		Packet *pktArm2Radio = (Packet *)downMsg.data;
+		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
+		memcpy(&(apl->src[5]), &(src_address), 1);
+		PrintPacket(pktArm2Radio);
+		// decide with type of packet is sending
+		if (pktArm2Radio->type == PKT_TYPE_DATA)
+		{
+			// send the data
+			SendBuffer();
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+		{
+			// send ranging pkt
+			SendRange();
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+		{
+			apl->len = 0;
+			// set src addr
+			printf("hhh\n");
+			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
+			downMsg.prim = PLME_SET_REQUEST;
+			downMsg.attribute = PHY_MAC_ADDRESS1;
+			memcpy (downMsg.data, apl->src, 6);
+			PLMESap (&downMsg);
+			printf("hhhh\n");
+		}
+		else
+		{
+			apl->len = 0;
+				printf("packet type error: %c \n", pktArm2Radio->type);
+		}
 
 		__pkt_rx_flag = 0;
 #ifdef RTS_CTS_ENABLE

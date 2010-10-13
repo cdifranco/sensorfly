@@ -32,9 +32,12 @@
 #define CTS_MASK (1<<21)
 // Pin 0.20
 #define RTS_MASK (1<<20)
+// Source Address
+#define SRC_ADDR 11
 
-#define SENDER 1
+//#define SENDER 1
 //#define RECEIVER 1
+#define RANGING 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -58,10 +61,10 @@ int rx_flag = 0;
 */
 int main(void){
 
-   //sf_fly_command = 'f';
+   sf_fly_command = 'f';
 
    hardware_init();
-   sf_network_init();
+
    tn_start_system(); //-- Never returns
 
    return 1;
@@ -74,7 +77,7 @@ int main(void){
 */
 void  tn_app_init()
 {
-    sf_flightcontroller_task_init();
+    sf_network_init();
 
    //--- Task application
    task_app.id_task = 0; /*!< Must be 0 for all tasks */
@@ -99,17 +102,15 @@ void task_app_func(void * par)
 
     unsigned short Blink = 1;
     Packet pkt;
-
-
-    pkt.id = 0;
+    pkt.id = 12;
     pkt.type = PKT_TYPE_SETTING;
-    pkt.checksum = 7;
-    pkt.src = 8;
-    pkt.data[0] = 'x';
-    pkt.data[1] = 'y';
+    pkt.checksum = 0;
+    pkt.src = SRC_ADDR;
+    pkt.dest = 12;
+    pkt.data[0] = '\0';
     sf_network_pkt_send(&pkt); 
-
-
+    
+    
     int i;
     /* Prevent compiler warning */
     par = par;
@@ -145,28 +146,18 @@ void task_app_func(void * par)
            sf_network_pkt_release();
       }
 #endif
-      /** change the pkt and resend it*/
-//      uint8_t temp = pkt_rx->src;
-//      pkt_rx->src = pkt_rx->dest;
-//      pkt_rx->dest = temp;
-//      pkt_rx->data[0] = 'a';
-//      pkt_rx->type = 'd';
-//      sf_network_pkt_send(pkt_rx);    
-//      sf_network_pkt_release();
 
-      /** test to send the pkt back*/
-      /** create a packet to store the received packet*/
 #ifdef SENDER
       /** Create packet for sending test*/
       pkt.id = counter;
       pkt.type = PKT_TYPE_DATA;
       pkt.checksum = 0;
-      pkt.src = 11;
-      pkt.dest = 22;
+      pkt.src = SRC_ADDR;
+      pkt.dest = 12;
       pkt.data[0] = 'x';
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
-      pkt.length = sizeof(Packet); 
+      pkt.length = sizeof(pkt); 
       if (total_pkt<1000)
       {
           sf_network_pkt_send(&pkt); 
@@ -174,6 +165,19 @@ void task_app_func(void * par)
       total_pkt++;
       counter++;
       if (counter == 100) counter = 0;
+
+#endif
+
+#ifdef RANGING
+      /** Create packet for sending test*/
+      pkt.id = 12;
+      pkt.type = PKT_TYPE_RANGING;
+      pkt.checksum = 0;
+      pkt.src = SRC_ADDR;
+      pkt.dest = 12;
+      pkt.length = sizeof(pkt); 
+      sf_network_pkt_send(&pkt); 
+      
 
 #endif
 

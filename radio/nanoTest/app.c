@@ -166,7 +166,9 @@ void APLCallback (MyMsgT *msg)
 							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
 							break;
 					}
+					PrintPacket(pkt_rx);	
 					// Send packet to ARM byte by byte
+/*						
 					cli();
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
@@ -179,6 +181,7 @@ void APLCallback (MyMsgT *msg)
 					}
 					putchar(STOP_BYTE);
 					sei();
+*/
 				break;
 								
 		case PD_RANGING_INDICATION:
@@ -197,7 +200,7 @@ void APLCallback (MyMsgT *msg)
 					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
 					Packet * pkt_temp = &(pktRadio2Arm);
 					/* packet testing */
-					 PrintRangingPacket(pkt_temp);
+					PrintRangingPacket(pkt_temp);
 					/* send the encoded pkt up to ARM	byte by byte */
 					/*
 					char * bufRadio2Arm = (char *)pkt_temp;
@@ -308,11 +311,13 @@ void APLPoll (void)
 		// set src and dest based on pkt info
 		Packet *pktArm2Radio = (Packet *)downMsg.data;
 		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-		PrintPacket(pktArm2Radio);
+				
 		// decide with type of packet is sending
 		if (pktArm2Radio->type == PKT_TYPE_DATA)
 		{
 			// send the data
+			pktArm2Radio->src = apl->src[5];
+			PrintPacket(pktArm2Radio);		
 			SendBuffer();
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
@@ -322,6 +327,7 @@ void APLPoll (void)
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
 		{
+			PrintPacket(pktArm2Radio);		
 			apl->len = 0;
 			// set src addr
 			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);

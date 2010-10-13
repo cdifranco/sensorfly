@@ -8,17 +8,18 @@
 #include <stdlib.h>
 #include "packet.h"
 
+
 void PrintPacket(Packet *pkt)
 {
 		int i;
 		printf("******Packet %d ******\n", pkt->id);
-		printf("destination: ", pkt->dest);
+		printf("destination: ");
 		for(i = 0; i < 6; i++)
 		{
 				if (i == 5) printf(" %d \n",pkt->dest);
 				else printf(" %d :",0);
 		}
-		printf("source: ", pkt->src);
+		printf("source: ");
 		for(i = 0; i < 6; i++)
 		{
 				if (i == 5) printf(" %d \n",pkt->src);
@@ -35,13 +36,13 @@ void PrintRangingPacket(Packet *pkt)
 {
 		int i;
 		printf("******Packet %d ******\n", pkt->id);
-		printf("destination: ", pkt->dest);
+		printf("destination: ");
 		for(i = 0; i < 6; i++)
 		{
 				if (i == 5) printf(" %d \n",pkt->dest);
 				else printf(" %d :",0);
 		}
-		printf("source: ", pkt->src);
+		printf("source: ");
 		for(i = 0; i < 6; i++)
 		{
 				if (i == 5) printf(" %d \n",pkt->src);
@@ -60,5 +61,14 @@ void PrintRangingPacket(Packet *pkt)
 }		
 
 
+void PrintPacketLog(Packet *pkt)
+{
+// id, src, dest, type, data, checksum
+    printf(" %d, %d, %d, %c, %s, %d \r\n", pkt->id, pkt->src, pkt->dest, pkt->type, pkt->data, pkt->checksum);
+}
 
-
+void PrintRangingLog(uint8_t dest, RangingPIB * ranginginfo)
+{
+// dest, distance, error
+		printf(" %d, %f, %c \r\n", dest, ranginginfo->distance, ranginginfo->error);
+}

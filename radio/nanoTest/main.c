@@ -38,9 +38,6 @@
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
 
-// src = 0 is the base station
-uint8_t src_address = 0;
-
 /**
  * error_handler:
  *

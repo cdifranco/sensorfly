@@ -1,7 +1,5 @@
 #ifndef SF_SENSORFLY_H_
 #define SF_SENSORFLY_H_
-
-
 #define  RTS_CTS_ENABLE 1
 //-----------------------------------------------------------------------------
 // Standard Headers

@@ -63,43 +63,6 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-/**
- * @brief Communicate the Clear To Send signal to the ARM, signaling when we are ready to accept packets for transmission, and when we need a small break.
- *
- * This function puts the clear to send pin to high or low, depending on the argument
- * .
- */
-/***************************************************************************/
-void CTSSet (int new_state)
-/***************************************************************************/
-{
-	switch (new_state) {
-	   case 0:
-	      CTS_PORT &= ~CTS_PIN;
-	      break;
-	   case 1:
-          CTS_PORT |= CTS_PIN;
-	      break;
-	   default: //we should never reach here
-	   break;
-	}
-}
-
-/**
- * @brief Request to send to ARM and wait the ARM to Clear to send
- * .
- */
-/***************************************************************************/
-void RTSAndWaitCTS (void)
-/***************************************************************************/
-{
-	volatile uint32_t flag;
-	do
-	{
-		flag = PINA;
-	}while(!(flag & RTS_PIN));
-}
-
 
 /**
  * @brief Process incoming messages.
@@ -108,12 +71,17 @@ void RTSAndWaitCTS (void)
  * This function receives all incoming messages from the lower layer
  * and sends the payload to the serial interface.
  */
-/**************************************************************************/
 void APLCallback (MyMsgT *msg)
-/**************************************************************************/
 {
 #ifdef RTS_CTS_ENABLE
-	CTSSet(0);
+	int ctsState;
+	if(CTS_PORT & CTS_PIN)
+		ctsState = 1;
+	else
+		ctsState = 0;
+
+	if(ctsState)
+		CTSSet(0);
 #endif
 
 	MyChar8T serial_print_buffer[32];
@@ -223,7 +191,8 @@ void APLCallback (MyMsgT *msg)
 	}
 
 #ifdef RTS_CTS_ENABLE
-	CTSSet(1);
+	if(ctsState)
+		CTSSet(1);
 #endif
 }
 
@@ -233,9 +202,7 @@ void APLCallback (MyMsgT *msg)
  * Initialize the application variables. APPInit is called after
  * init/start of the lower layers.
  */
-/***************************************************************************/
 void APLInit(void)
-/***************************************************************************/
 {
 
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
@@ -257,6 +224,75 @@ void APLInit(void)
 #endif
 }
 
+void APLPoll (void)
+{
+		if (__pkt_rx_flag)
+		{
+#ifdef RTS_CTS_ENABLE
+		CTSSet(0);
+#endif
+		// set src and dest based on pkt info
+		Packet *pktArm2Radio = (Packet *)downMsg.data;
+		apl->dest[5] = pktArm2Radio->dest;
+		//PrintPacket(pktArm2Radio);
+
+		// decide with type of packet is sending
+		if (pktArm2Radio->type == PKT_TYPE_DATA)
+		{
+			// send the data
+			pktArm2Radio->src = apl->src[5];
+			PrintPacket(pktArm2Radio);		
+			SendBuffer();
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+		{
+			// send ranging pkt
+			SendRange();
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+		{
+
+			SetAVR(pktArm2Radio);
+
+		}
+		else
+		{
+				apl->len = 0;
+			printf("packet type error: %c \n", pktArm2Radio->type);
+		}
+
+		__pkt_rx_flag = 0;
+
+
+#ifdef RTS_CTS_ENABLE
+		CTSSet(1);
+#endif
+	}
+}
+
+void CTSSet (int new_state)
+{
+	switch (new_state) {
+	   case 0:
+	      CTS_PORT &= ~CTS_PIN;
+	      break;
+	   case 1:
+          CTS_PORT |= CTS_PIN;
+	      break;
+	   default: //we should never reach here
+	   break;
+	}
+}
+
+void RTSAndWaitCTS (void)
+{
+	volatile uint32_t flag;
+	do
+	{
+		flag = PINA;
+	}while(!(flag & RTS_PIN));
+}
+
 void SendBuffer (void)
 {
 	memcpy (downMsg.addr, apl->dest, 6);
@@ -274,6 +310,22 @@ void SendRange (void)
 	SendMsg (&downMsg);
 }
 
+void SetAVR(Packet *setPkt)
+{
+	apl->len = 0;
+	// set src addr
+	SetSrcAddr (setPkt->src);
+}
+
+void SetSrcAddr (uint8_t src)
+{
+	apl->src[5] = src;
+	downMsg.prim = PLME_SET_REQUEST;
+	downMsg.attribute = PHY_MAC_ADDRESS1;
+	memcpy (downMsg.data, apl->src, 6);
+	PLMESap (&downMsg);
+}
+
 void SetStartComm(void)
 {
 	/* switch on receiver */
@@ -283,74 +335,5 @@ void SetStartComm(void)
 	PLMESap (&downMsg);
 }
 
-void SetAVR(Packet *setPkt)
-{
-	SetSrcAddr (&setPkt->src);
-	apl->len = 0;
-}
-
-void SetSrcAddr(uint8_t src)
-{
-	apl->src[5] = src;
-	downMsg.prim = PLME_SET_REQUEST;
-	downMsg.attribute = PHY_MAC_ADDRESS1;
-	memcpy (downMsg.data, apl->src, 6);
-	PLMESap (&downMsg);
-}
-/**
- * @brief Monitors user input.
- *
- * This function monitors the keys on the board and collects user input from
- * the serial interface
- */
-/***************************************************************************/
-void APLPoll (void)
-/***************************************************************************/
-{
-		if (__pkt_rx_flag)
-		{
-#ifdef RTS_CTS_ENABLE
-		CTSSet(0);
-#endif
-		// set src and dest based on pkt info
-		Packet *pktArm2Radio = (Packet *)downMsg.data;
-		memcpy(&(apl->dest[5]), &(pktArm2Radio->dest), 1);
-				
-		// decide with type of packet is sending
-		if (pktArm2Radio->type == PKT_TYPE_DATA)
-		{
-			// send the data
-			pktArm2Radio->src = apl->src[5];
-			PrintPacket(pktArm2Radio);		
-			SendBuffer();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-		{
-			// send ranging pkt
-			SendRange();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-		{
-			PrintPacket(pktArm2Radio);		
-			apl->len = 0;
-			// set src addr
-			memcpy(&(apl->src[5]), &(pktArm2Radio->src), 1);
-			downMsg.prim = PLME_SET_REQUEST;
-			downMsg.attribute = PHY_MAC_ADDRESS1;
-			memcpy (downMsg.data, apl->src, 6);
-			PLMESap (&downMsg);
-		}
-		else
-		{
-				apl->len = 0;
-				printf("packet type error: %c \n", pktArm2Radio->type);
-		}
-
-		__pkt_rx_flag = 0;
-#ifdef RTS_CTS_ENABLE
-		CTSSet(1);
-#endif
-	}
-}
 
 

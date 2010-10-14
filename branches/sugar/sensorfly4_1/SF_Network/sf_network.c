@@ -105,15 +105,15 @@ void sf_network_pkt_send(Packet * pkt)
 {
     unsigned int p_flags_pattern;
 #ifdef  RTS_CTS_ENABLE
-    int flag;
+    int cts_state;
     if(rIO0PIN & CTS_MASK)
-      flag = 1;
+      cts_state = 1;
     else
-      flag = 0;
-    if(flag)
+      cts_state = 0;
+
+    if(cts_state)
       sf_uart0_cts_set(0);
-    uint32_t temp1 = rIO0PIN;
-    uint32_t temp2 = RTS_MASK;
+
     if(!(rIO0PIN & RTS_MASK))
     {
         tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
@@ -124,7 +124,8 @@ void sf_network_pkt_send(Packet * pkt)
 
 #ifdef  RTS_CTS_ENABLE
     tn_event_clear(&ctsSet, 0x00000000);
-    if(flag)
+
+    if(cts_state)
       sf_uart0_cts_set(1);
 #endif
 }
@@ -132,7 +133,6 @@ void sf_network_pkt_send(Packet * pkt)
 Packet * sf_network_pkt_receive()
 {
     sf_uart0_pkt_receive();
-
 }
 
 void sf_network_pkt_release()

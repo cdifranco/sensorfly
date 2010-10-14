@@ -237,6 +237,10 @@ void APLCallback (MyMsgT *msg)
 void APLInit(void)
 /***************************************************************************/
 {
+
+	MyByte8T		s_address[] = {0,0,0,0,0,0};
+	MyByte8T		d_address[] = {0,0,0,0,0,0};
+
 	apl = &aplM;
 	/* These variables are used by the demo application.
    * They are used by the user interface
@@ -248,6 +252,7 @@ void APLInit(void)
 	SetStartComm();
 
 #ifdef RTS_CTS_ENABLE
+	printf("aaa");
 	CTSSet(1);
 #endif
 }

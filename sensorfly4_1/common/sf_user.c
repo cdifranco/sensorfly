@@ -53,8 +53,8 @@ void sf_timer1_int_handler (void)
 
 void sf_cts_int_handler(void)
 {    
-     tn_event_iset(&ctsSet, 0x00000001);
-      rEXTINT |= (1 << 3);   
+    rEXTINT |= (1 << 3);
+    tn_event_iset(&ctsSet, 0x00000001);    
 }
 
 /*=========================================================================*/

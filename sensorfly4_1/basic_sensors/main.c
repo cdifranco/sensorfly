@@ -33,12 +33,12 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-// 12-->ranging; 11-->sending; 2-->receiving 
-#define SRC_ADDR 12
+// 12-->ranging; 11,10,9-->sending; 2-->receiving 
+#define SRC_ADDR 10
 
-//#define SENDER 1
+#define SENDER 1
 //#define RECEIVER 1
-#define RANGING 1
+//#define RANGING 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -156,14 +156,8 @@ void task_app_func(void * par)
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
       pkt.length = sizeof(pkt); 
-      if (total_pkt<1000)
-      {
-          sf_network_pkt_send(&pkt); 
-      }
-      total_pkt++;
-      counter++;
-      if (counter == 100) counter = 0;
-
+      sf_network_pkt_send(&pkt); 
+      
 #endif
 
 #ifdef RANGING

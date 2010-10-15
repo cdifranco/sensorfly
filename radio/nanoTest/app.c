@@ -85,7 +85,6 @@ void APLCallback (MyMsgT *msg)
 #endif
 
 	MyChar8T serial_print_buffer[32];
-	
 	MyInt16T i;
 	
 	switch (msg->prim)
@@ -121,7 +120,7 @@ void APLCallback (MyMsgT *msg)
 				break;
 
 		case PD_DATA_INDICATION:
-          // Check if packet is for this node
+					// Check if packet is for this node
 					if(memcmp(msg->addr,apl->src,6) != 0)
 					{
 							printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
@@ -182,8 +181,8 @@ void APLInit(void)
 
 	apl = &aplM;
 	/* These variables are used by the demo application.
-   * They are used by the user interface
-   */
+	 * They are used by the user interface
+     */
 	apl->hwclock = 0;
 	apl->len = 0;
 
@@ -203,15 +202,12 @@ void APLPoll (void)
 #ifdef RTS_CTS_ENABLE
 		CTSSet(0);
 #endif
-		// set src and dest based on pkt info
 		Packet *pktArm2Radio = (Packet *)downMsg.data;
 		apl->dest[5] = pktArm2Radio->dest;
-		//PrintPacket(pktArm2Radio);
-
-		// decide with type of packet is sending
+		
 		if (pktArm2Radio->type == PKT_TYPE_DATA)
 		{
-			// send the data
+			// send the data packet
 			pktArm2Radio->src = apl->src[5];
 			PrintPacket(pktArm2Radio);		
 			SendBuffer();
@@ -223,18 +219,16 @@ void APLPoll (void)
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
 		{
-
+			// setting src address
 			SetAVR(pktArm2Radio);
-
 		}
 		else
 		{
-				apl->len = 0;
+			apl->len = 0;
 			printf("packet type error: %c \n", pktArm2Radio->type);
 		}
 
 		__pkt_rx_flag = 0;
-
 
 #ifdef RTS_CTS_ENABLE
 		CTSSet(1);
@@ -285,7 +279,6 @@ void SendRange (void)
 void SetAVR(Packet *setPkt)
 {
 	apl->len = 0;
-	// set src addr
 	SetSrcAddr (setPkt->src);
 }
 

@@ -157,37 +157,9 @@ void APLCallback (MyMsgT *msg)
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
 					PrintRangingLog(apl->dest[5], upRangingMsg);
-					// create pkt that will send to ARM
-/*					Packet pktRadio2Arm;
-					memcpy(pktRadio2Arm.data, &(upRangingMsg->distance), 4);
-					memcpy(&(pktRadio2Arm.data[4]), &(upRangingMsg->error), 1);
-					pktRadio2Arm.id = 0; // set id 0 pkt as ranging pkt
-					pktRadio2Arm.type = PKT_TYPE_RANGING;
-					pktRadio2Arm.checksum = 0;
-					pktRadio2Arm.dest = 0; // set dest = 0 only when it is ranging
-					pktRadio2Arm.src = 0; // set src = 0 only when it is ranging
-					pktRadio2Arm.length = 11; // only contains distance and error info = 5 bytes
-					Packet * pkt_temp = &(pktRadio2Arm);
-					PrintRangingPacket(pkt_temp);
+					break;
 
-					char * bufRadio2Arm = (char *)pkt_temp;
-					int i;
-					cli();
-					putchar(START_BYTE);
-					for (i = 0; i< 9; i++)
-					{
-							if (bufRadio2Arm[i] == START_BYTE || bufRadio2Arm[i] == ESC_BYTE || bufRadio2Arm[i] == STOP_BYTE)
-							{
-									putchar(ESC_BYTE);
-							}
-							putchar(bufRadio2Arm[i]);
-					}
-					putchar(STOP_BYTE);
-					sei();
-*/
-				break;
-
-		default:				break;
+		default:		break;
 	}
 
 #ifdef RTS_CTS_ENABLE

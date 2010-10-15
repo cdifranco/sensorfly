@@ -13,10 +13,6 @@
  * @note This file contains the source code for the demo application.
  */
 
-/*
- * $Log$
- */
-
 #ifndef APP_H
 #define APP_H
 
@@ -37,29 +33,15 @@ typedef struct AplMemT
 	MyByte8T 	len;		/**< Number of bytes in send buffer */
 } AplMemT;
 
-void APLMECallback (MyMsgT *msg);
 void APLCallback (MyMsgT *msg);
 void APLInit (void);
 void APLPoll (void);
-void SetStartComm(void);
-void SendRange (void);
-void SendBuffer (void);
-void SetSrcAddr (uint8_t src);
-
 void CTSSet (int new_state);
 void RTSAndWaitCTS (void);
-
 void SendBuffer (void);
 void SendRange (void);
 void SetAVR (Packet *setPkt);
 void SetSrcAddr (uint8_t src);
-void SetDestAddr (uint8_t dest);
-int SetChannel (MyByte8T channel);
-int SetPower (MyByte8T power);
-int SetAutoAck (MyByte8T autoAck);
 void SetStartComm (void);
-void SetSendRangeReq (void);
-void SetSendFastRangeReq (void);
-
 
 #endif /* APPL_H */

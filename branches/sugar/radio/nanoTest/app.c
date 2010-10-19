@@ -133,7 +133,9 @@ void APLCallback (MyMsgT *msg)
 							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
 							break;
 					}
+					cli();
 					PrintPacket(pkt_rx);	
+					sei();
 					// Send packet to ARM byte by byte
 /*						
 					cli();

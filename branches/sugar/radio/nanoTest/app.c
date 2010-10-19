@@ -155,7 +155,9 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
+					cli();
 					PrintRangingLog(apl->dest[5], upRangingMsg);
+					sei();
 					break;
 
 		default:		break;

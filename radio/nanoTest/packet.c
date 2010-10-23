@@ -12,23 +12,23 @@
 void PrintPacket(Packet *pkt)
 {
 		int i;
-		printf("******Packet %d ******\n", pkt->id);
+		printf("******Packet %d ******\r\n", pkt->id);
 		printf("destination: ");
 		for(i = 0; i < 6; i++)
 		{
-				if (i == 5) printf(" %d \n",pkt->dest);
+				if (i == 5) printf(" %d \r\n",pkt->dest);
 				else printf(" %d :",0);
 		}
 		printf("source: ");
 		for(i = 0; i < 6; i++)
 		{
-				if (i == 5) printf(" %d \n",pkt->src);
+				if (i == 5) printf(" %d \r\n",pkt->src);
 				else printf(" %d :",0);
 		}
-		printf("type: %c \n", pkt->type);
-		printf("data: %s \n", pkt->data);
-		printf("length: %d \n", pkt->length);
-		printf("checksum: %d \n", pkt->checksum);
+		printf("type: %c \r\n", pkt->type);
+		printf("data: %s \r\n", pkt->data);
+		printf("length: %d \r\n", pkt->length);
+		printf("checksum: %d \r\n", pkt->checksum);
 		
 }
 

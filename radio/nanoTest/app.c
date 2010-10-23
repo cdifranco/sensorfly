@@ -63,7 +63,7 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-
+extern uint8_t src_address;
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -79,7 +79,6 @@ void APLCallback (MyMsgT *msg)
 		ctsState = 1;
 	else
 		ctsState = 0;
-
 	if(ctsState)
 		CTSSet(0);
 #endif
@@ -102,8 +101,10 @@ void APLCallback (MyMsgT *msg)
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
+						cli();
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						//printf("ranging did not start : %s \n",serial_print_buffer);
+						printf("%s \n",serial_print_buffer);
+						sei();
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
@@ -111,9 +112,11 @@ void APLCallback (MyMsgT *msg)
 							for PD_RANGING_INDICATION first! */
 						break;
 					case PHY_CONFIGURATION_ERROR :
-						/* driver isnt correct initialized for ranging */
+						/* driver isnt correct initialized for ranging */						
+						cli();
 						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						//printf("initialization error : %s \n",serial_print_buffer);
+						printf("%s \n",serial_print_buffer);
+						sei();
 						break;
 					default : break;
 				}
@@ -121,21 +124,16 @@ void APLCallback (MyMsgT *msg)
 
 		case PD_DATA_INDICATION:
 					// Check if packet is for this node
-					if(memcmp(msg->addr,apl->src,6) != 0)
+					pkt_rx = (Packet *)msg->data;					
+					if(msg->rxAddr[5] != src_address)
 					{
-							printf("not for this packet, msg for %d and addr is %d \n",msg->addr[5],apl->src[5]);
+							cli();
+							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],src_address);
+							sei();
 							break;
 					}
 					// Check length of packet
-					pkt_rx = (Packet *)msg->data;
-					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
-					{
-							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
-							break;
-					}
-					cli();
-					PrintPacket(pkt_rx);	
-					sei();
+					if (memcmp(&(msg->len),&(pkt_
 					// Send packet to ARM byte by byte
 /*						
 					cli();
@@ -167,7 +165,7 @@ void APLCallback (MyMsgT *msg)
 
 #ifdef RTS_CTS_ENABLE
 	if(ctsState)
-		CTSSet(1);
+			CTSSet(1);
 #endif
 }
 
@@ -184,9 +182,13 @@ void APLInit(void)
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
 
 	apl = &aplM;
+
+	memcpy(apl->src, s_address, 6);
+	memcpy(apl->dest, d_address, 6);
+	
 	/* These variables are used by the demo application.
 	 * They are used by the user interface
-     */
+   */
 	apl->hwclock = 0;
 	apl->len = 0;
 
@@ -194,7 +196,6 @@ void APLInit(void)
 	SetStartComm();
 
 #ifdef RTS_CTS_ENABLE
-	printf("aaa");
 	CTSSet(1);
 #endif
 }
@@ -204,38 +205,38 @@ void APLPoll (void)
 		if (__pkt_rx_flag)
 		{
 #ifdef RTS_CTS_ENABLE
-		CTSSet(0);
+				CTSSet(0);
 #endif
-		Packet *pktArm2Radio = (Packet *)downMsg.data;
-		apl->dest[5] = pktArm2Radio->dest;
+				Packet *pktArm2Radio = (Packet *)downMsg.data;
+				apl->dest[5] = pktArm2Radio->dest;
 		
-		if (pktArm2Radio->type == PKT_TYPE_DATA)
-		{
-			// send the data packet
-			pktArm2Radio->src = apl->src[5];
-			PrintPacket(pktArm2Radio);		
-			SendBuffer();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-		{
-			// send ranging pkt
-			SendRange();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-		{
-			// setting src address
-			SetAVR(pktArm2Radio);
-		}
-		else
-		{
-			apl->len = 0;
-			printf("packet type error: %c \n", pktArm2Radio->type);
-		}
+				if (pktArm2Radio->type == PKT_TYPE_DATA)
+				{
+					// send the data packet
+					pktArm2Radio->src = apl->src[5];
+					PrintPacket(pktArm2Radio);		
+					SendBuffer();
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+				{
+					// send ranging pkt
+					SendRange();
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+				{
+					// setting src address
+					SetAVR(pktArm2Radio);
+				}
+				else
+				{
+					apl->len = 0;
+					printf("packet type error: %c \n", pktArm2Radio->type);
+				}
 
-		__pkt_rx_flag = 0;
+				__pkt_rx_flag = 0;
 
 #ifdef RTS_CTS_ENABLE
-		CTSSet(1);
+				CTSSet(1);
 #endif
 	}
 }
@@ -269,6 +270,7 @@ void SendBuffer (void)
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
+	printf("check down dest: %d \r\n", downMsg.addr[5]);
 	SendMsg (&downMsg);
 }
 
@@ -289,6 +291,7 @@ void SetAVR(Packet *setPkt)
 void SetSrcAddr (uint8_t src)
 {
 	apl->src[5] = src;
+	src_address = src;
 	downMsg.prim = PLME_SET_REQUEST;
 	downMsg.attribute = PHY_MAC_ADDRESS1;
 	memcpy (downMsg.data, apl->src, 6);
@@ -305,4 +308,13 @@ void SetStartComm(void)
 }
 
 
-
+rx->length),1) != 0)
+					{
+							cli();
+							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
+							sei();
+							break;
+					}
+					cli();
+					PrintPacket(pkt_rx);
+					sei();

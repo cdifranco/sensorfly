@@ -63,7 +63,6 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-extern uint8_t src_address;
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -125,15 +124,24 @@ void APLCallback (MyMsgT *msg)
 		case PD_DATA_INDICATION:
 					// Check if packet is for this node
 					pkt_rx = (Packet *)msg->data;					
-					if(msg->rxAddr[5] != src_address)
+					if(msg->rxAddr[5] != apl->src[5])
 					{
 							cli();
-							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],src_address);
+							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
 							sei();
 							break;
 					}
 					// Check length of packet
-					if (memcmp(&(msg->len),&(pkt_
+					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
+					{
+							cli();
+							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
+							sei();
+							break;
+					}
+					cli();
+					PrintPacket(pkt_rx);
+					sei();
 					// Send packet to ARM byte by byte
 /*						
 					cli();
@@ -225,6 +233,7 @@ void APLPoll (void)
 				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
 				{
 					// setting src address
+					PrintPacket(pktArm2Radio);		
 					SetAVR(pktArm2Radio);
 				}
 				else
@@ -291,7 +300,6 @@ void SetAVR(Packet *setPkt)
 void SetSrcAddr (uint8_t src)
 {
 	apl->src[5] = src;
-	src_address = src;
 	downMsg.prim = PLME_SET_REQUEST;
 	downMsg.attribute = PHY_MAC_ADDRESS1;
 	memcpy (downMsg.data, apl->src, 6);
@@ -308,13 +316,4 @@ void SetStartComm(void)
 }
 
 
-rx->length),1) != 0)
-					{
-							cli();
-							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
-							sei();
-							break;
-					}
-					cli();
-					PrintPacket(pkt_rx);
-					sei();
+

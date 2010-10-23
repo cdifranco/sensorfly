@@ -26,7 +26,7 @@ void PrintPacket(Packet *pkt)
 				else printf(" %d :",0);
 		}
 		printf("type: %c \r\n", pkt->type);
-		printf("data: %s \r\n", pkt->data);
+		printf("data: %d \r\n", pkt->data[0]);
 		printf("length: %d \r\n", pkt->length);
 		printf("checksum: %d \r\n", pkt->checksum);
 		

@@ -37,7 +37,7 @@
 
 #define CONFIG_CONSOLE 1
 #define CONFIG_PRINTF 1
-
+uint8_t src_address;
 /**
  * error_handler:
  *
@@ -105,10 +105,11 @@ int	main(int ac, char *av[])
 	LED3 (LED_OFF);
 
 	/* Initialize direction of pins for flow control for comm with the ARM */
+#ifdef RTS_CTS_ENABLE
 	CTS_DIR  |= CTS_PIN;	//output
 	RTS_DIR  &= ~RTS_PIN;	//input
 	RTS_PORT |= RTS_PIN; //pull up
-
+#endif
 	/*
    * Initialize the timer for periodic tasks
    * or time supervized actions
@@ -142,7 +143,6 @@ int	main(int ac, char *av[])
 
 	while(1)
 	{
-		printf("bbb");
 		/*
 		 * call application periodically
 		 */

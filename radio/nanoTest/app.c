@@ -124,7 +124,7 @@ void APLCallback (MyMsgT *msg)
 		case PD_DATA_INDICATION:
 					// Check if packet is for this node
 					pkt_rx = (Packet *)msg->data;					
-					if(msg->rxAddr[5] != apl->src[5])
+					if(memcmp(msg->addr,apl->src,6) != 0)
 					{
 							cli();
 							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);

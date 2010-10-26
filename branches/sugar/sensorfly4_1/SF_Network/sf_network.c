@@ -112,8 +112,7 @@ void sf_network_pkt_gen(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum,
 }
 
 void sf_network_pkt_send(Packet * pkt)
-{
-    unsigned int p_flags_pattern;
+{ 
 #ifdef  RTS_CTS_ENABLE
     int cts_state;
     if(rIO0PIN & CTS_MASK)
@@ -126,6 +125,7 @@ void sf_network_pkt_send(Packet * pkt)
 
     if(!(rIO0PIN & RTS_MASK))
     {
+        unsigned int p_flags_pattern;
         tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
     }
 #endif

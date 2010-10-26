@@ -101,6 +101,16 @@ void  sf_network_init()
 
 }
 
+void sf_network_pkt_gen(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src)
+{
+    pkt->id = id;
+    pkt->type = type;
+    pkt->checksum = checksum;
+    pkt->dest = dest;
+    pkt->src = src;
+    pkt->length = sizeof(Packet);
+}
+
 void sf_network_pkt_send(Packet * pkt)
 {
     unsigned int p_flags_pattern;

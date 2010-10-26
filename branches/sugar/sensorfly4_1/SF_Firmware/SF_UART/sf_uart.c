@@ -175,7 +175,7 @@ void sf_uart0_pkt_send(Packet *pkt)
 
     tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
     rU0THR = START_BYTE;
-    for (i = 0; i< pkt->length; i++ )
+    for (i = 0; i< sizeof(Packet); i++ )
     { 
        if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE)
        {

@@ -12,7 +12,7 @@
 void PrintPacket(Packet *pkt)
 {
 		int i;
-		printf("******Packet %d ******\r\n", pkt->id);
+		printf("******Packet %u ******\r\n", pkt->id);
 		printf("destination: ");
 		for(i = 0; i < 6; i++)
 		{
@@ -22,13 +22,14 @@ void PrintPacket(Packet *pkt)
 		printf("source: ");
 		for(i = 0; i < 6; i++)
 		{
-				if (i == 5) printf(" %d \r\n",pkt->src);
-				else printf(" %d :",0);
+				if (i == 5) printf(" %u \r\n",pkt->src);
+				else printf(" %u :",0);
 		}
 		printf("type: %c \r\n", pkt->type);
-		printf("data: %d \r\n", pkt->data[0]);
+		uint8_t* p = pkt->data;
+		printf("data: %x, %x, %x, %x, %d \r\n", *p, *(p+1), *(p+2), *(p+3), pkt->data[1]);
 		printf("length: %d \r\n", pkt->length);
-		printf("checksum: %d \r\n", pkt->checksum);
+		printf("checksum: %u \r\n", pkt->checksum);
 		
 }
 

@@ -103,10 +103,8 @@ void task_app_func(void * par)
 
     unsigned short Blink = 1;
     Packet pkt;
-    pkt.id = 12;
-    pkt.type = PKT_TYPE_SETTING;
-    pkt.checksum = 0;
-    pkt.src = SRC_ADDR;
+    //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+    sf_network_pkt_gen(&pkt, 12, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
     pkt.data[0] = '\0';
     sf_network_pkt_send(&pkt); 
     
@@ -146,28 +144,19 @@ void task_app_func(void * par)
 #endif
 
 #ifdef SENDER
-      /** Create packet for sending test*/
-      pkt.id = counter;
-      pkt.type = PKT_TYPE_DATA;
-      pkt.checksum = 0;
-      pkt.src = SRC_ADDR;
-      pkt.dest = 2;
+      //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+      sf_network_pkt_gen(&pkt, counter, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
       pkt.data[0] = 'x';
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
-      pkt.length = sizeof(pkt); 
       sf_network_pkt_send(&pkt); 
       
 #endif
 
 #ifdef RANGING
-      /** Create packet for sending test*/
-      pkt.id = 12;
-      pkt.type = PKT_TYPE_RANGING;
-      pkt.checksum = 0;
-      pkt.src = SRC_ADDR;
-      pkt.dest = 11;
-      pkt.length = sizeof(pkt); 
+      //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 11, SRC_ADDR);
+      pkt.data[0] = '\0';
       sf_network_pkt_send(&pkt); 
       
 //      Packet * pkt_rx = sf_network_pkt_receive();

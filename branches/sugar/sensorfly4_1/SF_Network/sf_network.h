@@ -40,6 +40,7 @@ typedef struct
 
 
 void sf_network_init();
+void sf_network_pkt_gen(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src);
 Packet * sf_network_pkt_receive();
 void sf_network_pkt_send(Packet *pkt);
 void sf_network_pkt_release();

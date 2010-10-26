@@ -26,8 +26,11 @@ void PrintPacket(Packet *pkt)
 				else printf(" %u :",0);
 		}
 		printf("type: %c \r\n", pkt->type);
-		uint8_t* p = pkt->data;
-		printf("data: %x, %x, %x, %x, %d \r\n", *p, *(p+1), *(p+2), *(p+3), pkt->data[1]);
+		for(i = 0; i < 10; i++)
+		{
+			printf("data: %d,",  pkt->data[i]);
+		}
+		printf("\r\n");
 		printf("length: %d \r\n", pkt->length);
 		printf("checksum: %u \r\n", pkt->checksum);
 		

@@ -999,10 +999,10 @@ void PDCallback (void)
     if ((status & (1 << NA_RxCrc2Stat_B)) != 0)
     {
         NTRXSetIndexReg (0);
-        ///* read source address */
-        //NTRXSPIRead (NA_RamRxSrcAddr_O, upMsg.addr, 6);
+        /* read source address */
+        NTRXSPIRead (NA_RamRxSrcAddr_O, upMsg.addr, 6);
         /* read destination address */
-        NTRXSPIRead (NA_RamRxDstAddr_O, upMsg.addr, 6);
+        NTRXSPIRead (NA_RamRxDstAddr_O, upMsg.rxAddr, 6);
         /* read length plus additionl bits */
         NTRXSPIRead (NA_RamRxLength_O, reg, 2);
 

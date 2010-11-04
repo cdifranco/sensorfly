@@ -101,6 +101,7 @@ typedef struct
 {
 	MyByte8T prim;			/**< The primitive of the message. */
 	MyAddrT  addr;			/**< MAC address of the message. */
+	MyAddrT  rxAddr;		/**< MAC address of the recipient */
 	MyByte8T len;			/**< Payload length. */
 	MyByte8T data[128];	/**< Payload of the message. */
 
@@ -109,7 +110,6 @@ typedef struct
 	MyByte8T attribute;
 #	ifdef CONFIG_NTRX_SNIFFER
 	MyDword32T count;		/**< Sniffer stuff */
-	MyAddrT  rxAddr;		/**< MAC address of the recipient */
 	MyByte8T frameType;	/**< Frame type of the message */
 	MyByte8T extBits;		/**< Extended bits in the header for ranging */
 #	endif /* CONFIG_NTRX_SNIFFER */

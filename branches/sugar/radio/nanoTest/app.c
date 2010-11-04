@@ -97,24 +97,30 @@ void APLCallback (MyMsgT *msg)
 				{
 					case PHY_SUCCESS	:
 						/* hwack received, ranging start successfully */
+						cli();
+						printf("phy success\r\n");
+						sei();
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						cli();
-						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s \n",serial_print_buffer);
+						printf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s \r\n",serial_print_buffer);
 						sei();
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
+						cli();
+						printf("phy busy\r\n");
+						sei();
 						/* measurement is allready running (BUSY), wait
 							for PD_RANGING_INDICATION first! */
 						break;
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */						
 						cli();
-						sprintf(serial_print_buffer,"%07.2f,%03i\n",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s \n",serial_print_buffer);
+						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s \r\n",serial_print_buffer);
 						sei();
 						break;
 					default : break;
@@ -210,43 +216,75 @@ void APLInit(void)
 
 void APLPoll (void)
 {
-		if (__pkt_rx_flag)
+	static int __start_flag = 0;
+	static int rangeAddr = 0;
+	if (__pkt_rx_flag)
+	{
+#ifdef RTS_CTS_ENABLE
+		CTSSet(0);
+#endif
+		Packet *pktArm2Radio = (Packet *)downMsg.data;
+		apl->dest[5] = pktArm2Radio->dest;
+
+		if (pktArm2Radio->type == PKT_TYPE_DATA)
 		{
-#ifdef RTS_CTS_ENABLE
-				CTSSet(0);
-#endif
-				Packet *pktArm2Radio = (Packet *)downMsg.data;
-				apl->dest[5] = pktArm2Radio->dest;
-		
-				if (pktArm2Radio->type == PKT_TYPE_DATA)
-				{
-					// send the data packet
-					pktArm2Radio->src = apl->src[5];
-					PrintPacket(pktArm2Radio);		
-					SendBuffer();
-				}
-				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-				{
-					// send ranging pkt
-					SendRange();
-				}
-				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-				{
-					// setting src address
-					PrintPacket(pktArm2Radio);		
-					SetAVR(pktArm2Radio);
-				}
-				else
-				{
-					apl->len = 0;
-					printf("packet type error: %c \n", pktArm2Radio->type);
-				}
+			// send the data packet
+			pktArm2Radio->src = apl->src[5];
+			PrintPacket(pktArm2Radio);
+			SendBuffer();
+			__start_flag = 0;
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+		{
+			// send ranging pkt
+			SendRange();
+			__start_flag = 0;
+		}
+		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+		{
+			// setting src address
+			PrintPacket(pktArm2Radio);
+			SetAVR(pktArm2Radio);
+			__start_flag = 0;
+		}
+		else if (pktArm2Radio->type == 't')
+		{
+			if (pktArm2Radio->data[0] == 's')
+			{
+				__start_flag = 1;
+				rangeAddr = 10;
+			}
+			else if (pktArm2Radio->data[0] == 'e')
+			{
+				__start_flag = 0;
+			}
+			apl->len = 0;
+		}
+		else
+		{
+			apl->len = 0;
+			printf("packet type error: %c \n", pktArm2Radio->type);
+			__start_flag = 0;
+		}
 
-				__pkt_rx_flag = 0;
+
+		__pkt_rx_flag = 0;
 
 #ifdef RTS_CTS_ENABLE
-				CTSSet(1);
+		CTSSet(1);
 #endif
+	}
+
+	if (__start_flag == 1)
+	{
+		//send ranging
+		apl->dest[5] = rangeAddr;
+		//rangeAddr++;
+		//if (rangeAddr == 12) rangeAddr = 10;
+		SendRange();
+		// delay
+		int delay;
+		for (delay = 0; delay<20000; delay++);
 	}
 }
 

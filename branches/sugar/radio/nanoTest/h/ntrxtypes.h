@@ -20,8 +20,7 @@
 #ifndef	_NTRXTYPES_H
 #define	_NTRXTYPES_H
 #define	BITS2BYTES(n)	(n/8)		/* calc. bits into bytes */
-// define rxAddr
-#define CONFIG_NTRX_SNIFFER 1
+//#define CONFIG_NTRX_SNIFFER 1
 
 #ifndef	NULL
 #define	NULL	(0)

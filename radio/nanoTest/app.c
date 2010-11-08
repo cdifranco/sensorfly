@@ -63,6 +63,8 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
+uint8_t temp[16];
+uint8_t src_addr;
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -97,22 +99,16 @@ void APLCallback (MyMsgT *msg)
 				{
 					case PHY_SUCCESS	:
 						/* hwack received, ranging start successfully */
-						cli();
-						printf("phy success\r\n");
-						sei();
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						cli();
-						printf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s \r\n",serial_print_buffer);
+						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s %d \r\n",serial_print_buffer,apl->dest[5]);
 						sei();
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
-						cli();
-						printf("phy busy\r\n");
-						sei();
 						/* measurement is allready running (BUSY), wait
 							for PD_RANGING_INDICATION first! */
 						break;
@@ -130,10 +126,10 @@ void APLCallback (MyMsgT *msg)
 		case PD_DATA_INDICATION:
 					// Check if packet is for this node
 					pkt_rx = (Packet *)msg->data;					
-					if(memcmp(msg->rxAddr,apl->src,6) != 0)
+					//if(memcmp(msg->rxAddr,apl->src,6) != 0)
 					{
 							cli();
-							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
+							//printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
 							sei();
 							break;
 					}
@@ -148,21 +144,7 @@ void APLCallback (MyMsgT *msg)
 					cli();
 					PrintPacket(pkt_rx);
 					sei();
-					// Send packet to ARM byte by byte
-/*						
-					cli();
-					putchar(START_BYTE);
-					for (i = 0; i < msg->len; i++)
-					{
-							if (msg->data[i] == START_BYTE || msg->data[i] == ESC_BYTE || msg->data[i] == STOP_BYTE)
-							{
-									putchar(ESC_BYTE);				
-							}
-							putchar (msg->data[i]);
-					}
-					putchar(STOP_BYTE);
-					sei();
-*/
+					
 				break;
 								
 		case PD_RANGING_INDICATION:
@@ -170,7 +152,7 @@ void APLCallback (MyMsgT *msg)
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
 					cli();
-					PrintRangingLog(apl->dest[5], upRangingMsg);
+					PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
 					sei();
 					break;
 
@@ -216,8 +198,7 @@ void APLInit(void)
 
 void APLPoll (void)
 {
-	static int __start_flag = 0;
-	static int rangeAddr = 0;
+
 	if (__pkt_rx_flag)
 	{
 #ifdef RTS_CTS_ENABLE
@@ -232,59 +213,42 @@ void APLPoll (void)
 			pktArm2Radio->src = apl->src[5];
 			PrintPacket(pktArm2Radio);
 			SendBuffer();
-			__start_flag = 0;
+			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
 		{
 			// send ranging pkt
 			SendRange();
-			__start_flag = 0;
+			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
 		{
 			// setting src address
 			PrintPacket(pktArm2Radio);
 			SetAVR(pktArm2Radio);
-			__start_flag = 0;
+			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == 't')
 		{
-			if (pktArm2Radio->data[0] == 's')
+			if (pktArm2Radio->data[0] = 's')
 			{
-				__start_flag = 1;
-				rangeAddr = 10;
+				apl->dest[5] = pktArm2Radio->dest;
+				src_addr = pktArm2Radio->src;
+				SendRange();
 			}
-			else if (pktArm2Radio->data[0] == 'e')
-			{
-				__start_flag = 0;
-			}
-			apl->len = 0;
+			apl->len = 0;			
 		}
 		else
 		{
 			apl->len = 0;
 			printf("packet type error: %c \n", pktArm2Radio->type);
-			__start_flag = 0;
 		}
-
 
 		__pkt_rx_flag = 0;
 
 #ifdef RTS_CTS_ENABLE
 		CTSSet(1);
 #endif
-	}
-
-	if (__start_flag == 1)
-	{
-		//send ranging
-		apl->dest[5] = rangeAddr;
-		//rangeAddr++;
-		//if (rangeAddr == 12) rangeAddr = 10;
-		SendRange();
-		// delay
-		int delay;
-		for (delay = 0; delay<20000; delay++);
 	}
 }
 
@@ -317,7 +281,7 @@ void SendBuffer (void)
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
-	printf("check down dest: %d \r\n", downMsg.addr[5]);
+	//printf("check down dest: %d \r\n", downMsg.addr[5]);
 	SendMsg (&downMsg);
 }
 

@@ -11,19 +11,20 @@
 
 void PrintPacket(Packet *pkt)
 {
+// print data in packet
 		int i;
 		printf("******Packet %u ******\r\n", pkt->id);
 		printf("destination: ");
 		for(i = 0; i < 6; i++)
 		{
-				if (i == 5) printf(" %d \r\n",pkt->dest);
-				else printf(" %d :",0);
+			if (i == 5) printf(" %d \r\n",pkt->dest);
+			else printf(" %d :",0);
 		}
 		printf("source: ");
 		for(i = 0; i < 6; i++)
 		{
-				if (i == 5) printf(" %u \r\n",pkt->src);
-				else printf(" %u :",0);
+			if (i == 5) printf(" %u \r\n",pkt->src);
+			else printf(" %u :",0);
 		}
 		printf("type: %c \r\n", pkt->type);
 		for(i = 0; i < 10; i++)
@@ -34,34 +35,6 @@ void PrintPacket(Packet *pkt)
 		printf("length: %d \r\n", pkt->length);
 		printf("checksum: %u \r\n", pkt->checksum);
 		
-}
-
-void PrintRangingPacket(Packet *pkt)
-{
-		int i;
-		printf("******Packet %d ******\n", pkt->id);
-		printf("destination: ");
-		for(i = 0; i < 6; i++)
-		{
-				if (i == 5) printf(" %d \n",pkt->dest);
-				else printf(" %d :",0);
-		}
-		printf("source: ");
-		for(i = 0; i < 6; i++)
-		{
-				if (i == 5) printf(" %d \n",pkt->src);
-				else printf(" %d :",0);
-		}
-		printf("type: %c \n", pkt->type);
-		double distance;
-		int error;
-		memcpy(&distance,pkt->data,4);
-		memcpy(&error,&(pkt->data[4]),1);
-		printf("distance : %f \n", distance);
-		printf("error: %c \n", error);
-		printf("length: %d \n", pkt->length);
-		printf("checksum: %d \n", pkt->checksum);
-		
 }		
 
 
@@ -71,8 +44,8 @@ void PrintPacketLog(Packet *pkt)
     printf(" %d, %d, %d, %c, %s, %d \r\n", pkt->id, pkt->src, pkt->dest, pkt->type, pkt->data, pkt->checksum);
 }
 
-void PrintRangingLog(uint8_t dest, RangingPIB * ranginginfo)
+void PrintRangingLog(uint8_t src, uint8_t dest, RangingPIB * ranginginfo)
 {
-// dest, distance, error
-		printf(" %d, %f, %c \r\n", dest, ranginginfo->distance, ranginginfo->error);
+//src, dest, distance, error
+		printf(" %d, %d, %f, %c \r\n", src, dest, ranginginfo->distance, ranginginfo->error);
 }

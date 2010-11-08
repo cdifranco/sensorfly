@@ -63,7 +63,6 @@ RangingPIB *upRangingMsg;
 Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
-uint8_t temp[16];
 uint8_t src_addr;
 /**
  * @brief Process incoming messages.

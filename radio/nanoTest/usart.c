@@ -48,7 +48,6 @@ extern AplMemT *apl;
 extern uint8_t state;
 extern uint8_t __pkt_rx_flag;
 extern MyMsgT downMsg;
-
 /**
  * interrupt USART1_REC:
  *
@@ -61,11 +60,6 @@ SIGNAL(AVR_USART_RECV)
 	serBuffer = AVR_UDR1;
 	full = 1;
 	
-	//states:
-	//0:wait
-	//1:receive
-	//2:escape
-	//3:stop(received)
 	switch (state)
 	{
 		case 0 :
@@ -73,6 +67,7 @@ SIGNAL(AVR_USART_RECV)
 				{
 					/* reset timer */
 					apl->hwclock = hwclock ();
+					apl->len = 0;
 					state = 1;
 				}
 				break;

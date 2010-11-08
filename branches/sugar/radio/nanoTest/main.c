@@ -150,6 +150,8 @@ int	main(int ac, char *av[])
 		 * Check for incomming packets
 		 */
 		PHYPoll ();
+		int i ;
+		for (i = 0; i <3800; i++);
 	}
 	return	0;
 }

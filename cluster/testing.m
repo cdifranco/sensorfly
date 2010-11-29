@@ -19,4 +19,8 @@ end
 error_rate = error / (testing_round-e);
 step_ave = l / (testing_round-e);
 error_count = e;
-
+%measurements
+time = [time step_ave]
+accuracy = [accuracy error_rate]
+%center_count = [center_count size(center, 1)]
+%error_time = [error_time e]

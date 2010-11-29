@@ -21,21 +21,11 @@ for base_number = 4:4
     basic_cluster;
     fprintf('-----start: base station number %d testing1-----\n', base_number);
     testing;
-    % measurements
-    time = [time step_ave]
-    accuracy = [accuracy error_rate]
-    center_count = [center_count size(center, 1)]
-    error_time = [error_time e]
 
     fprintf('-----start: base station number %d reclustering-----\n', base_number);
     recluster_kmeans;
     fprintf('-----start: base station number %d testing2-----\n', base_number);
     testing;
-    % measurements
-    time = [time step_ave]
-    accuracy = [accuracy error_rate]
-    center_count = [center_count size(center, 1)]
-    error_time = [error_time e]
 
 end
 clear_up;

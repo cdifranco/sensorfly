@@ -30,10 +30,7 @@ for base_number = 4:4
         end
         b = [b; i rand_x, rand_y];%real location
     end
-    % recording the history of trasaction, the first number is outside
     trans_history = [];
-    % initiate the trans_history (which is the f in the formula)
-    %trans_history(1,1:direction_number,1:size(center,1)+1) = trans_init_number;
             
     for mainloop = 1 : main_loop_count
         %initiate the believe vector

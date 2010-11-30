@@ -1,10 +1,2 @@
-function p = Possibility(d,distributionTable)
+function p = possibility(d,distributionTable)
 p = interp1(distributionTable(:,1), distributionTable(:,4), d);
-%{
-if d < 8
-    p = 1;
-else
-    p = 0;
-end
-%}
-

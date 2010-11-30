@@ -32,19 +32,30 @@ for mainloop = 1 : main_loop_count
                 else
                     trans_p = trans_history(j, reading(sig_count-1,2), k)/total_count;
                 end
-                bel_bar(k) = bel_bar(k) + trans_p * bel(j);
+                bel_bar(k) = bel_bar(k) + bel(j);%trans_p * bel(j);
             end
         end
         % get the distance reading and the new bel
+        %{
         for j = 1:size(center,1) %check all the centers
-            edist = sum((reading(sig_count,5:end)-center(j,4:end)).^2).^.5;
+            edist = (sum((reading(sig_count,5:end)-center(j,4:end)).^2)).^.5;
             p = possibility(edist,distribution_table{base_number-3});
             bel(j) = p * bel_bar(j);
             if bel(j) > bel_threshold && (reading(sig_count,1) == 0 || bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;
             end         
         end
-
+        %}
+        for k == 
+        for j = 1:size(center,1) %check all the centers
+            edist = 0;
+            for k = 1 : base_number
+                edist = edist + ((reading(sig_count,4+k)-center(j,3+k)).^2)^.5;
+            end
+            if edist < 1 && (reading(sig_count,1) == 0 || edist < bel(reading(sig_count,1)))
+                reading(sig_count,1) = j;
+            end         
+        end
         if reading(sig_count,1) == 0
             % add the new center to the count
             temp = [];
@@ -71,4 +82,3 @@ for mainloop = 1 : main_loop_count
 end
 
 draw_cluster(1,size(center,1),reading);
-draw_center;

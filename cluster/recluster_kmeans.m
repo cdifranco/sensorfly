@@ -1,6 +1,7 @@
 % using kmeans to cluster while generate the trans_possibility_table\
 opts = statset('Display','final');
-[reading(:,end+1), ctrs] = kmeans(reading(:,5:end), size(center,1), 'Distance','city', 'Replicates',20, 'Options',opts);
+reading_end = size(reading,2);
+[reading(:,reading_end+1), ctrs] = kmeans(reading(:,5:reading_end), size(center,1), 'Distance','city', 'Replicates',20, 'Options',opts);
 
 recluster_table = zeros(size(center,1),size(center,1));
 for i = 1 : size(center,1)
@@ -19,5 +20,6 @@ for i = 1 : direction_number
     end
 end
 trans_history = trans_history_new;
-%figure;
-%draw_cluster(size(reading,2),size(center,1),reading);
+
+figure;
+draw_cluster(size(reading,2),size(center,1),reading);

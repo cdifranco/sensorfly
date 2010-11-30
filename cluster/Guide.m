@@ -1,35 +1,22 @@
-function [path direction totalCost] = Guide(currentSig, destCluster, transHistory, transInitNumber, baseNumber,centers)
+function [path direction totalCost] = Guide(currentSig, destCluster, transHistory, transInitNumber, baseNumber,centers, matrix)
 
 noOfNodes  = size(transHistory,1);
 
 if destCluster > noOfNodes
     error('Point number is too large.');
 else
-    directionNumber = size(transHistory, 2);
-    for i = 1:noOfNodes
-        for j = 1:noOfNodes
-            sumIJ = sum(transHistory(i,:,j));
-            if sumIJ == transInitNumber*directionNumber
-                matrix(i, j) = inf;
-            else
-                matrix(i, j) = sum(transHistory(i,:,j))/sum(sum(transHistory(i,:,:)));
-                matrix(i, j) = 1/matrix(i, j);
-            end;
-        end;
-    end;
-
-    for i = 1:noOfNodes,
-        % initialize the farthest node to be itself;
-        farthestPreviousHop(i) = i;     % used to compute the RTS/CTS range;
-        farthestNextHop(i) = i;
-    end;
+    farthestPreviousHop = zeros(1, noOfNodes);
+    farthestNextHop = zeros(1, noOfNodes);
+    % initialize the farthest node to be itself;
+    farthestPreviousHop(1:noOfNodes) = 1:noOfNodes;     % used to compute the RTS/CTS range;
+    farthestNextHop(1:noOfNodes) = 1:noOfNodes;
 
     startPoint = GetCluster(centers, currentSig);
     endPoint = destCluster;
     [path, totalCost] = Dijkstra(noOfNodes, matrix, startPoint, endPoint, farthestPreviousHop, farthestNextHop);
     
     %get direction
-    direction = [];
+    direction = zeros(1, length(path) - 1);
     for i = 1:length(path) - 1
         [maxNum direction(i)] = max(transHistory(path(i), :, path(i+1)));
     end

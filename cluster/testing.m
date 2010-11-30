@@ -18,7 +18,7 @@ for j = 1:testing_round
 end
 error_rate = error / (testing_round-e);
 step_ave = l / (testing_round-e);
-error_count = e;
+%error_count = e;
 %measurements
 time = [time step_ave]
 accuracy = [accuracy error_rate]

@@ -1,23 +1,5 @@
-close all
-clear all
-load ('distribution')
-load ('get_reading_data');
-load ('room');
-%% 
-base_number = 4;%change
-main_loop_count = 10;%how many sensorflies going in
-path_reading_count = 200;% how many readings each sensorfly will take
-step_len = 0.75;%how long will each step take
-direction_number = 4;%how many direction can each sensorfly take
-trans_init_number = 1;
-bel_threshold = 0.0;
-
-%measurements
-time = [];
-accuracy = [];
-center_count = [];
-error_time = [];
-
+initialization;
+%%
 for base_number = 4:4
     fprintf('-----start: base station number %d clustering-----\n', base_number);
     basic_cluster;
@@ -28,6 +10,7 @@ for base_number = 4:4
     recluster_kmeans;
     fprintf('-----start: base station number %d testing2-----\n', base_number);
     testing;
-
+    fprintf('-----start: base station number %d testing3-----\n', base_number);
+    rand_testing;
 end
 clear_up;

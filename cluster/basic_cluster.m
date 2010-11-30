@@ -1,8 +1,10 @@
+fprintf('-----initialization-----\n', base_number);
 center = []; %cluster_id, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];
 generate_base;      
 coefficient = polyfit(sigMeanDist(:, 1), sigMeanDist(: ,2), 3);
+fprintf('-----main loop-----\n', base_number);
 for mainloop = 1 : main_loop_count
     %initiate the believe vector
     bel = [];
@@ -36,7 +38,7 @@ for mainloop = 1 : main_loop_count
         % get the distance reading and the new bel
         for j = 1:size(center,1) %check all the centers
             edist = (sum((reading(sig_count,5:end)-center(j,4:end)).^2)).^.5;
-            p = possibility(edist,distributionTable);
+            p = possibility(edist,distribution_table{base_number-3});
             bel(j) = p * bel_bar(j);
             if bel(j) > bel_threshold & (reading(sig_count,1) == 0 | bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;

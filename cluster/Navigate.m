@@ -28,7 +28,7 @@ while 1
             currentCoord = generate_next_step(directionNumber, directionNumber, direction(1), stepLength, currentCoord(1),currentCoord(2),room);
         end
         totalCnt = totalCnt + 1;
-        if totalCnt > 1000
+        if totalCnt > 300
             succ = 0;
             break;
         end

@@ -3,11 +3,19 @@ error = 0;
 e = 0;
 testing_round = 100;
 for j = 1:testing_round
-    %percentage = j
-    startX = 1+2*rand;
-    startY = 4+5*rand;
-    destX = 1+2*rand;
-    destY = 4+5*rand;
+    startX = 3*rand;
+    if startX <= 1
+        startY = 4*rand;
+    else
+        startY = 9*rand;
+    end
+    destX = 3*rand;
+    if destX <= 1
+        destY = 4*rand;
+    else
+        destY = 9*rand;
+    end
+
     [succ sigRoute clusterRoute coordRoute startClus destClus] = Navigate([startX, startY], [destX, destY], step_len, b, base_number, trans_history, trans_init_number, center, room, coefficient);
     if succ == 1
         l = l + length(clusterRoute)/sum(([startX, startY]-[destX destY]).^2).^.5;

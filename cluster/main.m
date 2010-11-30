@@ -1,6 +1,6 @@
 initialization;
 %%
-for base_number = 4:4
+for base_number = 4:10
     fprintf('-----start: base station number %d clustering-----\n', base_number);
     basic_cluster;
     fprintf('-----start: base station number %d testing1-----\n', base_number);
@@ -13,7 +13,7 @@ for base_number = 4:4
     
 end
 %% random walk
-fprintf('-----start: base station number %d testing3-----\n', base_number);
-rand_testing;
+%fprintf('-----start: base station number %d testing3-----\n', base_number);
+%rand_testing;
     
 clear_up;

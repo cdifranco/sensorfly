@@ -40,7 +40,7 @@ for mainloop = 1 : main_loop_count
             edist = (sum((reading(sig_count,5:end)-center(j,4:end)).^2)).^.5;
             p = possibility(edist,distribution_table{base_number-3});
             bel(j) = p * bel_bar(j);
-            if bel(j) > bel_threshold & (reading(sig_count,1) == 0 | bel(j) > bel(reading(sig_count,1)))
+            if bel(j) > bel_threshold && (reading(sig_count,1) == 0 || bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;
             end         
         end

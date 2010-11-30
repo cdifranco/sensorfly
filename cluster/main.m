@@ -10,7 +10,9 @@ for base_number = 4:10
     recluster_kmeans;
     fprintf('-----start: base station number %d testing2-----\n', base_number);
     testing;
-    
+    clear trans_history;
+    clear trans_history_new;
+    clear recluster_table;
 end
 %% random walk
 %fprintf('-----start: base station number %d testing3-----\n', base_number);

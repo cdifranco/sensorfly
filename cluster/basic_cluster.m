@@ -69,4 +69,4 @@ for mainloop = 1 : main_loop_count
     end
 end
 
-draw_cluster(1,size(center,1),reading);
+%draw_cluster(1,size(center,1),reading);

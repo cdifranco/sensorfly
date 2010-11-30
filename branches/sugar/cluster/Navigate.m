@@ -1,4 +1,4 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = Navigate(startCoord, destCoord, stepLength, baseData, baseNumber, transHistory, transInitNumber, centers, room, coefficient)
+function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = Navigate(startCoord, destCoord, stepLength, baseData, baseNumber, transHistory, transInitNumber, centers, room, coefficient, matrix)
 succ = 1;
 successCnt = 0;
 totalCnt = 0;
@@ -20,8 +20,8 @@ while 1
     if GetCluster(centers, currentSig) == destCluster
         break;
     else
-        [path direction] = Guide(currentSig, destCluster, transHistory, transInitNumber, baseNumber, centers);
-        if length(path) == 0
+        [path direction] = Guide(currentSig, destCluster, transHistory, transInitNumber, baseNumber, centers, matrix);
+        if isempty(path)
             rand_direction = ceil(directionNumber*rand);
             currentCoord = generate_next_step(directionNumber, directionNumber, rand_direction, stepLength, currentCoord(1),currentCoord(2),room);
         else

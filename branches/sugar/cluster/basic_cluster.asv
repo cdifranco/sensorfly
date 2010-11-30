@@ -2,6 +2,7 @@ fprintf('-----initialization-----\n');
 center = []; %cluster_id, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];
+reading = ze
 generate_base;      
 coefficient = polyfit(sigMeanDist(:, 1), sigMeanDist(: ,2), 3);
 fprintf('-----main loop-----\n');
@@ -17,7 +18,7 @@ for mainloop = 1 : main_loop_count
         % flying from side door
         if i == 1
             reading(sig_count, 3) = 3 - .00001;
-            reading(sig_count, 4) = 7 + rand;
+            reading(sig_count, 4) = 7+rand;
         else
             reading(sig_count, 3:4) = generate_next_step(direction_number,direction_number, reading(sig_count-1,2), step_len, reading(sig_count-1,3), reading(sig_count-1,4),room);
         end

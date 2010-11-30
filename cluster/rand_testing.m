@@ -17,7 +17,7 @@ for j = 1:rand_testing_round
         destY = 9*rand;
     end
     
-    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = RandGo([startX, startY], [destX, destY], step_len, b, base_number, trans_history, trans_init_number, center, room, coefficient);
+    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = rand_go([startX, startY], [destX, destY], step_len, b, base_number, trans_history, center, room, coefficient);
     if rand_succ == 1
         l = l + length(clusterRoute)/sum(([startX, startY]-[destX destY]).^2).^.5;
         rand_error = rand_error + sum((rand_coordRoute(end,:)-[destX destY]).^2).^.5;

@@ -1,4 +1,4 @@
-% clean up
+%{
 clear ans;
 clear bel;
 clear bel_bar;
@@ -23,7 +23,6 @@ clear trans_p;
 clear x;
 clear y;
 clear coefficient;
-clear coordRoute;
 clear destClus;
 clear destX;
 clear destY;
@@ -45,4 +44,4 @@ clear temp_metrix;
 clear temp_sig;
 clear testing_rount;
 clear trans_init_number;
-
+%}

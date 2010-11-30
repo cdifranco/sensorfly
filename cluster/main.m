@@ -10,7 +10,10 @@ for base_number = 4:4
     recluster_kmeans;
     fprintf('-----start: base station number %d testing2-----\n', base_number);
     testing;
-    fprintf('-----start: base station number %d testing3-----\n', base_number);
-    rand_testing;
+    
 end
+%% random walk
+fprintf('-----start: base station number %d testing3-----\n', base_number);
+rand_testing;
+    
 clear_up;

@@ -8,9 +8,9 @@ for j = 1:rand_testing_round
     startY = 4+5*rand;
     destX = 1+2*rand;
     destY = 4+5*rand;
-    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = RandGo([startX, startY], [destX, destY], step_len, b, base_number, trans_history, trans_init_number, center);
+    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = RandGo([startX, startY], [destX, destY], step_len, b, base_number, trans_history, trans_init_number, center, room, coefficient);
     if rand_succ == 1
-        l = l + length(rand_clusterRoute);
+        l = l + length(clusterRoute)/(sum([startX, startY]-[destX destY]).^2).^.5;
         rand_error = rand_error + sum((rand_coordRoute(end,:)-[destX destY]).^2).^.5;
     else 
         rand_e = rand_e + 1;
@@ -20,5 +20,5 @@ end
 rand_error_rate = rand_error / (rand_testing_round-rand_e)
 rand_step_ave = l / (rand_testing_round-rand_e)
 %rand_error_count = e
-time = [time step_ave]
-accuracy = [accuracy error_rate]
+time = [time rand_step_ave]
+accuracy = [accuracy rand_error_rate]

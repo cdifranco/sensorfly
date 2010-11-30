@@ -38,6 +38,6 @@ clear succ;
 clear temp_metrix;
 clear temp_sig;
 clear testing_rount;
-clear center;
-clear reading;
+%clear center;
+%clear reading;
 

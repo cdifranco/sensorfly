@@ -1,9 +1,7 @@
 function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = RandGo(startCoord, destCoord, stepLength, baseData, baseNumber, transHistory, transInitNumber, centers, room, coefficient)
 
 succ = 1;
-successCnt = 0;
 totalCnt = 0;
-cannotGoCnt = 0;
 directionNumber = size(transHistory, 2);
 currentCoord = startCoord;
 currentSig = convert(currentCoord(1),currentCoord(2), baseNumber, baseData, coefficient);

@@ -1,8 +1,8 @@
 close all
 clear all
-load ('distribution_table')
-load ('get_reading_data');
-load ('room');
+load ('./loading_files/distribution_table')
+load ('./loading_files/get_reading_data');
+load ('./loading_files/room');
 
 %% 
 base_number = 4;%change

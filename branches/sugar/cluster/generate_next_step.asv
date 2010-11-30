@@ -9,24 +9,11 @@ intersection = [];
 %% 
 for i = 1 :size(room,1)
    if mod(room(i,5),2) == 0
-       if next_x-room(i,1) == 0 && next_y >min(room(i,2),room(i,4)) && next_y < max(room(i,2),room(i,4))
-            if room(i,5) == 2
-                next_x = next_x - 0.0001;
-            else
-                next_x = next_x + 0.0001;
-            end
-       end
+       if next_x-room(i,1) == 0 &&
    else
-        if next_y-room(i,2) == 0 && next_y >min(room(i,1),room(i,3)) && next_y < max(room(i,1),room(i,3))
-            if room(i,5) == 1
-                next_y = next_y - 0.0001;
-            else
-                next_y = next_y + 0.0001;
-            end
-        end
+       
    end
 end
-%%
 for i =  1 : size(room,1)
     if mod(room(i,5),2) == 0
         if (x-room(i,1))*(next_x-room(i,1)) < 0 && interp1([x next_x],[y next_y],room(i,1))>min(room(i,2),room(i,4)) && interp1([x next_x],[y next_y],room(i,1))<max(room(i,2),room(i,4))
@@ -48,3 +35,4 @@ end
 if min_value ~= inf
     next_step = generate_next_step(4,2,room(position,5),k-intersection(position, 1),intersection(position, 2),intersection(position, 3),room);
 end 
+next_step

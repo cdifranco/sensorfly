@@ -4,7 +4,7 @@ load ('distribution')
 
 base_number = 4;%change
 main_loop_count = 10;%how many sensorflies going in
-path_reading_count = 20;% how many readings each sensorfly will take
+path_reading_count = 200;% how many readings each sensorfly will take
 step_len = 0.7;%how long will each step take
 direction_number = 4;%how many direction can each sensorfly take
 trans_init_number = 1;
@@ -26,11 +26,6 @@ for base_number = 4:4
     recluster_kmeans;
     fprintf('-----start: base station number %d testing2-----\n', base_number);
     testing;
-    % measurements
-    time = [time step_ave]
-    accuracy = [accuracy error_rate]
-    center_count = [center_count size(center, 1)]
-    error_time = [error_time e]
 
 end
 clear_up;

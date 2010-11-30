@@ -1,11 +1,11 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = Navigate(startCoord, destCoord, stepLength, baseData, baseNumber, transHistory, transInitNumber, centers)
+function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = Navigate(startCoord, destCoord, stepLength, baseData, baseNumber, transHistory, transInitNumber, centers, room, coefficient)
 succ = 1;
 successCnt = 0;
 totalCnt = 0;
 cannotGoCnt = 0;
 directionNumber = size(transHistory, 2);
 currentCoord = startCoord;
-currentSig = convert(currentCoord(1),currentCoord(2), baseNumber, baseData);
+currentSig = convert(currentCoord(1),currentCoord(2), baseNumber, baseData, coefficient);
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;
@@ -13,7 +13,7 @@ currentCluster = GetCluster(centers, currentSig);
 startCluster = currentCluster;
 clusterRoute(totalCnt) = currentCluster;
 
-destSig = convert(destCoord(1),destCoord(2), baseNumber, baseData);
+destSig = convert(destCoord(1),destCoord(2), baseNumber, baseData, coefficient);
 destCluster = GetCluster(centers, destSig);
 
 while 1
@@ -22,45 +22,17 @@ while 1
     else
         [path direction] = Guide(currentSig, destCluster, transHistory, transInitNumber, baseNumber, centers);
         if length(path) == 0
-            angle = 2*pi*rand;
+            rand_direction = ceil(directionNumber*rand);
+            currentCoord = generate_next_step(directionNumber, directionNumber, rand_direction, stepLength, currentCoord(1),currentCoord(2),room);
         else
-            angle = 2*pi*direction(1)/directionNumber + (rand*2-1)*pi/directionNumber;
-        end
-        newX = currentCoord(1) + stepLength*cos(angle);
-        newY = currentCoord(2) + stepLength*sin(angle);
-        if newX < 1
-            if newY > 4
-                newY = 8 - newY;
-            end
-        else
-            if newY > 9
-                newY = 18 - newY;
-            end  
-        end
-        if newY < 0
-            newY = 0 - newY;
-        end  
-
-        if newY < 4
-            if newX < 0 
-                newX = 0 - newX;
-            elseif newX > 3
-                newX = 6 - newX;
-            end
-        else
-            if newX < 1 
-                newX = 2 - newX;
-            elseif newX > 3
-                newX = 6 - newX;
-            end
+            currentCoord = generate_next_step(directionNumber, directionNumber, direction(1), stepLength, currentCoord(1),currentCoord(2),room);
         end
         totalCnt = totalCnt + 1;
         if totalCnt > 1000
             succ = 0;
             break;
         end
-        currentCoord = [newX newY];
-        currentSig = convert(currentCoord(1), currentCoord(2), baseNumber, baseData);
+        currentSig = convert(currentCoord(1), currentCoord(2), baseNumber, baseData, coefficient);
         sigRoute(totalCnt, 1:baseNumber) = currentSig;
         coordRoute(totalCnt, 1:2) = currentCoord;
         currentCluster = GetCluster(centers, currentSig);

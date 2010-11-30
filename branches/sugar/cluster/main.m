@@ -1,7 +1,7 @@
 initialization;
 %%
-for main_loop_count = 10:15
-    for base_number = 6:6
+for main_loop_count = 10:10
+    for base_number = 4:10
         fprintf('-----start: base station number %d clustering-----\n', base_number);
         basic_cluster;
         fprintf('-----start: base station number %d testing1-----\n', base_number);
@@ -15,10 +15,11 @@ for main_loop_count = 10:15
         clear trans_history_new;
         clear recluster_table;
         clear temp_metrix;
+        
+ %       fprintf('-----start: base station number %d testing3-----\n', base_number);
+ %       rand_testing;
     end
     clear_up;
 end
-%% random walk
-%fprintf('-----start: base station number %d testing3-----\n', base_number);
-%rand_testing;
+
     

@@ -1,3 +1,3 @@
-figure;
+
 colors = randperm(size(center,1));
-scatter(center(:,2),center(:,3),30,colors(:));
+scatter(center(:,2),center(:,3),50,colors(:),'filled');

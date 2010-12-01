@@ -23,3 +23,6 @@ trans_history = trans_history_new;
 
 figure;
 draw_cluster(size(reading,2),size(center,1),reading);
+hold on;
+draw_center;
+hold off;

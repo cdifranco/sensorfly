@@ -33,7 +33,7 @@ for i = 1:real_radius_point_num
 end
 
 %% get distribution table
-total_item_num = (radius/real_radius_itvl+1)*(((2*pi/real_angle_itvl)*sig_num_per_point)^2);
+total_item_num = real_radius_point_num*((real_angle_point_num*sig_num_per_point)^2);
 distance_table = zeros(total_item_num, 2);
 item_num = 0;
 for i = 1:real_radius_point_num

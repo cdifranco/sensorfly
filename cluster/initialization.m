@@ -16,4 +16,4 @@ bel_threshold = 0.025;
 time = [];
 accuracy = [];
 %center_count = [];
-%error_time = [];
+error_time = [];

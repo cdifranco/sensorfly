@@ -11,7 +11,7 @@ else
     farthestPreviousHop(1:noOfNodes) = 1:noOfNodes;     % used to compute the RTS/CTS range;
     farthestNextHop(1:noOfNodes) = 1:noOfNodes;
 
-    startPoint = GetCluster(centers, currentSig);
+    startPoint = get_cluster(centers, currentSig);
     endPoint = destCluster;
     [path, totalCost] = dijkstra(noOfNodes, matrix, startPoint, endPoint, farthestPreviousHop, farthestNextHop);
     

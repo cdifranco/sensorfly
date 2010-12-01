@@ -1,5 +1,5 @@
 fprintf('-----initialization-----\n');
-center = []; %cluster_id, real_x, real_y,sig1,sig2,sig3...sigN
+center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];
 generate_base;      
@@ -38,7 +38,7 @@ for mainloop = 1 : main_loop_count
         % get the distance reading and the new bel
         for j = 1:size(center,1) %check all the centers
             edist = sum((reading(sig_count,5:end)-center(j,5:end)).^2).^.5;
-            p = possibility(edist,distribution_table_1p0{base_number});
+            p = possibility(edist,distribution_table_1p5{base_number});
             bel(j) = p * bel_bar(j);
             if bel(j) > bel_threshold && (reading(sig_count,1) == 0 || bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;
@@ -47,14 +47,13 @@ for mainloop = 1 : main_loop_count
         if reading(sig_count,1) ~= 0
             center(reading(sig_count,1),2) = center(reading(sig_count,1),2) + 1;
         else
-            reading(sig_count,1) == 0
             % add the new center to the count
             temp = [];
             temp = [temp size(center,1)+1];
             temp = [temp 1];
             temp = [temp reading(sig_count,3)];
             temp = [temp reading(sig_count,4)];
-            temp_sig = convert(temp(2),temp(3),base_number,b,coefficient);
+            temp_sig = convert(temp(3),temp(4),base_number,b,coefficient);
             temp = [temp temp_sig];
             center = [center; temp];
             reading(sig_count,1) = size(center,1);
@@ -77,3 +76,4 @@ draw_cluster(1,size(center,1),reading);
 hold on;
 draw_center;
 hold off;
+center_sig = center(:,5:end);

@@ -32,8 +32,7 @@ for j = 1:testing_round
             end;
         end;
     end;
-    
-    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], step_len, b, base_number, trans_history, center, room, coefficient, matrix);
+    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], step_len, b, base_number, trans_history, center_sig, room, coefficient, matrix);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
         error = error + sum((coordRoute(end,:)-[destX destY]).^2).^.5;

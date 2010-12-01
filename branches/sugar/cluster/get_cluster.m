@@ -2,7 +2,7 @@ function cluster = get_cluster(centers, sig)
 
 dist = zeros(1, size(centers,1));
 for i = 1:size(centers,1)
-    center_sig = centers(i,5:end);
+    center_sig = centers(i,:);
     dist(i) = sum((sig - center_sig).^2).^.5;
 end
 

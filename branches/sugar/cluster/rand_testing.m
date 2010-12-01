@@ -17,7 +17,7 @@ for j = 1:testing_round
 end
 rand_error_rate = rand_error / (testing_round-rand_e);
 rand_step_ave = rand_l / (testing_round-rand_e);
-rand_error_count = e;
+rand_error_count = rand_e;
 time = [time rand_step_ave]
 accuracy = [accuracy rand_error_rate]
-error_time = [error_time e]
+error_time = [error_time rand_e]

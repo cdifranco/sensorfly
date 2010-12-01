@@ -1,6 +1,6 @@
 close all
 clear all
-load ('./loading_files/distribution_table_1p0.mat')
+load ('./loading_files/distribution_table_0p5.mat')
 load ('./loading_files/get_reading_data.mat');
 load ('./loading_files/room.mat');
 load ('./loading_files/base.mat');

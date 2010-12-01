@@ -31,7 +31,7 @@ end
 %surf(x,y,z);
 hold off;
 %}
-
+figure;
 rawX = reading(:,3);
 rawY = reading(:,4);
 rawZ = reading(:,b);
@@ -47,13 +47,15 @@ for c = 1:center_size
             Z = [Z rawZ(i)];
         end
     end
-    xtemp=linspace(min(X),max(X),100);
-    ytemp=linspace(min(Y),max(Y),100);
-    [x,y]=meshgrid(xtemp,ytemp);
-    z=griddata(X,Y,Z,x,y);
-    surf(x,y,z,'EdgeColor','none');
-    colormap hsv
-    alpha(.4)
-    hold on;
+    if length(Z) >2
+        xtemp=linspace(min(X),max(X),100);
+        ytemp=linspace(min(Y),max(Y),100);
+        [x,y]=meshgrid(xtemp,ytemp);
+        z=griddata(X,Y,Z,x,y);
+        surf(x,y,z,'EdgeColor','none');
+        colormap hsv
+        alpha(.4)
+        hold on;
+    end
 end
 

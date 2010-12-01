@@ -1,7 +1,7 @@
 len = 0;
 error = 0;
 e = 0;
-testing_round = 100;
+testing_round = 1000;
 
 for j = 1:testing_round
     %percentage = j

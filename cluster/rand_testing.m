@@ -1,7 +1,7 @@
 rand_l = 0;
 rand_error = 0;
 rand_e = 0;
-rand_testing_round = 100;
+rand_testing_round = 1000;
 for j = 1:rand_testing_round
     %percentage = j
     %{

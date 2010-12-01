@@ -38,7 +38,7 @@ for mainloop = 1 : main_loop_count
         % get the distance reading and the new bel
         for j = 1:size(center,1) %check all the centers
             edist = sum((reading(sig_count,5:end)-center(j,5:end)).^2).^.5;
-            p = possibility(edist,distribution_table_1p5{base_number});
+            p = possibility(edist,distribution_table{base_number});
             bel(j) = p * bel_bar(j);
             if bel(j) > bel_threshold && (reading(sig_count,1) == 0 || bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;
@@ -71,7 +71,7 @@ for mainloop = 1 : main_loop_count
         sig_count = sig_count + 1;
     end
 end
-
+figure;
 draw_cluster(1,size(center,1),reading);
 hold on;
 draw_center;

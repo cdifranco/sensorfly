@@ -16,7 +16,7 @@ center_coord = [1.5, 4.5];
 sig_num_per_point = 15;
 radius = 0.7;
 real_radius_itvl = 0.1;
-real_radius_point_num = radius/real_radius_itvl+1
+real_radius_point_num = round(radius/real_radius_itvl+1);
 real_angle_point_num = 10;
 real_angle_itvl = 2*pi/real_angle_point_num;
 sig_map = zeros(real_radius_point_num, real_angle_point_num, sig_num_per_point, base_num);
@@ -33,7 +33,7 @@ for i = 1:real_radius_point_num
 end
 
 %% get distribution table
-total_item_num = real_radius_point_num*((real_angle_point_num*sig_num_per_point)^2);
+total_item_num = round(real_radius_point_num*((real_angle_point_num*sig_num_per_point)^2));
 distance_table = zeros(total_item_num, 2);
 item_num = 0;
 for i = 1:real_radius_point_num

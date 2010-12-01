@@ -17,7 +17,11 @@ for i = 1:size(time,2)
         random_accuracy = [random_accuracy accuracy(i)];
     end
 end
-
-plot(base_number_s:base_number_s-1+size(time,2)/3,basic_time,'r',base_number_s:base_number_s-1+size(time,2)/3,kmeans_time,'b',base_number_s:base_number_s-1+size(time,2)/3,random_time,'g');
+%{
+plot(10:9+size(time,2)/3,basic_time,'r',10:9+size(time,2)/3,kmeans_time,'b',10:9+size(time,2)/3,random_time,'g');
 figure;
-plot(base_number_s:base_number_s-1+size(time,2)/3,basic_accuracy,'r',base_number_s:base_number_s-1+size(time,2)/3,kmeans_accuracy,'b',base_number_s:base_number_s-1+size(time,2)/3,random_accuracy,'g');
+plot(10:9+size(time,2)/3,basic_accuracy,'r',10:9+size(time,2)/3,kmeans_accuracy,'b',10:9+size(time,2)/3,random_accuracy,'g');
+%}
+plot(10:9+size(time,2)/3,basic_time,'r',10:9+size(time,2)/3,kmeans_time,'b',10:9+size(time,2)/3,random_time,'g');
+figure;
+plot(10:9+size(time,2)/3,basic_accuracy,'r',10:9+size(time,2)/3,kmeans_accuracy,'b',10:9+size(time,2)/3,random_accuracy,'g');

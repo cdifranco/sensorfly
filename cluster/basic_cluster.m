@@ -37,18 +37,21 @@ for mainloop = 1 : main_loop_count
         end
         % get the distance reading and the new bel
         for j = 1:size(center,1) %check all the centers
-            edist = sum((reading(sig_count,5:end)-center(j,4:end)).^2).^.5;
+            edist = sum((reading(sig_count,5:end)-center(j,5:end)).^2).^.5;
             p = possibility(edist,distribution_table_1p0{base_number});
             bel(j) = p * bel_bar(j);
             if bel(j) > bel_threshold && (reading(sig_count,1) == 0 || bel(j) > bel(reading(sig_count,1)))
                 reading(sig_count,1) = j;
             end         
         end
-
-        if reading(sig_count,1) == 0
+        if reading(sig_count,1) ~= 0
+            center(reading(sig_count,1),2) = center(reading(sig_count,1),2) + 1;
+        else
+            reading(sig_count,1) == 0
             % add the new center to the count
             temp = [];
             temp = [temp size(center,1)+1];
+            temp = [temp 1];
             temp = [temp reading(sig_count,3)];
             temp = [temp reading(sig_count,4)];
             temp_sig = convert(temp(2),temp(3),base_number,b,coefficient);

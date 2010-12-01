@@ -9,15 +9,15 @@ currentSig = convert(currentCoord(1),currentCoord(2), baseNumber, baseData, coef
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;
-currentCluster = GetCluster(centers, currentSig);
+currentCluster = get_cluster(centers, currentSig);
 startCluster = currentCluster;
 clusterRoute(totalCnt) = currentCluster;
 
 destSig = convert(destCoord(1),destCoord(2), baseNumber, baseData, coefficient);
-destCluster = GetCluster(centers, destSig);
+destCluster = get_cluster(centers, destSig);
 
 while 1
-    if GetCluster(centers, currentSig) == destCluster
+    if get_cluster(centers, currentSig) == destCluster
         break;
     else
         [path direction] = guide(currentSig, destCluster, transHistory, centers, matrix);
@@ -35,7 +35,7 @@ while 1
         currentSig = convert(currentCoord(1), currentCoord(2), baseNumber, baseData, coefficient);
         sigRoute(totalCnt, 1:baseNumber) = currentSig;
         coordRoute(totalCnt, 1:2) = currentCoord;
-        currentCluster = GetCluster(centers, currentSig);
+        currentCluster = get_cluster(centers, currentSig);
         clusterRoute(totalCnt) = currentCluster;
         if length(path) >= 1 && currentCluster == path(2)
             successCnt = successCnt + 1;

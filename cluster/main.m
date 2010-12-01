@@ -1,6 +1,6 @@
 initialization;
 %%
-for main_loop_count = 10:10
+for main_loop_count = 10:15
     for base_number = base_number_s: base_number_e
         fprintf('-----start: base station number %d clustering-----\n', base_number);
         basic_cluster;

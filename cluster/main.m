@@ -6,7 +6,12 @@ for main_loop_count = 10:10
         basic_cluster;
         fprintf('-----start: base station number %d testing1-----\n', base_number);
         testing;
-  
+        
+%        fprintf('-----start: base station number %d reclustering-----\n', base_number);
+%        recluster_reduce;
+%        fprintf('-----start: base station number %d testing2-----\n', base_number);
+%        testing;
+        
         fprintf('-----start: base station number %d reclustering-----\n', base_number);
         recluster_kmeans;
         fprintf('-----start: base station number %d testing2-----\n', base_number);

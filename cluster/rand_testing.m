@@ -22,7 +22,7 @@ for j = 1:rand_testing_round
     startY = 0;
     destX = 3;
     destY = 9;
-    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = rand_go([startX, startY], [destX, destY], step_len, b, base_number, direction_number, center, room, coefficient);
+    [rand_succ rand_sigRoute rand_clusterRoute rand_coordRoute rand_startClus rand_destClus] = rand_go([startX, startY], [destX, destY], step_len, b, base_number, direction_number, center_sig, room, coefficient);
     if rand_succ == 1
         rand_l = rand_l + length(clusterRoute)/sum(([startX, startY]-[destX destY]).^2).^.5;
         rand_error = rand_error + sum((rand_coordRoute(end,:)-[destX destY]).^2).^.5;

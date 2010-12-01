@@ -14,12 +14,12 @@ end
 load real_rang_dist;
 center_coord = [1.5, 4.5];
 sig_num_per_point = 15;
-radius = 1.5;
+radius = 0.7;
 real_radius_itvl = 0.1;
-real_radius_point_num = radius/real_radius_itvl+1;
+real_radius_point_num = radius/real_radius_itvl+1
 real_angle_point_num = 10;
 real_angle_itvl = 2*pi/real_angle_point_num;
-sig_map = zeros(radius/real_radius_itvl+1, 2*pi/real_angle_itvl, sig_num_per_point, base_num);
+sig_map = zeros(real_radius_point_num, real_angle_point_num, sig_num_per_point, base_num);
 for i = 1:real_radius_point_num
     for j = 1:real_angle_point_num
         current_coord = [center_coord(1) + real_radius_itvl*(i-1)*cos(2*pi*j/real_angle_itvl), center_coord(2) + real_radius_itvl*(i-1)*sin(2*pi*j/real_angle_itvl)];

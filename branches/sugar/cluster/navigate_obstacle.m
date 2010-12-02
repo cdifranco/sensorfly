@@ -1,4 +1,4 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, stepLength, baseData, baseNumber, direction_number, transHistory, obstacleHistory, centers, room, coefficient, matrix)
+function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate_obstacle(startCoord, destCoord, stepLength, baseData, baseNumber, direction_number, transHistory, obstacleHistory, centers, room, coefficient, matrix)
 succ = 1;
 successCnt = 0;
 totalCnt = 0;

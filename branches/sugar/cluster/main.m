@@ -1,17 +1,15 @@
 initialization;
 %%
-for main_loop_count = 10:15
+for main_loop_count = 10:10
     for base_number = base_number_s: base_number_e
+        %testing paths
+        generate_paths;
+        
         fprintf('-----start: base station number %d clustering-----\n', base_number);
         basic_cluster;
         fprintf('-----start: base station number %d testing1-----\n', base_number);
         testing;
-        
-%        fprintf('-----start: base station number %d reclustering-----\n', base_number);
-%        recluster_reduce;
-%        fprintf('-----start: base station number %d testing2-----\n', base_number);
-%        testing;
-        
+%{      
         fprintf('-----start: base station number %d reclustering-----\n', base_number);
         recluster_kmeans;
         fprintf('-----start: base station number %d testing2-----\n', base_number);
@@ -23,6 +21,7 @@ for main_loop_count = 10:15
         clear reading;
         fprintf('-----start: base station number %d testing3-----\n', base_number);
         rand_testing;
+%}
     end
     clear_up;
 end

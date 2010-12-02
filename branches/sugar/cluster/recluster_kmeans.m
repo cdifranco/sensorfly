@@ -20,7 +20,8 @@ for i = 1 : direction_number
     end
 end
 trans_history = trans_history_new;
-
+%{
 figure;
 draw_cluster(size(reading,2),size(center,1),reading);
+%}
 center_sig = ctrs;

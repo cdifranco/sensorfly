@@ -1,7 +1,7 @@
 function a = draw_cluster(b,center_size,reading)
 % b is the position of clustering record
 colors = randperm(center_size);
-%scatter(reading(:,3),reading(:,4),10,colors(reading(:,b)),'filled');
+scatter(reading(:,3),reading(:,4),10,colors(reading(:,b)),'filled');
 
 %Show Results
 %{
@@ -41,13 +41,13 @@ for c = 1:center_size
     Y = [];
     Z = [];
     for i = 1:size(reading(:,1),1)
-        if rawZ(i) == c
+        if rawZ(i) == c && ~remove(rawX, rawY, rawZ, i, 0.08, 0.13)
             X = [X rawX(i)];
             Y = [Y rawY(i)];
             Z = [Z rawZ(i)];
         end
     end
-    if length(Z) >2
+    if length(Z) > 2
         xtemp=linspace(min(X),max(X),100);
         ytemp=linspace(min(Y),max(Y),100);
         [x,y]=meshgrid(xtemp,ytemp);

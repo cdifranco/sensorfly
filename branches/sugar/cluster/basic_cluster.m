@@ -2,6 +2,7 @@ fprintf('-----initialization-----\n');
 center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];
+obstacle_history = [];
 generate_base;      
 coefficient = polyfit(sigMeanDist(:, 1), sigMeanDist(: ,2), 3);
 fprintf('-----main loop-----\n');
@@ -12,6 +13,7 @@ for mainloop = 1 : main_loop_count
     %generate path and simulate the flight
     for i = 1 : path_reading_count
         % initialization of structure for reading
+        bumping = 0;
         reading(sig_count,1) = 0;
         reading(sig_count,2) = ceil(rand*direction_number);
         % flying from side door
@@ -19,7 +21,7 @@ for mainloop = 1 : main_loop_count
             reading(sig_count, 3) = 3 - .00001;
             reading(sig_count, 4) = 7 + rand;
         else
-            reading(sig_count, 3:4) = generate_next_step(direction_number,direction_number, reading(sig_count-1,2), step_len, reading(sig_count-1,3), reading(sig_count-1,4),room);
+            [reading(sig_count, 3:4) bumping] = generate_next_step(direction_number,direction_number, reading(sig_count-1,2), step_len, reading(sig_count-1,3), reading(sig_count-1,4),room);
         end
         reading(sig_count, 5:4+base_number) = convert(reading(sig_count,3), reading(sig_count,4), base_number, b, coefficient);
         % initialize the bel_bar
@@ -61,9 +63,13 @@ for mainloop = 1 : main_loop_count
             %update the trans_history
             trans_history(1:size(center, 1), 1:direction_number, size(center, 1)) = trans_init_number;
             trans_history(size(center, 1), 1:direction_number, 1:size(center, 1)) = trans_init_number;
+            obstacle_history(size(center, 1), 1:direction_number) = 0;
         end
         if i ~= 1
             trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))+1;
+            if bumping > 0
+                obstacle_history(reading(sig_count-1,1), reading(sig_count-1,2)) = obstacle_history(reading(sig_count-1,1), reading(sig_count-1,2)) +1;
+            end
         end
         %normalize the bel
         bel_total =sum(bel(:));
@@ -71,9 +77,11 @@ for mainloop = 1 : main_loop_count
         sig_count = sig_count + 1;
     end
 end
+%{
 figure;
 draw_cluster(1,size(center,1),reading);
 hold on;
 draw_center;
 hold off;
+%}
 center_sig = center(:,5:end);

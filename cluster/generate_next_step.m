@@ -1,11 +1,11 @@
-function next_step = generate_next_step(dn,drange, u, k, x, y, room)
+function [next_step bumping] = generate_next_step(dn,drange, u, k, x, y, room)
 %%
 angle = 2*pi*u/dn + (rand*2-1)*pi/drange;
 next_x = x + k*cos(angle);
 next_y = y + k*sin(angle);
 next_step = [next_x next_y];
 intersection = [];
-
+bumping = 0;
 %% 
 for i = 1 :size(room,1)
    if mod(room(i,5),2) == 0
@@ -46,5 +46,6 @@ end
 %%
 [min_value position] = min([intersection(:,1)]);
 if min_value ~= inf
-    next_step = generate_next_step(4,2,room(position,5),k-intersection(position, 1),intersection(position, 2),intersection(position, 3),room);
+    [next_step bumping] = generate_next_step(4,2,room(position,5),k-intersection(position, 1),intersection(position, 2),intersection(position, 3),room);
+    bumping = bumping + 1;
 end 

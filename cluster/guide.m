@@ -1,7 +1,8 @@
-function [path direction totalCost] = guide(currentSig, destCluster, transHistory, centers, matrix)
+function [path direction_count direction_order totalCost] = guide(currentSig, destCluster, transHistory, centers, matrix)
 
 noOfNodes  = size(transHistory,1);
-
+direction_count = [];
+direction_order = [];
 if destCluster > noOfNodes
     error('Point number is too large.');
 else
@@ -14,10 +15,7 @@ else
     startPoint = get_cluster(centers, currentSig);
     endPoint = destCluster;
     [path, totalCost] = dijkstra(noOfNodes, matrix, startPoint, endPoint, farthestPreviousHop, farthestNextHop);
-    
-    %get direction
-    direction = zeros(1, length(path) - 1);
-    for i = 1:length(path) - 1
-        [maxNum direction(i)] = max(transHistory(path(i), :, path(i+1)));
+    if ~isempty(path)
+        [direction_count direction_order] = sort(transHistory(path(1), :, path(2)),'descend');
     end
 end

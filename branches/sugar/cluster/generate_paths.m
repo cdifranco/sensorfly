@@ -1,3 +1,4 @@
+RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
 path = [];    
 for i = 1 : testing_round
     startX = 3*rand;

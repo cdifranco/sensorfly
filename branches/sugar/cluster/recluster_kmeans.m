@@ -14,8 +14,8 @@ trans_history_new = zeros(size(center,1), direction_number, size(center,1));
 for i = 1 : direction_number
     for j = 1 : size(center,1)
         for k = 1 : size(center,1)
-           temp_matrix(1:size(center,1),1:size(center,1)) = trans_history(:,i,:);
-           trans_history_new(j,i,k)= recluster_table(j,:)* temp_matrix* recluster_table(k,:)';    
+           temp_metrix(1:size(center,1),1:size(center,1)) = trans_history(:,i,:);
+           trans_history_new(j,i,k)= recluster_table(j,:)* temp_metrix* recluster_table(k,:)';    
         end
     end
 end

@@ -80,7 +80,10 @@ void APLCallback (MyMsgT *msg)
 	else
 		ctsState = 0;
 	if(ctsState)
+	{
+		RTSAndWaitCTS ();
 		CTSSet(0);
+	}
 #endif
 
 	MyChar8T serial_print_buffer[32];
@@ -125,10 +128,10 @@ void APLCallback (MyMsgT *msg)
 		case PD_DATA_INDICATION:
 					// Check if packet is for this node
 					pkt_rx = (Packet *)msg->data;					
-					//if(memcmp(msg->rxAddr,apl->src,6) != 0)
+					if(memcmp(msg->rxAddr,apl->src,6) != 0)
 					{
 							cli();
-							//printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
+							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
 							sei();
 							break;
 					}
@@ -201,6 +204,7 @@ void APLPoll (void)
 	if (__pkt_rx_flag)
 	{
 #ifdef RTS_CTS_ENABLE
+		RTSAndWaitCTS ();
 		CTSSet(0);
 #endif
 		Packet *pktArm2Radio = (Packet *)downMsg.data;

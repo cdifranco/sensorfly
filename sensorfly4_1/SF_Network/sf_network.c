@@ -120,14 +120,14 @@ void sf_network_pkt_send(Packet * pkt)
     else
       cts_state = 0;
 
-    if(cts_state)
-      sf_uart0_cts_set(0);
-
     if(!(rIO0PIN & RTS_MASK))
     {
         unsigned int p_flags_pattern;
         tn_event_wait(&ctsSet, 0x00000001, TN_EVENT_WCOND_OR, &p_flags_pattern, TN_WAIT_INFINITE);
     }
+
+    if(cts_state)
+      sf_uart0_cts_set(0);
 #endif
 
     sf_uart0_pkt_send(pkt);

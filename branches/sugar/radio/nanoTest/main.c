@@ -145,13 +145,11 @@ int	main(int ac, char *av[])
 		/*
 		 * call application periodically
 		 */
-		APLPoll ();	
+		APLPoll ();
 		/*
 		 * Check for incomming packets
 		 */
 		PHYPoll ();
-		int i ;
-		for (i = 0; i <3800; i++);
 	}
 	return	0;
 }

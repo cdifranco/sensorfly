@@ -34,7 +34,8 @@
 // encode bytes
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
-#define STOP_BYTE   0xEF  
+#define STOP_BYTE   0xEF
+#define RESET_BYTE  0xEE  
 
 extern TN_EVENT ctsSet;
 
@@ -46,6 +47,7 @@ extern int state;
 //-------- Events --------------------------
 TN_EVENT eventRxUART0;
 uint32_t eventPattern;
+TN_EVENT eventReset;
 
 
 
@@ -90,6 +92,9 @@ void sf_uart0_init()
   tn_event_create(&eventRxUART0,TN_EVENT_ATTR_SINGLE,0x00000000);
   tn_event_clear(&eventRxUART0,0x00000000);
   state = 0;
+  eventReset.id_event = 19;
+  tn_event_create(&eventReset,TN_EVENT_ATTR_SINGLE,0x00000000);
+  tn_event_clear(&eventReset,0x00000000);
   
 }
 
@@ -102,9 +107,8 @@ void sf_uart0_int_handler(void)
   unsigned char * rx_buf;
 
   status = rU0IIR;  // Reset Int Request Source
-  
   status &= (0x7 <<1);
-  
+
   /* RX */
     if(status == RX_INT || status == TO_INT)
     {
@@ -113,25 +117,37 @@ void sf_uart0_int_handler(void)
               data = rU0RBR;
               switch (state)
               {
-                  case 0 :
+                  case 0 :// wait
                       if (data == START_BYTE)
                       {
                             state = 1;
                       }
                       break;
-                  case 1 :
+                  case 1 :// start
                       if (data == ESC_BYTE)
                       {
                             state = 2;
                       }
                       else if (data == STOP_BYTE)	//stop(received)
                       {
-                            #ifdef  RTS_CTS_ENABLE
+#ifdef  RTS_CTS_ENABLE
     sf_uart0_cts_set(0);
 #endif
-                             state = 0;
-                             drvUART0.pos = 0;
-                             tn_event_iset(&eventRxUART0,0x00000001);
+                           state = 0;
+                           if (drvUART0.pos == 1 && drvUART0.buf[0] == RESET_BYTE)
+                           {
+                                drvUART0.pos = 0;
+                                tn_event_iset(&eventReset,0x00000001);
+                           }
+                           else
+                           {
+                                drvUART0.pos = 0;
+                                tn_event_iset(&eventRxUART0,0x00000001);
+                           }                      
+                      }
+                      else if (data == START_BYTE)
+                      {
+                            drvUART0.pos = 0;
                       }
                       else
                       {
@@ -177,7 +193,7 @@ void sf_uart0_pkt_send(Packet *pkt)
     rU0THR = START_BYTE;
     for (i = 0; i< sizeof(Packet); i++ )
     { 
-       if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE)
+       if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE || pkt_bytes[i] == RESET_BYTE)
        {
            tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
            rU0THR = ESC_BYTE;

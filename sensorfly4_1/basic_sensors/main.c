@@ -33,10 +33,10 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 1
+#define SRC_ADDR 2
 
-#define SENDER 1
-//#define RECEIVER 1
+//#define SENDER 1
+#define RECEIVER 1
 //#define RANGING 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
@@ -101,14 +101,11 @@ void task_app_func(void * par)
 {
 
     unsigned short Blink = 1;
-    Packet pkt;
     Packet pkt_reset;
-    
     sf_network_pkt_gen(&pkt_reset, 12, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
     pkt_reset.data[0] = '\0';
     sf_network_pkt_send(&pkt_reset); 
-    
-    
+    int s = 0;
     int i;
     int flag = 1;
     /* Prevent compiler warning */
@@ -140,18 +137,26 @@ void task_app_func(void * par)
       pkt_rx->data[1] = 'b';
       pkt_rx->dest = pkt_rx->src;
       pkt_rx->src = SRC_ADDR;
+      /* Sleep 2000 ticks */
+      tn_task_sleep(2000);
       sf_network_pkt_send(&pkt_rx); 
 
 #endif
 
 #ifdef SENDER
+      Packet pkt;
       //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, counter, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
+      sf_network_pkt_gen(&pkt, 0, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
       pkt.data[0] = 'x';
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
       sf_network_pkt_send(&pkt); 
-      //flag = 0;      
+      s++;
+      if (s == 5)
+          flag = 0;      
+      /* Sleep 2000 ticks */
+      tn_task_sleep(10000);
+      //Packet * pkt_rx = sf_network_pkt_receive();
 #endif
 
 #ifdef RANGING

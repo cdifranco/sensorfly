@@ -33,8 +33,7 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-// 12-->ranging; 11,10,9-->sending; 2-->receiving 
-#define SRC_ADDR 10
+#define SRC_ADDR 1
 
 #define SENDER 1
 //#define RECEIVER 1
@@ -51,6 +50,8 @@ int total_pkt = 0;
 int pkt_id = 101;
 int receive_pkt_num = 0;
 int rx_flag = 0;
+extern TN_EVENT eventReset;
+extern uint32_t eventPattern;
 //-----------------------------------------------------------------------------
 // Definitions
 //-----------------------------------------------------------------------------
@@ -61,8 +62,6 @@ int rx_flag = 0;
     \return none
 */
 int main(void){
-
-   sf_fly_command = 'f';
 
    hardware_init();
 
@@ -103,17 +102,27 @@ void task_app_func(void * par)
 
     unsigned short Blink = 1;
     Packet pkt;
-    //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-    sf_network_pkt_gen(&pkt, 12, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
-    pkt.data[0] = '\0';
-    sf_network_pkt_send(&pkt); 
+    Packet pkt_reset;
+    
+    sf_network_pkt_gen(&pkt_reset, 12, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
+    pkt_reset.data[0] = '\0';
+    sf_network_pkt_send(&pkt_reset); 
     
     
     int i;
+    int flag = 1;
     /* Prevent compiler warning */
     par = par;
-    while(1)
+    while(flag)
     {
+        int reset;   // result of system waiting
+        reset = tn_event_wait_polling(&eventReset,0x00000001,TN_EVENT_WCOND_OR,&eventPattern);
+        if (reset == TERR_NO_ERR)
+        {
+            sf_network_pkt_send(&pkt_reset); 
+            tn_event_clear(&eventReset,0x00000000);
+        }
+
         if (Blink & 1)
         {
            sf_led_on();
@@ -127,20 +136,12 @@ void task_app_func(void * par)
       //receive from ARM   
 #ifdef RECEIVER
       Packet * pkt_rx = sf_network_pkt_receive();
-     
-      /** calculate the rate of packet received*/      
-      if (pkt_rx != NULL)
-      {
-          // get percentage of the packet received
-          if (pkt_rx->id != pkt_id) 
-          {
-             receive_pkt_num++;
-             rx_flag++; 
-             pkt_id = pkt_rx->id;
-          }
-          pkt_rx_percent =  receive_pkt_num/1000.00;
-          sf_network_pkt_release();
-      }
+      pkt_rx->data[0] = 'a';
+      pkt_rx->data[1] = 'b';
+      pkt_rx->dest = pkt_rx->src;
+      pkt_rx->src = SRC_ADDR;
+      sf_network_pkt_send(&pkt_rx); 
+
 #endif
 
 #ifdef SENDER
@@ -150,20 +151,17 @@ void task_app_func(void * par)
       pkt.data[1] = 'y';
       pkt.data[2] = '\0';
       sf_network_pkt_send(&pkt); 
-      
+      //flag = 0;      
 #endif
 
 #ifdef RANGING
       //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
       sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 11, SRC_ADDR);
       pkt.data[0] = '\0';
-      sf_network_pkt_send(&pkt); 
-      
-//      Packet * pkt_rx = sf_network_pkt_receive();
-//      sf_network_pkt_release();
+      sf_network_pkt_send(&pkt);       
 #endif
 
-      /* Sleep 5000 ticks */
+      /* Sleep 2000 ticks */
       tn_task_sleep(2000);
 
    }

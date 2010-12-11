@@ -33,10 +33,6 @@
 #define ENTER_TASK {unsigned char cSREG=SREG; cli();
 #define LEAVE_TASK  SREG=cSREG; sei();}
 
-#define START_BYTE  0xFF
-#define ESC_BYTE    0x1B
-#define STOP_BYTE   0xEF 
-
 volatile MyByte8T serBuffer;
 volatile MyByte8T full;
 
@@ -48,6 +44,8 @@ extern AplMemT *apl;
 extern uint8_t state;
 extern uint8_t __pkt_rx_flag;
 extern MyMsgT downMsg;
+extern uint8_t temp[16];
+extern int ct;
 /**
  * interrupt USART1_REC:
  *
@@ -59,6 +57,11 @@ SIGNAL(AVR_USART_RECV)
 {
 	serBuffer = AVR_UDR1;
 	full = 1;
+	if (ct<16)
+	{
+		temp[ct]=serBuffer;
+		ct++;
+	}
 	
 	switch (state)
 	{
@@ -76,11 +79,19 @@ SIGNAL(AVR_USART_RECV)
 					state = 2;
 				else if (serBuffer == STOP_BYTE)	//stop(received)
 				{
-				   state = 0;
-				   __pkt_rx_flag = 1;
+					state = 0;
+					__pkt_rx_flag = 1;
+				}
+				else if (serBuffer == START_BYTE)
+				{
+					/* reset timer */
+					apl->hwclock = hwclock ();
+					apl->len = 0;	
 				}
 				else
+				{
 					downMsg.data[apl->len++] = serBuffer;
+				}
 				break;
 		case 2 :
 				state = 1;

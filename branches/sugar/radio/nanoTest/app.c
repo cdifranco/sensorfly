@@ -49,8 +49,8 @@
  *
  */
 #define SendMsg PDSap
-
-
+uint8_t temp[16];
+int ct = 0;
 /** @brief Memory for all layer configuration settings.  */
 AplMemT aplM;
 /** @brief Pointer to memory for all layer configuration settings.  */
@@ -92,8 +92,8 @@ void APLCallback (MyMsgT *msg)
 	switch (msg->prim)
 	{
 		case PD_DATA_CONFIRM: 	
-								downMsg.len = 0;
-							  	break;
+				downMsg.len = 0;
+			  	break;
 		case PD_RANGING_CONFIRM:
 		case PD_RANGING_FAST_CONFIRM:	
 				upRangingMsg = (RangingPIB*) msg->data;
@@ -143,8 +143,18 @@ void APLCallback (MyMsgT *msg)
 							sei();
 							break;
 					}
-					cli();
-					PrintPacket(pkt_rx);
+				  cli();
+					// PrintPacket(pkt_rx);
+					putchar(START_BYTE);
+					for (i = 0; i < msg->len; i++)
+					{
+							if (msg->data[i] == START_BYTE || msg->data[i] == ESC_BYTE || msg->data[i] == STOP_BYTE)
+							{
+									putchar(ESC_BYTE);				
+							}
+							putchar (msg->data[i]);
+					}
+					putchar(STOP_BYTE);					
 					sei();
 					
 				break;
@@ -183,10 +193,15 @@ void APLInit(void)
 
 	memcpy(apl->src, s_address, 6);
 	memcpy(apl->dest, d_address, 6);
-	
+
+	// send reset signal to ARM
+  putchar(START_BYTE);
+  putchar(RESET_BYTE);
+  putchar(STOP_BYTE);
+   	
 	/* These variables are used by the demo application.
 	 * They are used by the user interface
-   */
+	 */
 	apl->hwclock = 0;
 	apl->len = 0;
 
@@ -200,7 +215,6 @@ void APLInit(void)
 
 void APLPoll (void)
 {
-
 	if (__pkt_rx_flag)
 	{
 #ifdef RTS_CTS_ENABLE
@@ -209,27 +223,23 @@ void APLPoll (void)
 #endif
 		Packet *pktArm2Radio = (Packet *)downMsg.data;
 		apl->dest[5] = pktArm2Radio->dest;
-
+		PrintPacket(pktArm2Radio);
 		if (pktArm2Radio->type == PKT_TYPE_DATA)
 		{
 			// send the data packet
-			pktArm2Radio->src = apl->src[5];
-			PrintPacket(pktArm2Radio);
+			pktArm2Radio->src = apl->src[5];			
 			SendBuffer();
-			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
 		{
 			// send ranging pkt
 			SendRange();
-			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
 		{
 			// setting src address
 			PrintPacket(pktArm2Radio);
 			SetAVR(pktArm2Radio);
-			//__start_flag = 0;
 		}
 		else if (pktArm2Radio->type == 't')
 		{

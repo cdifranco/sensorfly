@@ -24,7 +24,7 @@
 #define START_BYTE  0xFF
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF
-#define RESET_BYTE   0xEE
+#define RESET_BYTE  0xEE
 
 #include "config.h"
 #ifdef	CONFIG_CONSOLE

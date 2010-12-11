@@ -26,7 +26,7 @@
 // Local declarations
 //-----------------------------------------------------------------------------
 #define  TASK_APP_PRIORITY   5
-#define  TASK_APP_STK_SIZE  256 //changed...not suppose to...
+#define  TASK_APP_STK_SIZE  256
 
 // Pin 0.21
 #define CTS_MASK (1<<21)

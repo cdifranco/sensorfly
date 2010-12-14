@@ -142,7 +142,7 @@ void sf_network_pkt_send(Packet * pkt)
 
 Packet * sf_network_pkt_receive()
 {
-    sf_uart0_pkt_receive();
+    return sf_uart0_pkt_receive();
 }
 
 void sf_network_pkt_release()

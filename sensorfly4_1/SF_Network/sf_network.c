@@ -31,7 +31,9 @@ UARTDRV drvUART0;
 unsigned char gUART0PayloadBuf[UART0_RX_PAYLOAD_BUF_SIZE];
 
 extern TN_EVENT ctsSet;
-
+extern TN_EVENT eventFail;
+extern TN_EVENT eventSucc;
+extern uint32_t eventPattern;
 // Pin 0.21
 #define CTS_MASK (1<<21)
 // Pin 0.20
@@ -109,6 +111,7 @@ void sf_network_pkt_gen(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum,
     pkt->dest = dest;
     pkt->src = src;
     pkt->length = sizeof(Packet);
+    pkt->data[0] = '\0';
 }
 
 void sf_network_pkt_send(Packet * pkt)
@@ -130,7 +133,29 @@ void sf_network_pkt_send(Packet * pkt)
       sf_uart0_cts_set(0);
 #endif
 
-    sf_uart0_pkt_send(pkt);
+    int fail = 0, succ = 0;
+    while(1)
+    {
+        sf_uart0_pkt_send(pkt);
+        // wait for ACK
+        fail = tn_event_wait(&eventFail,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,500);
+        if (fail == TERR_NO_ERR)
+        {
+            tn_event_clear(&eventFail,0x00000000);
+            continue;
+        }
+        succ = tn_event_wait(&eventSucc,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,500);
+        if (succ == TERR_NO_ERR)
+        {
+            tn_event_clear(&eventSucc,0x00000000);
+            break;
+        }
+        else if (succ == TERR_TIMEOUT)
+        {
+            tn_event_clear(&eventSucc,0x00000000);
+            continue;
+        }
+    }
 
 #ifdef  RTS_CTS_ENABLE
     tn_event_clear(&ctsSet, 0x00000000);

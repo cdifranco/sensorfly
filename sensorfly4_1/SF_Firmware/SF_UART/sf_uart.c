@@ -36,6 +36,8 @@
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF
 #define RESET_BYTE  0xEE  
+#define FAIL_BYTE   0xFE
+#define SUCC_BYTE   0xFD
 
 extern TN_EVENT ctsSet;
 
@@ -48,6 +50,8 @@ extern int state;
 TN_EVENT eventRxUART0;
 uint32_t eventPattern;
 TN_EVENT eventReset;
+TN_EVENT eventFail;
+TN_EVENT eventSucc;
 
 
 
@@ -95,6 +99,12 @@ void sf_uart0_init()
   eventReset.id_event = 19;
   tn_event_create(&eventReset,TN_EVENT_ATTR_SINGLE,0x00000000);
   tn_event_clear(&eventReset,0x00000000);
+  eventFail.id_event = 21;
+  tn_event_create(&eventFail,TN_EVENT_ATTR_SINGLE,0x00000000);
+  tn_event_clear(&eventFail,0x00000000);
+  eventSucc.id_event = 23;
+  tn_event_create(&eventSucc,TN_EVENT_ATTR_SINGLE,0x00000000);
+  tn_event_clear(&eventSucc,0x00000000);
   
 }
 
@@ -138,6 +148,16 @@ void sf_uart0_int_handler(void)
                            {
                                 drvUART0.pos = 0;
                                 tn_event_iset(&eventReset,0x00000001);
+                           }
+                           else if (drvUART0.pos == 1 && drvUART0.buf[0] == FAIL_BYTE)
+                           {
+                                drvUART0.pos = 0;
+                                tn_event_iset(&eventFail,0x00000001);
+                           }
+                           else if (drvUART0.pos == 1 && drvUART0.buf[0] == SUCC_BYTE)
+                           {
+                                drvUART0.pos = 0;
+                                tn_event_iset(&eventSucc,0x00000001);
                            }
                            else
                            {
@@ -193,7 +213,7 @@ void sf_uart0_pkt_send(Packet *pkt)
     rU0THR = START_BYTE;
     for (i = 0; i< sizeof(Packet); i++ )
     { 
-       if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE || pkt_bytes[i] == RESET_BYTE)
+       if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE || pkt_bytes[i] == RESET_BYTE || pkt_bytes[i] == FAIL_BYTE || pkt_bytes[i] == SUCC_BYTE)
        {
            tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
            rU0THR = ESC_BYTE;

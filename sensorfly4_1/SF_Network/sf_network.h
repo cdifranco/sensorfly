@@ -26,6 +26,7 @@
 #define PKT_TYPE_RANGING 'r'
 #define PKT_TYPE_DATA    'd'
 #define PKT_TYPE_SETTING 's'
+#define PKT_TYPE_REQUEST 'q'
 
 typedef struct
 {
@@ -36,7 +37,7 @@ typedef struct
   uint8_t src;	// with 6 characters MAC Address
   uint8_t length;
   int16_t data[10];
-} Packet;
+} Packet __attribute__((packed));
 
 
 void sf_network_init();

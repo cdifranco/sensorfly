@@ -94,7 +94,7 @@ void sf_uart0_init()
   // set up event flag
   eventRxUART0.id_event = 17;
   tn_event_create(&eventRxUART0,TN_EVENT_ATTR_SINGLE,0x00000000);
-  tn_event_clear(&eventRxUART0,0x00000000);
+  //tn_event_clear(&eventRxUART0,0x00000000);
   state = 0;
   eventReset.id_event = 19;
   tn_event_create(&eventReset,TN_EVENT_ATTR_SINGLE,0x00000000);
@@ -229,15 +229,15 @@ Packet * sf_uart0_pkt_receive()
 {
     // get the packet and check the length of the packet
     int rw;   // result of system waiting
-    Packet * pktRadio2Arm;
+    Packet * pktAVR2ARM;
     rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
     if (rw == TERR_NO_ERR)
     {
         // get the packet from the buffer
-        pktRadio2Arm = (Packet *)drvUART0.buf;
+        pktAVR2ARM = (Packet *)drvUART0.buf;
         tn_event_clear(&eventRxUART0,0x00000000);
     }
-    return pktRadio2Arm;
+    return pktAVR2ARM;
 }
 
 /*! \fn 

@@ -35,9 +35,11 @@
 // Source Address
 #define SRC_ADDR 1
 
-#define SENDER 1
+//#define SENDER 1
 //#define RECEIVER 1
-//#define RANGING 1
+#define RANGING 1
+//#define ANCHOR 1
+//#define NODE 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -148,11 +150,20 @@ void task_app_func(void * par)
 #endif
 
 #ifdef RANGING
+      Packet pkt;
       //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 11, SRC_ADDR);
+      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
       sf_network_pkt_send(&pkt);       
+      Packet * pkt_ranging_result = sf_network_pkt_receive();
 #endif
 
+#ifdef ANCHOR
+
+#endif
+
+#ifdef NODE
+
+#endif
       /* Sleep 2000 ticks */
       tn_task_sleep(2000);
 

@@ -25,12 +25,14 @@
 #define ESC_BYTE    0x1B
 #define STOP_BYTE   0xEF
 #define RESET_BYTE  0xEE
+#define FAIL_BYTE   0xFE
+#define SUCC_BYTE   0xFD
 
 #include "config.h"
 #ifdef	CONFIG_CONSOLE
 void console_init(void);
 int	kbhit(void);
 char    *read_line(char buf[]);
-#endif	/* CONFIG_CONSOLE */
 
+#endif	/* CONFIG_CONSOLE */
 #endif	/* _IOHIGH_H */

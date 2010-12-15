@@ -188,14 +188,12 @@ void APLInit(void)
 
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
-
 	apl = &aplM;
-
 	memcpy(apl->src, s_address, 6);
 	memcpy(apl->dest, d_address, 6);
 
 	// send reset signal to ARM
-  putchar(START_BYTE);
+	putchar(START_BYTE);
   putchar(RESET_BYTE);
   putchar(STOP_BYTE);
    	
@@ -222,47 +220,78 @@ void APLPoll (void)
 		CTSSet(0);
 #endif
 		Packet *pktArm2Radio = (Packet *)downMsg.data;
-		apl->dest[5] = pktArm2Radio->dest;
-		PrintPacket(pktArm2Radio);
-		if (pktArm2Radio->type == PKT_TYPE_DATA)
+		// check if the packet's format is correct
+		if (pktArm2Radio->checksum != 0)
 		{
-			// send the data packet
-			pktArm2Radio->src = apl->src[5];			
-			SendBuffer();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_RANGING)
-		{
-			// send ranging pkt
-			SendRange();
-		}
-		else if (pktArm2Radio->type == PKT_TYPE_SETTING)
-		{
-			// setting src address
-			PrintPacket(pktArm2Radio);
-			SetAVR(pktArm2Radio);
-		}
-		else if (pktArm2Radio->type == 't')
-		{
-			if (pktArm2Radio->data[0] = 's')
-			{
-				apl->dest[5] = pktArm2Radio->dest;
-				src_addr = pktArm2Radio->src;
-				SendRange();
-			}
-			apl->len = 0;			
+				sendFailAck();
 		}
 		else
-		{
-			apl->len = 0;
-			printf("packet type error: %c \n", pktArm2Radio->type);
+		{// checksum is correct: ADD CHECKSUM !!!
+				apl->dest[5] = pktArm2Radio->dest;
+				PrintPacketLog(pktArm2Radio);
+				if (pktArm2Radio->type == PKT_TYPE_DATA)
+				{
+						// send the data packet
+						pktArm2Radio->src = apl->src[5];			
+						SendBuffer();
+						// inform ARM that the transform is correct	
+						sendSuccAck();						
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+				{
+						// send ranging pkt
+						SendRange();
+						// inform ARM that the transform is correct	
+						sendSuccAck();
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+				{
+						// setting src address
+						SetAVR(pktArm2Radio);
+						// inform ARM that the transform is correct	
+						sendSuccAck();
+				}
+				else if (pktArm2Radio->type == PKT_TYPE_TERMINAL)
+				{
+						// terminal mode
+						if (pktArm2Radio->data[0] = START_SIGNAL)
+						{
+								apl->dest[5] = pktArm2Radio->dest;
+								src_addr = pktArm2Radio->src;
+								SendRange();
+						}
+						apl->len = 0;			
+				}
+				else
+				{
+						apl->len = 0;
+						//printf("packet type error: %c \n", pktArm2Radio->type);
+						sendFailAck();
+				}
 		}
-
 		__pkt_rx_flag = 0;
 
 #ifdef RTS_CTS_ENABLE
 		CTSSet(1);
 #endif
 	}
+}
+
+void sendSuccAck(void)
+{
+		putchar(START_BYTE);
+		putchar(SUCC_BYTE);
+		putchar(STOP_BYTE);
+		//printf("success");	
+}
+
+void sendFailAck(void)
+{
+		//printf("fail: ");		
+		putchar(START_BYTE);
+		putchar(FAIL_BYTE);
+		putchar(STOP_BYTE);
+		apl->len = 0;
 }
 
 void CTSSet (int new_state)
@@ -294,7 +323,6 @@ void SendBuffer (void)
 	downMsg.prim = PD_DATA_REQUEST;
 	downMsg.len = apl->len;
 	apl->len = 0;
-	//printf("check down dest: %d \r\n", downMsg.addr[5]);
 	SendMsg (&downMsg);
 }
 

@@ -43,5 +43,7 @@ void SendRange (void);
 void SetAVR (Packet *setPkt);
 void SetSrcAddr (uint8_t src);
 void SetStartComm (void);
+void sendSuccAck(void);
+void sendFailAck(void);
 
 #endif /* APPL_H */

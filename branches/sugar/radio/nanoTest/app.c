@@ -64,6 +64,9 @@ Packet * pkt_rx;
 uint8_t state = 0;
 volatile uint8_t __pkt_rx_flag = 0;
 uint8_t src_addr;
+// temp packet: for ranging info mostly
+Packet temp_pkt;
+Packet * pktAVR2ARM = &temp_pkt;
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -104,10 +107,27 @@ void APLCallback (MyMsgT *msg)
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
+						//cli();
+						//sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						//printf("%s %d \r\n",serial_print_buffer,apl->dest[5]);
+						pktAVR2ARM->data[0] = upRangingMsg->distance;
+						pktAVR2ARM->data[1] = upRangingMsg->error;
+						pktAVR2ARM->data[2] = '\0';
+						char * streamAVR2ARM = (char *)pktAVR2ARM;
 						cli();
-						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s %d \r\n",serial_print_buffer,apl->dest[5]);
+						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+						putchar(START_BYTE);
+						for (i = 0; i < sizeof(Packet); i++)
+						{
+								if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
+								{
+										putchar(ESC_BYTE);				
+								}
+								putchar (streamAVR2ARM[i]);
+						}
+						putchar(STOP_BYTE);
 						sei();
+						//sei();
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
@@ -163,8 +183,22 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
+					pktAVR2ARM->data[0] = upRangingMsg->distance;
+					pktAVR2ARM->data[1] = upRangingMsg->error;
+					pktAVR2ARM->data[2] = '\0';
+					char * streamAVR2ARM = (char *)pktAVR2ARM;
 					cli();
-					PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+					// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+					putchar(START_BYTE);
+					for (i = 0; i < sizeof(Packet); i++)
+					{
+							if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
+							{
+									putchar(ESC_BYTE);				
+							}
+							putchar (streamAVR2ARM[i]);
+					}
+					putchar(STOP_BYTE);
 					sei();
 					break;
 
@@ -185,6 +219,14 @@ void APLCallback (MyMsgT *msg)
  */
 void APLInit(void)
 {
+
+	temp_pkt.id = 0;
+	temp_pkt.type = 'r';
+	temp_pkt.checksum = 0;
+	temp_pkt.dest = 0;
+	temp_pkt.src = 0;
+	temp_pkt.length = sizeof(Packet);
+	//temp_pkt.data[0] = '\0';
 
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
@@ -219,45 +261,45 @@ void APLPoll (void)
 		RTSAndWaitCTS ();
 		CTSSet(0);
 #endif
-		Packet *pktArm2Radio = (Packet *)downMsg.data;
+		Packet *pktARM2AVR = (Packet *)downMsg.data;
 		// check if the packet's format is correct
-		if (pktArm2Radio->checksum != 0)
+		if (pktARM2AVR->checksum != 0)
 		{
 				sendFailAck();
 		}
 		else
 		{// checksum is correct: ADD CHECKSUM !!!
-				apl->dest[5] = pktArm2Radio->dest;
-				PrintPacketLog(pktArm2Radio);
-				if (pktArm2Radio->type == PKT_TYPE_DATA)
+				apl->dest[5] = pktARM2AVR->dest;
+				PrintPacketLog(pktARM2AVR);
+				if (pktARM2AVR->type == PKT_TYPE_DATA)
 				{
 						// send the data packet
-						pktArm2Radio->src = apl->src[5];			
+						pktARM2AVR->src = apl->src[5];			
 						SendBuffer();
 						// inform ARM that the transform is correct	
 						sendSuccAck();						
 				}
-				else if (pktArm2Radio->type == PKT_TYPE_RANGING)
+				else if (pktARM2AVR->type == PKT_TYPE_RANGING)
 				{
 						// send ranging pkt
 						SendRange();
 						// inform ARM that the transform is correct	
 						sendSuccAck();
 				}
-				else if (pktArm2Radio->type == PKT_TYPE_SETTING)
+				else if (pktARM2AVR->type == PKT_TYPE_SETTING)
 				{
 						// setting src address
-						SetAVR(pktArm2Radio);
+						SetAVR(pktARM2AVR);
 						// inform ARM that the transform is correct	
 						sendSuccAck();
 				}
-				else if (pktArm2Radio->type == PKT_TYPE_TERMINAL)
+				else if (pktARM2AVR->type == PKT_TYPE_TERMINAL)
 				{
 						// terminal mode
-						if (pktArm2Radio->data[0] = START_SIGNAL)
+						if (pktARM2AVR->data[0] = START_SIGNAL)
 						{
-								apl->dest[5] = pktArm2Radio->dest;
-								src_addr = pktArm2Radio->src;
+								apl->dest[5] = pktARM2AVR->dest;
+								src_addr = pktARM2AVR->src;
 								SendRange();
 						}
 						apl->len = 0;			
@@ -265,7 +307,7 @@ void APLPoll (void)
 				else
 				{
 						apl->len = 0;
-						//printf("packet type error: %c \n", pktArm2Radio->type);
+						//printf("packet type error: %c \n", pktARM2AVR->type);
 						sendFailAck();
 				}
 		}
@@ -282,7 +324,7 @@ void sendSuccAck(void)
 		putchar(START_BYTE);
 		putchar(SUCC_BYTE);
 		putchar(STOP_BYTE);
-		//printf("success");	
+		printf("success");	
 }
 
 void sendFailAck(void)

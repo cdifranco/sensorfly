@@ -151,14 +151,66 @@ void task_app_func(void * par)
 
 #ifdef RANGING
       Packet pkt;
-      //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
-      sf_network_pkt_send(&pkt);       
-      Packet * pkt_ranging_result = sf_network_pkt_receive();
+      while (1)
+      {
+          //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+          sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
+          // send ranging packet
+          sf_network_pkt_send(&pkt);       
+          Packet * pkt_ranging_result = sf_network_pkt_receive();
+          if (pkt_ranging_result == NULL)
+          {
+              continue;
+          }
+          else if (pkt_ranging_result->data[2] != 0)
+          {
+              continue;
+          }
+          else
+          {
+              break; 
+          }
+      }
 #endif
 
 #ifdef ANCHOR
-
+      Packet * pkt_rx = sf_network_pkt_receive();
+      Packet pkt;
+      // check if it is the right order
+      if (pkt_rx->data[0] != SRC_ADDR)
+      {
+          // send back packet indicate the error
+          //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+          sf_network_pkt_gen(&pkt, 13, PKT_TYPE_DATA, 0, 0, SRC_ADDR);
+          pkt->data[0] = 'e';
+          sf_network_pkt_send(&pkt);       
+      }
+      else
+      {
+          while (1)
+          {
+              //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+              sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
+              // send ranging packet
+              sf_network_pkt_send(&pkt);       
+              Packet * pkt_ranging_result = sf_network_pkt_receive();
+              if (pkt_ranging_result == NULL)
+              {
+                  continue;
+              }
+              else if (pkt_ranging_result->data[2] != NULL)
+              {
+                  continue;
+              }
+              else
+              {
+                  break; 
+              }
+          }
+          // get ranging result packet
+          pkt_ranging_result->src = SRC_ADDR;
+          sf_network_pkt_send(&pkt_ranging_result);       
+      }
 #endif
 
 #ifdef NODE

@@ -36,7 +36,7 @@ typedef struct
   uint8_t dest; // with 6 characters MAC Address
   uint8_t src;	// with 6 characters MAC Address
   uint8_t length;
-  int16_t data[10];
+  double data[10];
 } Packet __attribute__((packed));
 
 

@@ -47,7 +47,7 @@ void PrintPacketLog(Packet *pkt)
 void PrintRangingLog(uint8_t src, uint8_t dest, RangingPIB * ranginginfo)
 {
 //src, dest, distance, error
-		printf(" %d, %d, %f, %c \r\n", src, dest, ranginginfo->distance, ranginginfo->error);
+	printf(" %d, %d, %f, %c \r\n", src, dest, ranginginfo->distance, ranginginfo->error);
 }
 
 void PacketGeneration(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src)

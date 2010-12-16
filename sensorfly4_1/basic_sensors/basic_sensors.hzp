@@ -28,6 +28,7 @@
         <file file_name="../SF_Firmware/SF_Sensors/sf_sonic.h"/>
         <file file_name="../SF_Firmware/SF_UART/sf_uart.c"/>
         <file file_name="../SF_Firmware/SF_UART/sf_uart.h"/>
+        <file file_name="../SF_Firmware/SF_Sensors/sf_compass.c"/>
       </folder>
       <folder Name="common">
         <file file_name="../common/sf_led.c"/>

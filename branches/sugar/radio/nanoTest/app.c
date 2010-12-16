@@ -163,8 +163,10 @@ void APLCallback (MyMsgT *msg)
 							sei();
 							break;
 					}
-				  cli();
-					// PrintPacket(pkt_rx);
+				  	cli();
+					printf("print packet: msg length: %d \r\n",msg->len);
+					PrintPacketLog(pkt_rx);
+
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{

@@ -230,12 +230,16 @@ Packet * sf_uart0_pkt_receive()
     // get the packet and check the length of the packet
     int rw;   // result of system waiting
     Packet * pktAVR2ARM;
-    rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
+    rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,5000);
     if (rw == TERR_NO_ERR)
     {
         // get the packet from the buffer
         pktAVR2ARM = (Packet *)drvUART0.buf;
         tn_event_clear(&eventRxUART0,0x00000000);
+    }
+    else if (rw == TERR_TIMEOUT)
+    {
+        return NULL;
     }
     return pktAVR2ARM;
 }

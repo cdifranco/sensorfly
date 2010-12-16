@@ -35,9 +35,9 @@
 // Source Address
 #define SRC_ADDR 1
 
-//#define SENDER 1
+#define SENDER 1
 //#define RECEIVER 1
-#define RANGING 1
+//#define RANGING 1
 //#define ANCHOR 1
 //#define NODE 1
 
@@ -96,7 +96,7 @@ void  tn_app_init()
 void task_app_func(void * par)
 {
     /* Sleep 2000 ticks */
-    tn_task_sleep(2000);
+    tn_task_sleep(4000);
     unsigned short Blink = 1;
     Packet pkt_reset;
     sf_network_pkt_gen(&pkt_reset, 1, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
@@ -142,6 +142,8 @@ void task_app_func(void * par)
           Packet pkt;
           //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
           sf_network_pkt_gen(&pkt, 0, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
+          pkt.data[0] = SRC_ADDR;
+          pkt.data[1] = '\0';
           sf_network_pkt_send(&pkt); 
           flag++;
       }
@@ -214,7 +216,22 @@ void task_app_func(void * par)
 #endif
 
 #ifdef NODE
-
+      Packet * pkt_rx = sf_network_pkt_receive();
+      Packet pkt;
+      // check if it is the right order
+      // get compass reading 
+      uint16_t heading;
+      uint16_t pitch; 
+      uint16_t roll;
+      while((GetCompassHeading(&heading, &pitch, &roll)));
+      // generate packet and send back
+      //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 1, SRC_ADDR);
+      // put data into packet
+      pkt.data[0] = heading;
+      pkt.data[1] = pitch;
+      pkt.data[2] = roll;
+      sf_network_pkt_send(&pkt);
 #endif
       /* Sleep 2000 ticks */
       tn_task_sleep(2000);

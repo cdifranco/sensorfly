@@ -14,7 +14,7 @@
 #include "sf_user.h"
 #include "../TNKernel/tn.h"
 #include "../TNKernel/tn_port.h"
-
+#include "../SF_Firmware/SF_Sensors/sf_compass.h"
 #include "../SF_Firmware/SF_UART/sf_uart.h"
 
 //-----------------------------------------------------------------------------

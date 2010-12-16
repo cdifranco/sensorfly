@@ -130,6 +130,7 @@ void sf_uart0_int_handler(void)
                   case 0 :// wait
                       if (data == START_BYTE)
                       {
+                            drvUART0.pos = 0;
                             state = 1;
                       }
                       break;
@@ -230,18 +231,18 @@ Packet * sf_uart0_pkt_receive()
     // get the packet and check the length of the packet
     int rw;   // result of system waiting
     Packet * pktAVR2ARM;
-    rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,5000);
+    rw = tn_event_wait(&eventRxUART0,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,TN_WAIT_INFINITE);
     if (rw == TERR_NO_ERR)
     {
         // get the packet from the buffer
         pktAVR2ARM = (Packet *)drvUART0.buf;
         tn_event_clear(&eventRxUART0,0x00000000);
+        return pktAVR2ARM;
     }
-    else if (rw == TERR_TIMEOUT)
+    else
     {
         return NULL;
-    }
-    return pktAVR2ARM;
+    }  
 }
 
 /*! \fn 

@@ -108,14 +108,14 @@ void APLCallback (MyMsgT *msg)
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						//cli();
-						//sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						//printf("%s %d \r\n",serial_print_buffer,apl->dest[5]);
-						pktAVR2ARM->data[0] = upRangingMsg->distance;
-						pktAVR2ARM->data[1] = upRangingMsg->error;
-						pktAVR2ARM->data[2] = '\0';
+						pktAVR2ARM->data_double[0] = upRangingMsg->distance;
+						pktAVR2ARM->data_double[1] = upRangingMsg->error;
 						char * streamAVR2ARM = (char *)pktAVR2ARM;
 						cli();
 						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
+												
 						putchar(START_BYTE);
 						for (i = 0; i < sizeof(Packet); i++)
 						{
@@ -185,11 +185,14 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
-					pktAVR2ARM->data[0] = upRangingMsg->distance;
-					pktAVR2ARM->data[1] = upRangingMsg->error;
-					pktAVR2ARM->data[2] = '\0';
+
+					pktAVR2ARM->data_double[0] = upRangingMsg->distance;
+					pktAVR2ARM->data_double[1] = upRangingMsg->error;
 					char * streamAVR2ARM = (char *)pktAVR2ARM;
 					cli();
+					sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+					printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
+						
 					// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
 					putchar(START_BYTE);
 					for (i = 0; i < sizeof(Packet); i++)
@@ -228,8 +231,7 @@ void APLInit(void)
 	temp_pkt.dest = 0;
 	temp_pkt.src = 0;
 	temp_pkt.length = sizeof(Packet);
-	//temp_pkt.data[0] = '\0';
-
+	
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
 	apl = &aplM;
@@ -298,7 +300,7 @@ void APLPoll (void)
 				else if (pktARM2AVR->type == PKT_TYPE_TERMINAL)
 				{
 						// terminal mode
-						if (pktARM2AVR->data[0] = START_SIGNAL)
+						if (pktARM2AVR->data_int[0] = START_SIGNAL)
 						{
 								apl->dest[5] = pktARM2AVR->dest;
 								src_addr = pktARM2AVR->src;

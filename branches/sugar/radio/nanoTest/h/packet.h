@@ -22,7 +22,8 @@ typedef struct _Packet
   uint8_t dest; // last char in 6 characters MAC Address
   uint8_t src;	// last char in 6 characters MAC Address
   uint8_t length;
-  uint16_t data[10];
+  uint16_t data_int[5];
+  float data_double[2];
 } Packet __attribute__((packed));
 
 void PrintPacket(Packet *pkt);

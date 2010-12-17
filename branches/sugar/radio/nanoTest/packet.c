@@ -27,9 +27,9 @@ void PrintPacket(Packet *pkt)
 			else printf(" %u :",0);
 		}
 		printf("type: %c \r\n", pkt->type);
-		for(i = 0; i < 10; i++)
+		for(i = 0; i < 4; i++)
 		{
-			printf("data: %d,",  pkt->data[i]);
+			printf("data: %d,",  pkt->data_int[i]);
 		}
 		printf("\r\n");
 		printf("length: %d \r\n", pkt->length);
@@ -58,5 +58,6 @@ void PacketGeneration(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, u
     pkt->dest = dest;
     pkt->src = src;
     pkt->length = sizeof(Packet);
-    pkt->data[0] = '\0';
+    pkt->data_int[0] = '\0';
+    pkt->data_double[0] = '\0';
 }

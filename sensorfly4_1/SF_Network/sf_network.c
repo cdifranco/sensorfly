@@ -111,7 +111,7 @@ void sf_network_pkt_gen(Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum,
     pkt->dest = dest;
     pkt->src = src;
     pkt->length = sizeof(Packet);
-    pkt->data[0] = '\0';
+    pkt->data_int[0] = '\0';
 }
 
 void sf_network_pkt_send(Packet * pkt)

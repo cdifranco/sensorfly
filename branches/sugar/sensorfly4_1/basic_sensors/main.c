@@ -35,9 +35,9 @@
 // Source Address
 #define SRC_ADDR 1
 
-#define SENDER 1
+//#define SENDER 1
 //#define RECEIVER 1
-//#define RANGING 1
+#define RANGING 1
 //#define ANCHOR 1
 //#define NODE 1
 
@@ -129,8 +129,8 @@ void task_app_func(void * par)
       //receive from ARM   
 #ifdef RECEIVER
       Packet * pkt_rx = sf_network_pkt_receive();
-      pkt_rx->data[0] = 'a';
-      pkt_rx->data[1] = 'b';
+      pkt_rx->data_int[0] = 'a';
+      pkt_rx->data_int[1] = 'b';
       pkt_rx->dest = pkt_rx->src;
       pkt_rx->src = SRC_ADDR;
       sf_network_pkt_send(pkt_rx); 
@@ -142,13 +142,13 @@ void task_app_func(void * par)
           Packet pkt;
           //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
           sf_network_pkt_gen(&pkt, 0, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
-          pkt.data[0] = SRC_ADDR;
-          pkt.data[1] = '\0';
+          pkt.data_int[0] = SRC_ADDR;
+          pkt.data_int[1] = '\0';
           sf_network_pkt_send(&pkt); 
           flag++;
       }
       Packet * pkt_rx = sf_network_pkt_receive();
-      char data1 = pkt_rx->data[0];
+      char data1 = pkt_rx->data_int[0];
 #endif
 
 #ifdef RANGING
@@ -164,7 +164,7 @@ void task_app_func(void * par)
           {
               continue;
           }
-          else if (pkt_ranging_result->data[2] != 0)
+          else if (pkt_ranging_result->data_double[1] != 0)
           {
               continue;
           }
@@ -176,43 +176,34 @@ void task_app_func(void * par)
 #endif
 
 #ifdef ANCHOR
+      // waiting for command
       Packet * pkt_rx = sf_network_pkt_receive();
       Packet pkt;
-      // check if it is the right order
-      if (pkt_rx->data[0] != SRC_ADDR)
+      // execute command     
+      while (1)
       {
-          // send back packet indicate the error
           //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-          sf_network_pkt_gen(&pkt, 13, PKT_TYPE_DATA, 0, 0, SRC_ADDR);
-          pkt->data[0] = 'e';
+          sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
+          // send ranging packet
           sf_network_pkt_send(&pkt);       
-      }
-      else
-      {
-          while (1)
+          Packet * pkt_ranging_result = sf_network_pkt_receive();
+          if (pkt_ranging_result == NULL)
           {
-              //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-              sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
-              // send ranging packet
-              sf_network_pkt_send(&pkt);       
-              Packet * pkt_ranging_result = sf_network_pkt_receive();
-              if (pkt_ranging_result == NULL)
-              {
-                  continue;
-              }
-              else if (pkt_ranging_result->data[2] != NULL)
-              {
-                  continue;
-              }
-              else
-              {
-                  break; 
-              }
+              continue;
           }
-          // get ranging result packet
-          pkt_ranging_result->src = SRC_ADDR;
-          sf_network_pkt_send(&pkt_ranging_result);       
+          else if (pkt_ranging_result->data_double[1] != 0)
+          {
+              continue;
+          }
+          else
+          {
+              break; 
+          }
       }
+      // get ranging result packet
+      pkt_ranging_result->src = SRC_ADDR;
+      sf_network_pkt_send(&pkt_ranging_result);       
+  
 #endif
 
 #ifdef NODE
@@ -225,12 +216,12 @@ void task_app_func(void * par)
       uint16_t roll;
       while((GetCompassHeading(&heading, &pitch, &roll)));
       // generate packet and send back
-      //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+      // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
       sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 1, SRC_ADDR);
       // put data into packet
-      pkt.data[0] = heading;
-      pkt.data[1] = pitch;
-      pkt.data[2] = roll;
+      pkt.data_int[0] = heading;
+      pkt.data_int[1] = pitch;
+      pkt.data_int[2] = roll;
       sf_network_pkt_send(&pkt);
 #endif
       /* Sleep 2000 ticks */

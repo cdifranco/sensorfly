@@ -33,7 +33,7 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 1
+#define SRC_ADDR 0
 
 // #define ANCHOR 1
 // #define NODE 1

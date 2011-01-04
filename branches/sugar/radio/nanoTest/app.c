@@ -112,10 +112,11 @@ void APLCallback (MyMsgT *msg)
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						cli();
+#ifndef IS_BASE	
 							// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
 							// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
 							// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
-												
+			
 							putchar(START_BYTE);
 							for (i = 0; i < sizeof(Packet); i++)
 							{
@@ -126,6 +127,7 @@ void APLCallback (MyMsgT *msg)
 									putchar (streamAVR2ARM[i]);
 							}
 							putchar(STOP_BYTE);
+#endif
 						sei();
 						break;
 					case PHY_BUSY 		:
@@ -136,6 +138,7 @@ void APLCallback (MyMsgT *msg)
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */						
 						cli();
+#ifndef IS_BASE	
 							//sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
 							//printf("%s \r\n",serial_print_buffer);
 							putchar(START_BYTE);
@@ -148,6 +151,7 @@ void APLCallback (MyMsgT *msg)
 									putchar (streamAVR2ARM[i]);
 							}
 							putchar(STOP_BYTE);
+#endif
 						sei();
 						break;
 					default : break;
@@ -160,7 +164,7 @@ void APLCallback (MyMsgT *msg)
 					if(memcmp(msg->rxAddr,apl->src,6) != 0)
 					{
 							cli();
-							printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
+							//printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
 							sei();
 							break;
 					}
@@ -168,14 +172,14 @@ void APLCallback (MyMsgT *msg)
 					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
 					{
 							cli();
-							printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
+							//printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
 							sei();
 							break;
 					}
 				  	cli();
 					//printf("print packet: msg length: %d \r\n",msg->len);
 					//PrintPacketLog(pkt_rx);
-
+#ifndef IS_BASE	
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
@@ -185,9 +189,11 @@ void APLCallback (MyMsgT *msg)
 							}
 							putchar (msg->data[i]);
 					}
-					putchar(STOP_BYTE);					
+					putchar(STOP_BYTE);						
+#else
+					PrintPacketLog(pkt_rx);
+#endif
 					sei();
-					
 				break;
 								
 		case PD_RANGING_INDICATION:
@@ -199,6 +205,7 @@ void APLCallback (MyMsgT *msg)
 					pktAVR2ARM->type = PKT_TYPE_RESULT;
 					char * streamAVR2ARM = (char *)pktAVR2ARM;
 					cli();
+#ifndef IS_BASE
 						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
 						// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));						
 						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
@@ -212,6 +219,9 @@ void APLCallback (MyMsgT *msg)
 								putchar (streamAVR2ARM[i]);
 						}
 						putchar(STOP_BYTE);
+#else
+					PrintPacketLog(pktAVR2ARM);
+#endif
 					sei();
 					break;
 
@@ -242,6 +252,7 @@ void APLInit(void)
 	
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
+	SetSrcAddr(0);
 	apl = &aplM;
 	memcpy(apl->src, s_address, 6);
 	memcpy(apl->dest, d_address, 6);
@@ -282,7 +293,7 @@ void APLPoll (void)
 		else
 		{// checksum is correct: ADD CHECKSUM !!!
 				apl->dest[5] = pktARM2AVR->dest;
-				PrintPacketLog(pktARM2AVR);
+				//PrintPacketLog(pktARM2AVR);
 				if (pktARM2AVR->type == PKT_TYPE_DATA)
 				{
 						// send the data packet
@@ -308,13 +319,8 @@ void APLPoll (void)
 				else if (pktARM2AVR->type == PKT_TYPE_TERMINAL)
 				{
 						// terminal mode
-						if (pktARM2AVR->data_int[0] = START_SIGNAL)
-						{
-								apl->dest[5] = pktARM2AVR->dest;
-								src_addr = pktARM2AVR->src;
-								SendRange();
-						}
-						apl->len = 0;			
+						pktARM2AVR->type = PKT_TYPE_REQUEST;
+						SendBuffer();
 				}
 				else
 				{

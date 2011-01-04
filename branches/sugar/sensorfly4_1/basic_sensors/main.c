@@ -36,8 +36,8 @@
 #define SRC_ADDR 0
 
 // #define ANCHOR 1
-// #define NODE 1
-#define BASE 1
+#define NODE 1
+//#define BASE 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;

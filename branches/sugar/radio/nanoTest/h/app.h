@@ -18,6 +18,7 @@
 
 #include "ntrxtypes.h"
 //#define RTS_CTS_ENABLE 1
+#define IS_BASE
 
 /** @brief Structure type for all layer configuration settings
  *

@@ -35,9 +35,9 @@
 // Source Address
 #define SRC_ADDR 1
 
-#define RANGING 1
-//#define ANCHOR 1
-//#define NODE 1
+// #define ANCHOR 1
+// #define NODE 1
+#define BASE 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;
@@ -58,11 +58,12 @@ extern uint32_t eventPattern;
 int main(void)
 {
 
-//   hardware_init();
-//
-//   tn_start_system(); //-- Never returns
-//
-//   return 1;
+#ifndef BASE
+   hardware_init();
+   tn_start_system(); //-- Never returns
+   return 1;
+#endif
+
 }
 
 /*! \fn void  tn_app_init()
@@ -125,30 +126,6 @@ void task_app_func(void * par)
         }      
         Blink = Blink ^ 1;
 
-#ifdef RANGING
-      Packet pkt;
-      while (1)
-      {
-          //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-          sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
-          // send ranging packet
-          sf_network_pkt_send(&pkt);       
-          Packet * pkt_ranging_result = sf_network_pkt_receive();
-          if (pkt_ranging_result == NULL)
-          {
-              continue;
-          }
-          else if (pkt_ranging_result->data_double[1] != 0)
-          {
-              continue;
-          }
-          else
-          {
-              break; 
-          }
-      }
-#endif
-
 #ifdef ANCHOR
       // waiting for command
       Packet * pkt_rx = sf_network_pkt_receive();
@@ -158,7 +135,7 @@ void task_app_func(void * par)
       // execute command     
       while (1)
       {
-          //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+          // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
           sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, ranging_dest, SRC_ADDR);
           // send ranging packet
           // TODO: add time out part
@@ -186,6 +163,7 @@ void task_app_func(void * par)
 
 #ifdef NODE
       Packet * pkt_rx = sf_network_pkt_receive();
+
       Packet pkt;
       // check if it is the right order
       // get compass reading 
@@ -195,7 +173,7 @@ void task_app_func(void * par)
       while((GetCompassHeading(&heading, &pitch, &roll)));
       // generate packet and send back
       // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 1, SRC_ADDR);
+      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 0, SRC_ADDR);
       // put data into packet
       pkt.data_int[0] = heading;
       pkt.data_int[1] = pitch;

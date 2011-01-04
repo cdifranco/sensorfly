@@ -100,6 +100,10 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_CONFIRM:
 		case PD_RANGING_FAST_CONFIRM:	
 				upRangingMsg = (RangingPIB*) msg->data;
+				pktAVR2ARM->data_double[0] = upRangingMsg->distance;
+				pktAVR2ARM->data_double[1] = upRangingMsg->error;
+				pktAVR2ARM->type = PKT_TYPE_RESULT;
+				char * streamAVR2ARM = (char *)pktAVR2ARM;
 				switch(msg->status)
 				{
 					case PHY_SUCCESS	:
@@ -107,27 +111,22 @@ void APLCallback (MyMsgT *msg)
 						break;
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
-						//cli();
-						pktAVR2ARM->data_double[0] = upRangingMsg->distance;
-						pktAVR2ARM->data_double[1] = upRangingMsg->error;
-						char * streamAVR2ARM = (char *)pktAVR2ARM;
 						cli();
 						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
-						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
+						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
 												
-						putchar(START_BYTE);
-						for (i = 0; i < sizeof(Packet); i++)
-						{
-								if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
-								{
-										putchar(ESC_BYTE);				
-								}
-								putchar (streamAVR2ARM[i]);
-						}
-						putchar(STOP_BYTE);
+							putchar(START_BYTE);
+							for (i = 0; i < sizeof(Packet); i++)
+							{
+									if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
+									{
+											putchar(ESC_BYTE);				
+									}
+									putchar (streamAVR2ARM[i]);
+							}
+							putchar(STOP_BYTE);
 						sei();
-						//sei();
 						break;
 					case PHY_BUSY 		:
 					case PHY_BUSY_TX 	:
@@ -137,8 +136,18 @@ void APLCallback (MyMsgT *msg)
 					case PHY_CONFIGURATION_ERROR :
 						/* driver isnt correct initialized for ranging */						
 						cli();
-						sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						printf("%s \r\n",serial_print_buffer);
+							//sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+							//printf("%s \r\n",serial_print_buffer);
+							putchar(START_BYTE);
+							for (i = 0; i < sizeof(Packet); i++)
+							{
+									if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
+									{
+											putchar(ESC_BYTE);				
+									}
+									putchar (streamAVR2ARM[i]);
+							}
+							putchar(STOP_BYTE);
 						sei();
 						break;
 					default : break;
@@ -185,25 +194,24 @@ void APLCallback (MyMsgT *msg)
 		case PD_RANGING_FAST_INDICATION:
 					// getting the ranging result data
 					upRangingMsg = (RangingPIB*) msg->data;
-
 					pktAVR2ARM->data_double[0] = upRangingMsg->distance;
 					pktAVR2ARM->data_double[1] = upRangingMsg->error;
+					pktAVR2ARM->type = PKT_TYPE_RESULT;
 					char * streamAVR2ARM = (char *)pktAVR2ARM;
 					cli();
-					sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-					printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
-						
-					// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
-					putchar(START_BYTE);
-					for (i = 0; i < sizeof(Packet); i++)
-					{
-							if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
-							{
-									putchar(ESC_BYTE);				
-							}
-							putchar (streamAVR2ARM[i]);
-					}
-					putchar(STOP_BYTE);
+						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+						// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));						
+						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+						putchar(START_BYTE);
+						for (i = 0; i < sizeof(Packet); i++)
+						{
+								if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
+								{
+										putchar(ESC_BYTE);				
+								}
+								putchar (streamAVR2ARM[i]);
+						}
+						putchar(STOP_BYTE);
 					sei();
 					break;
 
@@ -226,7 +234,7 @@ void APLInit(void)
 {
 
 	temp_pkt.id = 0;
-	temp_pkt.type = 'r';
+	temp_pkt.type = PKT_TYPE_RANGING;
 	temp_pkt.checksum = 0;
 	temp_pkt.dest = 0;
 	temp_pkt.src = 0;
@@ -240,8 +248,8 @@ void APLInit(void)
 
 	// send reset signal to ARM
 	putchar(START_BYTE);
-  putchar(RESET_BYTE);
-  putchar(STOP_BYTE);
+	putchar(RESET_BYTE);
+	putchar(STOP_BYTE);
    	
 	/* These variables are used by the demo application.
 	 * They are used by the user interface

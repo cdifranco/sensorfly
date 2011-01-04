@@ -212,7 +212,7 @@ void sf_uart0_pkt_send(Packet *pkt)
 
     tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
     rU0THR = START_BYTE;
-    for (i = 0; i< sizeof(Packet); i++ )
+    for (i = 0; i < sizeof(Packet); i++ )
     { 
        if (pkt_bytes[i] == START_BYTE || pkt_bytes[i] == STOP_BYTE || pkt_bytes[i] == ESC_BYTE || pkt_bytes[i] == RESET_BYTE || pkt_bytes[i] == FAIL_BYTE || pkt_bytes[i] == SUCC_BYTE)
        {
@@ -222,6 +222,7 @@ void sf_uart0_pkt_send(Packet *pkt)
        tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
        rU0THR = pkt_bytes[i];
     }
+    tn_sem_acquire(&semFifoEmptyTxUART0, TN_WAIT_INFINITE);
     rU0THR = STOP_BYTE;
     tn_sem_signal(&semTxUART0);
 }

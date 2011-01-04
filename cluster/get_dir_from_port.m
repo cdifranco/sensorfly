@@ -1,6 +1,6 @@
 function dir = get_dir_from_port(node_id, port)
 serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-msg_array = [uint8('0'),uint8('q'),uint8(0),uint8(node_id),uint8('0'),uint8(32),typecast(uint16('c'),'uint8')]
+msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(node_id),uint8('0'),uint8(32),typecast(uint16('c'),'uint8')]
 % open the serial port
 try
     fopen(serial_port);
@@ -33,9 +33,11 @@ try
     while serial_port.BytesAvailable < 3
     end
     rx_pkt_info = fscanf(serial_port)
-    %rx_pkt_info = fread(serial_port,serial_port.BytesAvailable,'uint8')
-    %convert
-    dir = 1;
+    temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
+    pkt_rx = char(temp_str);
+    data_int = str2num(pkt_rx(7,:))
+    data_double = str2num(pkt_rx(8,:))
+    dir = data_int;
 catch ME
     fclose(serial_port);
     error('fail to read from the serial port, check connection and name'); 

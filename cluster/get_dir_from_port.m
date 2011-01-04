@@ -1,6 +1,6 @@
 function dir = get_dir_from_port(node_id, port)
 serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(node_id),uint8('0'),uint8(32),typecast(uint16('c'),'uint8')]
+msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(node_id),uint8('0'),uint8(32)]
 % open the serial port
 try
     fopen(serial_port);
@@ -36,7 +36,6 @@ try
     temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
     pkt_rx = char(temp_str);
     data_int = str2num(pkt_rx(7,:))
-    data_double = str2num(pkt_rx(8,:))
     dir = data_int;
 catch ME
     fclose(serial_port);

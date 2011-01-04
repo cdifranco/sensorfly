@@ -35,8 +35,6 @@
 // Source Address
 #define SRC_ADDR 1
 
-//#define SENDER 1
-//#define RECEIVER 1
 #define RANGING 1
 //#define ANCHOR 1
 //#define NODE 1
@@ -57,13 +55,14 @@ extern uint32_t eventPattern;
     \param none
     \return none
 */
-int main(void){
+int main(void)
+{
 
-   hardware_init();
-
-   tn_start_system(); //-- Never returns
-
-   return 1;
+//   hardware_init();
+//
+//   tn_start_system(); //-- Never returns
+//
+//   return 1;
 }
 
 /*! \fn void  tn_app_init()
@@ -125,31 +124,6 @@ void task_app_func(void * par)
            sf_led_off();
         }      
         Blink = Blink ^ 1;
-        
-      //receive from ARM   
-#ifdef RECEIVER
-      Packet * pkt_rx = sf_network_pkt_receive();
-      pkt_rx->data_int[0] = 'a';
-      pkt_rx->data_int[1] = 'b';
-      pkt_rx->dest = pkt_rx->src;
-      pkt_rx->src = SRC_ADDR;
-      sf_network_pkt_send(pkt_rx); 
-#endif
-
-#ifdef SENDER
-      if (flag < 2)
-      {
-          Packet pkt;
-          //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-          sf_network_pkt_gen(&pkt, 0, PKT_TYPE_DATA, 0, 2, SRC_ADDR);
-          pkt.data_int[0] = SRC_ADDR;
-          pkt.data_int[1] = '\0';
-          sf_network_pkt_send(&pkt); 
-          flag++;
-      }
-      Packet * pkt_rx = sf_network_pkt_receive();
-      char data1 = pkt_rx->data_int[0];
-#endif
 
 #ifdef RANGING
       Packet pkt;
@@ -178,12 +152,14 @@ void task_app_func(void * par)
 #ifdef ANCHOR
       // waiting for command
       Packet * pkt_rx = sf_network_pkt_receive();
+
       Packet pkt;
+      uint8_t ranging_dest = (uint8_t)pkt_rx->data_int[0];
       // execute command     
       while (1)
       {
           //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-          sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, 2, SRC_ADDR);
+          sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, ranging_dest, SRC_ADDR);
           // send ranging packet
           sf_network_pkt_send(&pkt);       
           Packet * pkt_ranging_result = sf_network_pkt_receive();

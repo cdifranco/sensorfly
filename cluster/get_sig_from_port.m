@@ -3,7 +3,7 @@ function sig = get_sig_from_port(node_id, port, base_number)
 sig = [];
 for anchor_id = 1:base_number
     serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-    msg_array = [uint8('0'),uint8('q'),uint8(0),uint8(anchor_id),uint8('0'),uint8(32),typecast(uint16('r'),'uint8'),typecast(uint16(node_id),'uint8')]
+    msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(anchor_id),uint8('0'),uint8(32),typecast(uint16('r'),'uint8'),typecast(uint16(node_id),'uint8')]
     try
         fopen(serial_port);
     catch ME
@@ -35,7 +35,11 @@ for anchor_id = 1:base_number
         while serial_port.BytesAvailable < 3
         end
         rx_pkt_info = fscanf(serial_port)
-        sig = [sig 1]
+        temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
+        pkt_rx = char(temp_str);
+        data_int = str2num(pkt_rx(7,:))
+        data_double = str2num(pkt_rx(8,:))
+        sig = [sig data_double]
     catch ME
         fclose(serial_port);
         error('fail to read from the serial port, check connection and name'); 

@@ -67,6 +67,7 @@ uint8_t src_addr;
 // temp packet: for ranging info mostly
 Packet temp_pkt;
 Packet * pktAVR2ARM = &temp_pkt;
+char * streamAVR2ARM = NULL;
 /**
  * @brief Process incoming messages.
  * @param *msg this is the message pointer
@@ -103,7 +104,7 @@ void APLCallback (MyMsgT *msg)
 				pktAVR2ARM->data_double[0] = upRangingMsg->distance;
 				pktAVR2ARM->data_double[1] = upRangingMsg->error;
 				pktAVR2ARM->type = PKT_TYPE_RESULT;
-				char * streamAVR2ARM = (char *)pktAVR2ARM;
+				streamAVR2ARM = (char *)pktAVR2ARM;
 				switch(msg->status)
 				{
 					case PHY_SUCCESS	:
@@ -203,7 +204,7 @@ void APLCallback (MyMsgT *msg)
 					pktAVR2ARM->data_double[0] = upRangingMsg->distance;
 					pktAVR2ARM->data_double[1] = upRangingMsg->error;
 					pktAVR2ARM->type = PKT_TYPE_RESULT;
-					char * streamAVR2ARM = (char *)pktAVR2ARM;
+					streamAVR2ARM = (char *)pktAVR2ARM;
 					cli();
 #ifndef IS_BASE
 						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);

@@ -41,8 +41,9 @@ void PrintPacket(Packet *pkt)
 void PrintPacketLog(Packet *pkt)
 {
 // id, src, dest, type, data, length ,checksum
-    printf(" %d, %d, %d, %c, %d, %d\r\n", pkt->id, pkt->src, pkt->dest, pkt->type, pkt->length, pkt->checksum);
+	printf(" %d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f\r\n", pkt->id, pkt->type, pkt->checksum, pkt->dest, pkt->src, pkt->length, pkt->data_int[0],pkt->data_int[1],pkt->data_int[2], pkt->data_double[0], pkt->data_double[1]);
 }
+
 
 void PrintRangingLog(uint8_t src, uint8_t dest, RangingPIB * ranginginfo)
 {

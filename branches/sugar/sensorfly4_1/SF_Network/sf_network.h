@@ -23,10 +23,12 @@
   * Packet Part
   */
     
-#define PKT_TYPE_RANGING 'r'
-#define PKT_TYPE_DATA    'd'
-#define PKT_TYPE_SETTING 's'
-#define PKT_TYPE_REQUEST 'q'
+#define PKT_TYPE_RANGING 	'g'
+#define PKT_TYPE_RESULT 	'r'
+#define PKT_TYPE_REQUEST 	'q'
+#define PKT_TYPE_TERMINAL 	't'
+#define PKT_TYPE_DATA           'd'
+#define PKT_TYPE_SETTING        's'
 
 typedef struct
 {

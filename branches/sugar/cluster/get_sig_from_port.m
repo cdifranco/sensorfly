@@ -3,7 +3,7 @@ function sig = get_sig_from_port(node_id, port, base_number)
 sig = [];
 for anchor_id = 1:base_number
     serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-    msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(anchor_id),uint8('0'),uint8(32),typecast(uint16('r'),'uint8'),typecast(uint16(node_id),'uint8')]
+    msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(anchor_id),uint8('0'),uint8(32), typecast(uint16(node_id),'uint8')]
     try
         fopen(serial_port);
     catch ME

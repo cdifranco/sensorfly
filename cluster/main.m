@@ -1,12 +1,13 @@
 initialization;
 %%
-for main_loop_count = 10:10
+for main_loop_count = 1:1
     for base_number = base_number_s: base_number_e
         %testing paths
-        generate_paths;
+        %generate_paths;
         
-        fprintf('-----start: base station number %d clustering-----\n', base_number);
+        %fprintf('-----start: base station number %d clustering-----\n', base_number);
         basic_cluster;
+        %{
         fprintf('-----start: base station number %d testing1-----\n', base_number);
         testing;
       
@@ -23,6 +24,7 @@ for main_loop_count = 10:10
         clear reading;
         fprintf('-----start: base station number %d testing3-----\n', base_number);
         rand_testing;
+        %}
 
     end
     clear_up;

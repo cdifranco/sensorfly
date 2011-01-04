@@ -21,6 +21,8 @@
  </Memory4>
  <Project>
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -55,6 +57,9 @@
  <Watch4>
   <Watches active="0" update="Never" />
  </Watch4>
- <Files/>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" y="166" path="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" left="0" selected="1" name="unnamed" top="147" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" y="26" path="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" left="0" selected="0" name="unnamed" top="18" />
+ </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\SF_Firmware\SF_Sensors" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

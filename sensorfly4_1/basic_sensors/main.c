@@ -161,6 +161,7 @@ void task_app_func(void * par)
           //para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
           sf_network_pkt_gen(&pkt, 12, PKT_TYPE_RANGING, 0, ranging_dest, SRC_ADDR);
           // send ranging packet
+          // TODO: add time out part
           sf_network_pkt_send(&pkt);       
           Packet * pkt_ranging_result = sf_network_pkt_receive();
           if (pkt_ranging_result == NULL)
@@ -178,6 +179,7 @@ void task_app_func(void * par)
       }
       // get ranging result packet
       pkt_ranging_result->src = SRC_ADDR;
+      pkt_ranging_result->dest = 0;
       sf_network_pkt_send(&pkt_ranging_result);       
   
 #endif

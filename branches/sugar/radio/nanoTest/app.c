@@ -112,9 +112,9 @@ void APLCallback (MyMsgT *msg)
 					case PHY_NO_ACK		:
 						/* no hwack received, ranging didnt start */
 						cli();
-						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
-						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
-						// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
+							// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+							// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
+							// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));
 												
 							putchar(START_BYTE);
 							for (i = 0; i < sizeof(Packet); i++)
@@ -173,8 +173,8 @@ void APLCallback (MyMsgT *msg)
 							break;
 					}
 				  	cli();
-					printf("print packet: msg length: %d \r\n",msg->len);
-					PrintPacketLog(pkt_rx);
+					//printf("print packet: msg length: %d \r\n",msg->len);
+					//PrintPacketLog(pkt_rx);
 
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)

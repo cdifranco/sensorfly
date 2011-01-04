@@ -1,8 +1,6 @@
 center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
-trans_history = [];
-%obstacle_history = [];
-%generate_base;      
+trans_history = [];     
 
 for mainloop = 1 : main_loop_count
     node_id = mainloop + 10;

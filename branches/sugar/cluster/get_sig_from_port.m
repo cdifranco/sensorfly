@@ -3,7 +3,7 @@ function sig = get_sig_from_port(node_id, port, base_number)
 sig = [];
 for anchor_id = 1:base_number
     serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-    msg_array = [uint8('0'),uint8('t'),uint8(0),uint8(anchor_id),uint8('0'),uint8(32), typecast(uint16(node_id),'uint8')]
+    msg_array = [uint8(0),uint8('t'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(node_id),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')]
     try
         fopen(serial_port);
     catch ME
@@ -32,14 +32,15 @@ for anchor_id = 1:base_number
 
     % wait for respense of direction to anchor
     try
-        while serial_port.BytesAvailable < 3
+        while serial_port.BytesAvailable < 24
         end
-        rx_pkt_info = fscanf(serial_port)
-        temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
-        pkt_rx = char(temp_str);
-        data_int = str2num(pkt_rx(7,:))
-        data_double = str2num(pkt_rx(8,:))
-        sig = [sig data_double]
+        rx_pkt_info = fread(serial_port,serial_port.BytesAvailable,'uint8')'
+        char(rx_pkt_info)
+        %temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
+        %pkt_rx = char(temp_str);
+        %data_int = str2num(pkt_rx(7,:))
+        %data_double = str2num(pkt_rx(8,:))
+        sig = [sig 0];%data_double]
     catch ME
         fclose(serial_port);
         error('fail to read from the serial port, check connection and name'); 

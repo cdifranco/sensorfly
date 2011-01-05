@@ -2,8 +2,9 @@
 <session>
  <Bookmarks/>
  <Breakpoints>
-  <BreakpointListItem line="159" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
-  <BreakpointListItem line="163" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+  <BreakpointListItem line="159" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+  <BreakpointListItem line="163" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+  <BreakpointListItem line="165" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" expression="" />
   <BreakpointListItem line="96" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\SF_Network\sf_network.c" expression="" />
  </Breakpoints>
  <ExecutionCountWindow/>
@@ -23,6 +24,8 @@
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Firmware" name="unnamed" />
+  <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Network" name="unnamed" />
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -42,10 +45,10 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Never" >
-   <Watchpoint linenumber="179" radix="16" name="pkt_ranging_result" expression="pkt_ranging_result" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/basic_sensors/main.c" />
-   <Watchpoint linenumber="141" radix="-1" name="fail" expression="fail" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/sf_network/sf_network.c" />
-   <Watchpoint evalMode="1" linenumber="117" evalType="1" radix="-1" name="pkt" expression="pkt" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/sf_network/sf_network.c" />
    <Watchpoint evalMode="1" linenumber="132" evalType="1" radix="16" name="pkt_rx" expression="pkt_rx" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/basic_sensors/main.c" />
+   <Watchpoint evalMode="1" linenumber="117" evalType="1" radix="-1" name="pkt" expression="pkt" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/sf_network/sf_network.c" />
+   <Watchpoint linenumber="141" radix="-1" name="fail" expression="fail" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/sf_network/sf_network.c" />
+   <Watchpoint linenumber="179" radix="16" name="pkt_ranging_result" expression="pkt_ranging_result" filename="/home/jennifer/workspace/sensorfly_lab/sensorfly4_1/basic_sensors/main.c" />
   </Watches>
  </Watch1>
  <Watch2>
@@ -58,8 +61,10 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
-  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" y="166" path="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" left="0" selected="1" name="unnamed" top="147" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="14" debugPath="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" y="39" path="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" left="0" selected="1" name="unnamed" top="21" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" y="26" path="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" left="0" selected="0" name="unnamed" top="18" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.c" y="138" path="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.c" left="0" selected="0" name="unnamed" top="126" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Firmware\SF_UART\sf_uart.c" y="224" path="D:\sensorfly_impl\sensorfly4_1\SF_Firmware\SF_UART\sf_uart.c" left="0" selected="0" name="unnamed" top="24" />
  </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\SF_Firmware\SF_Sensors" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

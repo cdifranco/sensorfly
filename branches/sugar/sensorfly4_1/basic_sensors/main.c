@@ -33,10 +33,10 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 11
+#define SRC_ADDR 2
 
-// #define ANCHOR 1
-#define NODE 1
+#define ANCHOR 1
+//#define NODE 1
 //#define BASE 1
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
@@ -99,6 +99,7 @@ void task_app_func(void * par)
     tn_task_sleep(4000);
     unsigned short Blink = 1;
     Packet pkt_reset;
+    // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
     sf_network_pkt_gen(&pkt_reset, 1, PKT_TYPE_SETTING, 0, 0, SRC_ADDR);
     sf_network_pkt_send(&pkt_reset); 
 
@@ -132,6 +133,7 @@ void task_app_func(void * par)
 
       Packet pkt;
       uint8_t ranging_dest = (uint8_t)pkt_rx->data_int[0];
+      Packet * pkt_ranging_result = NULL;
       // execute command     
       while (1)
       {
@@ -140,7 +142,7 @@ void task_app_func(void * par)
           // send ranging packet
           // TODO: add time out part
           sf_network_pkt_send(&pkt);       
-          Packet * pkt_ranging_result = sf_network_pkt_receive();
+          pkt_ranging_result = sf_network_pkt_receive();
           if (pkt_ranging_result == NULL)
           {
               continue;
@@ -156,8 +158,8 @@ void task_app_func(void * par)
       }
       // get ranging result packet
       pkt_ranging_result->src = SRC_ADDR;
-      pkt_ranging_result->dest = 0;
-      sf_network_pkt_send(&pkt_ranging_result);       
+      pkt_ranging_result->dest = 1;
+      sf_network_pkt_send(pkt_ranging_result);       
   
 #endif
 

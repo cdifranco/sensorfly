@@ -12,7 +12,6 @@
 #define PKT_TYPE_TERMINAL 	't'
 #define PKT_TYPE_DATA    	'd'
 #define PKT_TYPE_SETTING 	's'
-#define START_SIGNAL 		's'
 
 #include	"ntrxranging.h"
 

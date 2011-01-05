@@ -190,7 +190,7 @@ void APLCallback (MyMsgT *msg)
 							}
 							putchar (msg->data[i]);
 					}
-					putchar(STOP_BYTE);						
+					putchar(STOP_BYTE);
 #else
 					PrintPacketLog(pkt_rx);
 #endif
@@ -209,7 +209,7 @@ void APLCallback (MyMsgT *msg)
 #ifndef IS_BASE
 						// sprintf(serial_print_buffer,"%07.2f,%03i",upRangingMsg->distance, upRangingMsg->error);
 						// printf("%s, dest: %d, size of Packet: %d\r\n",serial_print_buffer,apl->dest[5],sizeof(Packet));						
-						// PrintRangingLog(src_addr, apl->dest[5], upRangingMsg);
+						//PrintRangingLog(apl->src[5], apl->dest[5], upRangingMsg);PrintPacketLog(pktAVR2ARM);
 						putchar(START_BYTE);
 						for (i = 0; i < sizeof(Packet); i++)
 						{
@@ -286,6 +286,7 @@ void APLPoll (void)
 		CTSSet(0);
 #endif
 		Packet *pktARM2AVR = (Packet *)downMsg.data;
+		//PrintPacketLog(pktARM2AVR);
 		// check if the packet's format is correct
 		if (pktARM2AVR->checksum != 0)
 		{
@@ -294,8 +295,8 @@ void APLPoll (void)
 		else
 		{// checksum is correct: ADD CHECKSUM !!!
 				apl->dest[5] = pktARM2AVR->dest;
-				//PrintPacketLog(pktARM2AVR);
-				if (pktARM2AVR->type == PKT_TYPE_DATA)
+			//PrintPacketLog(pktARM2AVR);
+				if (pktARM2AVR->type == PKT_TYPE_DATA || pktARM2AVR->type == PKT_TYPE_RESULT)
 				{
 						// send the data packet
 						pktARM2AVR->src = apl->src[5];			
@@ -322,6 +323,7 @@ void APLPoll (void)
 						// terminal mode
 						pktARM2AVR->type = PKT_TYPE_REQUEST;
 						SendBuffer();
+						//printf("success");
 				}
 				else
 				{

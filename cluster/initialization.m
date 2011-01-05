@@ -7,7 +7,7 @@ base_number_s = 1;
 base_number_e = 1;
 testing_round = 1000;
 bel_threshold =0.0001;
-port = 'COM11';
+port = 'COM5';
 
 %measurements
 time = [];

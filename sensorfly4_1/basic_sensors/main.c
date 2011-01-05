@@ -33,7 +33,7 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 0
+#define SRC_ADDR 11
 
 // #define ANCHOR 1
 #define NODE 1
@@ -173,7 +173,7 @@ void task_app_func(void * par)
       while((GetCompassHeading(&heading, &pitch, &roll)));
       // generate packet and send back
       // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 0, SRC_ADDR);
+      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 1, SRC_ADDR);
       // put data into packet
       pkt.data_int[0] = heading;
       pkt.data_int[1] = pitch;

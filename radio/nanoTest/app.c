@@ -253,10 +253,10 @@ void APLInit(void)
 	
 	MyByte8T		s_address[] = {0,0,0,0,0,0};
 	MyByte8T		d_address[] = {0,0,0,0,0,0};
-	SetSrcAddr(0);
 	apl = &aplM;
 	memcpy(apl->src, s_address, 6);
 	memcpy(apl->dest, d_address, 6);
+	SetSrcAddr(1);
 
 	// send reset signal to ARM
 	putchar(START_BYTE);

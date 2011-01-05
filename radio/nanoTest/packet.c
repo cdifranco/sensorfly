@@ -41,7 +41,7 @@ void PrintPacket(Packet *pkt)
 void PrintPacketLog(Packet *pkt)
 {
 // id, src, dest, type, data, length ,checksum
-	printf(" %d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f\r\n", pkt->id, pkt->type, pkt->checksum, pkt->dest, pkt->src, pkt->length, pkt->data_int[0],pkt->data_int[1],pkt->data_int[2], pkt->data_double[0], pkt->data_double[1]);
+	printf(" %d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f", pkt->id, pkt->type, pkt->checksum, pkt->dest, pkt->src, pkt->length, pkt->data_int[0],pkt->data_int[1],pkt->data_int[2], pkt->data_double[0], pkt->data_double[1]);
 }
 
 

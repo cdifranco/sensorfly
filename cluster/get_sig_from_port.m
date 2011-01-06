@@ -3,7 +3,7 @@ function sig = get_sig_from_port(node_id, port, base_number)
 sig = [];
 for anchor_id = 1:base_number
     serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-    msg_array = [uint8(0),uint8('t'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(node_id),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')]
+    msg_array = [uint8(0),uint8('t'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(node_id),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
     try
         fopen(serial_port);
     catch ME
@@ -22,7 +22,7 @@ for anchor_id = 1:base_number
             end
              msg_new = [msg_new msg_array(i)];
         end
-        msg_new = [msg_new uint8(239)]
+        msg_new = [msg_new uint8(239)];
         fwrite(serial_port, msg_new, 'uint8','async');
     catch ME
         stopasync(serial_port);

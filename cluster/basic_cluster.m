@@ -8,8 +8,14 @@ for mainloop = 1 : main_loop_count
     bel = [];
     bel(1:size(center,1)) = 1/size(center,1);
     reading(sig_count,1) = 0;
+    get_dir = input('get direction? (1:yes; 0:no)');
+    if get_dir == 0
+        break;
+    end
     reading(sig_count,2) = get_dir_from_port(node_id, port);
+    fprintf('get real location\n');
     reading(sig_count, 3:4) = get_location();
+    fprintf('get signature\n');
     reading(sig_count, 5:4+base_number) = get_sig_from_port(node_id, port, base_number);% number of node we are observing
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
@@ -56,6 +62,7 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
+    pause(5);
 end
 %{
 figure;

@@ -33,11 +33,12 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 2
+#define SRC_ADDR 1
 
-#define ANCHOR 1
+// #define ANCHOR 1
 //#define NODE 1
-//#define BASE 1
+#define BASE 1
+
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
 TN_TCB  task_app;

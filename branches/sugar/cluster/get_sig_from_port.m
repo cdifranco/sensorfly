@@ -32,15 +32,13 @@ for anchor_id = 1:base_number
 
     % wait for respense of direction to anchor
     try
-        while serial_port.BytesAvailable < 24
-        end
-        rx_pkt_info = fread(serial_port,serial_port.BytesAvailable,'uint8')'
-        char(rx_pkt_info)
-        %temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
-        %pkt_rx = char(temp_str);
-        %data_int = str2num(pkt_rx(7,:))
-        %data_double = str2num(pkt_rx(8,:))
-        sig = [sig 0];%data_double]
+ %       while serial_port.BytesAvailable < 44
+ %       end
+        rx_pkt_info = fscanf(serial_port);
+        temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
+        pkt_rx = char(temp_str);
+        data_double = str2num(pkt_rx(10,:));
+        sig = [sig data_double]
     catch ME
         fclose(serial_port);
         error('fail to read from the serial port, check connection and name'); 

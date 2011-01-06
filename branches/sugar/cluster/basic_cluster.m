@@ -3,7 +3,7 @@ sig_count = 1;
 trans_history = [];     
 
 for mainloop = 1 : main_loop_count
-    node_id = mainloop + 11;
+    node_id = 12;
     %initiate the believe vector
     bel = [];
     bel(1:size(center,1)) = 1/size(center,1);

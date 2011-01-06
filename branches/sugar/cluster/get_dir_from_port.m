@@ -1,6 +1,6 @@
 function dir = get_dir_from_port(node_id, port)
 serial_port = serial(port,'BaudRate',38400,'DataBits',8);
-msg_array = [uint8(0),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')]
+msg_array = [uint8(0),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
 % open the serial port
 try
     fopen(serial_port);
@@ -19,7 +19,7 @@ try
         end
          msg_new = [msg_new msg_array(i)];
     end
-    msg_new = [msg_new uint8(239)]
+    msg_new = [msg_new uint8(239)];
     fwrite(serial_port, msg_new, 'uint8','async');
 catch ME
      stopasync(serial_port);
@@ -33,11 +33,12 @@ try
     
 %    while serial_port.BytesAvailable < 44
 %    end
+    fprintf('wait for dir\n');
     rx_pkt_info = fscanf(serial_port);
     temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
     pkt_rx = char(temp_str);
-    data_int = str2num(pkt_rx(7,:));
-    dir = data_int
+    data_int = str2num(pkt_rx(7,:))
+    dir = 1;%data_int
 catch ME
     fclose(serial_port);
     error('fail to read from the serial port, check connection and name'); 

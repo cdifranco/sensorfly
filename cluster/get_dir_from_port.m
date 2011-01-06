@@ -31,14 +31,13 @@ end
 try
     % wait for the transfer finished
     
-    while serial_port.BytesAvailable < 44
-    end
-    rx_pkt_info = fread(serial_port,serial_port.BytesAvailable,'uint8')'
-    char(rx_pkt_info)
-    %temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
-    %pkt_rx = char(temp_str);
-    %data_int = str2num(pkt_rx(7,:))
-    dir = 0;%data_int;
+%    while serial_port.BytesAvailable < 44
+%    end
+    rx_pkt_info = fscanf(serial_port);
+    temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
+    pkt_rx = char(temp_str);
+    data_int = str2num(pkt_rx(7,:));
+    dir = data_int
 catch ME
     fclose(serial_port);
     error('fail to read from the serial port, check connection and name'); 

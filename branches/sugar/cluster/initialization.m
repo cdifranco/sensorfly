@@ -1,6 +1,7 @@
 close all
 clear all
-%% 
+
+load ('./loading_files/distribution_table_0p5.mat')
 direction_number = 4;%how many direction can each sensorfly take
 trans_init_number = 1;
 base_number_s = 4;

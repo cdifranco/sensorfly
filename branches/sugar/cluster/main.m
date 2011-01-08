@@ -1,6 +1,6 @@
 initialization;
 %%
-for main_loop_count = 100:100
+for main_loop_count = 1000:1000
     for base_number = base_number_s: base_number_e
         %testing paths
         %generate_paths;

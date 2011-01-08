@@ -1,11 +1,10 @@
 center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];     
-
+packet_id = 0;
 for mainloop = 1 : main_loop_count
     mainloop
     node_id = 12;
-    packet_id = mod(mainloop, 255)+1;
     %initiate the believe vector
 %{
     bel = [];
@@ -16,7 +15,7 @@ for mainloop = 1 : main_loop_count
         break;
     end
 %}
-    reading(sig_count,2) = get_dir_from_port(packet_id, node_id, port);
+    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, port);
 %{    
     fprintf('get real location\n');
     reading(sig_count, 3:4) = get_location();
@@ -70,7 +69,6 @@ for mainloop = 1 : main_loop_count
     sig_count = sig_count + 1;
 %}
    % pause(2);
-
 end
 %{
 figure;

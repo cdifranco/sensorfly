@@ -1,5 +1,6 @@
-function dir = get_dir_from_port(packet_id, node_id, port)
+function [dir packet_id] = get_dir_from_port(packet_id, node_id, port)
 serial_port = serial(port,'BaudRate',38400,'DataBits',8);
+packet_id = mod(packet_id + 1, 255);
 msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
 % open the serial port
 try
@@ -40,6 +41,8 @@ while 1
     catch ME
         % send request of direction to anchor
         try
+            packet_id = mod(packet_id + 1, 255);
+            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % id, type, checksum, dest, src, length, data_int[5], data_float[2]
             msg_new = [uint8(255)];
             for i = 1 : length(msg_array)

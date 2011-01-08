@@ -107,10 +107,22 @@ void task_app_func(void * par)
     /* Prevent compiler warning */
     par = par;
     int flag = 1;
+    // check if AVR restarted
+    int reset;
+    Packet * pkt_rx = NULL;
+    Packet pkt;
+#ifdef ANCHOR
+    uint8_t ranging_dest;
+    Packet * pkt_ranging_result = NULL;
+#endif
+#ifdef NODE
+    // get compass reading 
+    uint16_t heading;
+    uint16_t pitch; 
+    uint16_t roll;
+#endif
     while(1)
     {
-        // check if AVR restarted
-        int reset;
         reset = tn_event_wait_polling(&eventReset,0x00000001,TN_EVENT_WCOND_OR,&eventPattern);
         if (reset == TERR_NO_ERR)
         {
@@ -130,11 +142,9 @@ void task_app_func(void * par)
 
 #ifdef ANCHOR
       // waiting for command
-      Packet * pkt_rx = sf_network_pkt_receive();
+      pkt_rx = sf_network_pkt_receive();
 
-      Packet pkt;
-      uint8_t ranging_dest = (uint8_t)pkt_rx->data_int[0];
-      Packet * pkt_ranging_result = NULL;
+      ranging_dest = (uint8_t)pkt_rx->data_int[0];
       // execute command     
       while (1)
       {
@@ -165,14 +175,9 @@ void task_app_func(void * par)
 #endif
 
 #ifdef NODE
-      Packet * pkt_rx = sf_network_pkt_receive();
+      pkt_rx = sf_network_pkt_receive();
 
-      Packet pkt;
       // check if it is the right order
-      // get compass reading 
-      uint16_t heading;
-      uint16_t pitch; 
-      uint16_t roll;
       while((GetCompassHeading(&heading, &pitch, &roll)));
       // generate packet and send back
       // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
@@ -183,9 +188,9 @@ void task_app_func(void * par)
       pkt.data_int[2] = roll;
       sf_network_pkt_send(&pkt);
 #endif
+
       /* Sleep 2000 ticks */
       tn_task_sleep(2000);
 
    }
 }
-

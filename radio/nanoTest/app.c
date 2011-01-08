@@ -123,7 +123,7 @@ void APLCallback (MyMsgT *msg)
 							{
 									if (streamAVR2ARM[i] == START_BYTE || streamAVR2ARM[i] == ESC_BYTE || streamAVR2ARM[i] == STOP_BYTE)
 									{
-											putchar(ESC_BYTE);				
+											putchar(ESC_BYTE);
 									}
 									putchar (streamAVR2ARM[i]);
 							}
@@ -178,9 +178,10 @@ void APLCallback (MyMsgT *msg)
 							break;
 					}
 				  	cli();
-					//printf("print packet: msg length: %d \r\n",msg->len);
-					//PrintPacketLog(pkt_rx);
+
 #ifndef IS_BASE	
+				  	//printf("print packet: msg length: %d \r\n",msg->len);
+					printf("AVRtoARM:");PrintPacketLog(pkt_rx);
 					putchar(START_BYTE);
 					for (i = 0; i < msg->len; i++)
 					{
@@ -259,9 +260,11 @@ void APLInit(void)
 	SetSrcAddr(1);
 
 	// send reset signal to ARM
+	cli();
 	putchar(START_BYTE);
 	putchar(RESET_BYTE);
 	putchar(STOP_BYTE);
+	sei();
    	
 	/* These variables are used by the demo application.
 	 * They are used by the user interface
@@ -279,6 +282,7 @@ void APLInit(void)
 
 void APLPoll (void)
 {
+	static int count_pkt = 0;
 	if (__pkt_rx_flag)
 	{
 #ifdef RTS_CTS_ENABLE
@@ -290,33 +294,43 @@ void APLPoll (void)
 		// check if the packet's format is correct
 		if (pktARM2AVR->checksum != 0)
 		{
-				sendFailAck();
+			cli();
+			sendFailAck();
+			sei();
 		}
 		else
 		{// checksum is correct: ADD CHECKSUM !!!
 				apl->dest[5] = pktARM2AVR->dest;
-			//PrintPacketLog(pktARM2AVR);
+#ifndef IS_BASE
+				cli();printf("ARMtoAVR:", count_pkt);PrintPacketLog(pktARM2AVR);sei();
+#endif
 				if (pktARM2AVR->type == PKT_TYPE_DATA || pktARM2AVR->type == PKT_TYPE_RESULT)
-				{
+				{count_pkt++;
 						// send the data packet
 						pktARM2AVR->src = apl->src[5];			
 						SendBuffer();
-						// inform ARM that the transform is correct	
-						sendSuccAck();						
+						// inform ARM that the transform is correct
+						cli();
+						sendSuccAck();//printf("result count: %d\r\n", count_pkt);
+						sei();
 				}
 				else if (pktARM2AVR->type == PKT_TYPE_RANGING)
 				{
 						// send ranging pkt
 						SendRange();
 						// inform ARM that the transform is correct	
+						cli();
 						sendSuccAck();
+						sei();
 				}
 				else if (pktARM2AVR->type == PKT_TYPE_SETTING)
 				{
 						// setting src address
 						SetAVR(pktARM2AVR);
 						// inform ARM that the transform is correct	
+						cli();
 						sendSuccAck();
+						sei();
 				}
 				else if (pktARM2AVR->type == PKT_TYPE_TERMINAL)
 				{
@@ -328,8 +342,10 @@ void APLPoll (void)
 				else
 				{
 						apl->len = 0;
+						cli();
 						//printf("packet type error: %c \n", pktARM2AVR->type);
 						sendFailAck();
+						sei();
 				}
 		}
 		__pkt_rx_flag = 0;
@@ -342,19 +358,19 @@ void APLPoll (void)
 
 void sendSuccAck(void)
 {
-		putchar(START_BYTE);
-		putchar(SUCC_BYTE);
-		putchar(STOP_BYTE);
-		printf("success");	
+	putchar(START_BYTE);
+	putchar(SUCC_BYTE);
+	putchar(STOP_BYTE);
+	printf("success");
 }
 
 void sendFailAck(void)
 {
-		//printf("fail: ");		
-		putchar(START_BYTE);
-		putchar(FAIL_BYTE);
-		putchar(STOP_BYTE);
-		apl->len = 0;
+	putchar(START_BYTE);
+	putchar(FAIL_BYTE);
+	putchar(STOP_BYTE);
+	printf("fail");
+	apl->len = 0;
 }
 
 void CTSSet (int new_state)
@@ -420,6 +436,4 @@ void SetStartComm(void)
 	downMsg.value = PHY_RX_ON;
 	PLMESap (&downMsg);
 }
-
-
 

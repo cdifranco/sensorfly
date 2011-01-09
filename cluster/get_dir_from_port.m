@@ -36,7 +36,15 @@ while 1
         temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
         pkt_rx = char(temp_str);
         data_int = str2num(pkt_rx(7,:))
-        dir = 1;%data_int
+        if data_int <= 450 || data_int > 3150
+            dir = 1;
+        elseif data_int > 450 && data_int <= 1350
+            dir = 2;
+        elseif data_int > 1350 && data_int <= 2250
+            dir = 3;
+        else
+            dir = 4;
+        end
         break;
     catch ME
         % send request of direction to anchor

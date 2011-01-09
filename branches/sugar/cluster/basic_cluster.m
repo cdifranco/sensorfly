@@ -2,26 +2,23 @@ center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3.
 sig_count = 1;
 trans_history = [];     
 packet_id = 0;
+bel = [];
+bel(1:size(center,1)) = 1/size(center,1);
+    
 for mainloop = 1 : main_loop_count
     mainloop
     node_id = 12;
     %initiate the believe vector
-%{
-    bel = [];
-    bel(1:size(center,1)) = 1/size(center,1);
-    reading(sig_count,1) = 0;
-    get_dir = input('get direction? (1:yes; 0:no)');
-    if get_dir == 0
-        break;
-    end
-%}
-    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, port);
-%{    
-    fprintf('get real location\n');
-    reading(sig_count, 3:4) = get_location();
-    fprintf('get signature\n');
-    reading(sig_count, 5:4+base_number) = get_sig_from_port(packet_id, node_id, port, base_number);% number of node we are observing
 
+    reading(sig_count,1) = 0;
+    %get_dir = input('get direction? (1:yes; 0:no)');
+    %if get_dir == 0
+    %    break;
+    %end
+    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, port);
+    %fprintf('get real location\n');
+    reading(sig_count, 3:4) = [0,0];%get_location();
+    [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, port, base_number);
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
     for j = 1:size(center,1)
@@ -67,8 +64,7 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-%}
-   % pause(2);
+    pause(2);
 end
 %{
 figure;

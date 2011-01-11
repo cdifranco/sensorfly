@@ -16,9 +16,9 @@ for mainloop = 1 : main_loop_count
     %    break;
     %end
     [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, port);
-    %fprintf('get real location\n');
-    reading(sig_count, 3:4) = [0,0];%get_location();
-    [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, port, base_number);
+    reading(sig_count, 3) = 0;%get_area();%area id 
+    reading(sig_count, 4) = 0; %researved element in the structure
+    [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, port, base_number);
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
     for j = 1:size(center,1)

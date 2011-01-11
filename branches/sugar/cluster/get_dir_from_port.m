@@ -18,7 +18,7 @@ try
         if msg_array(i) == uint8(255) || msg_array(i) == uint8(27) || msg_array(i) == uint8(239)
             msg_new = [msg_new uint8(27)];
         end
-         msg_new = [msg_new msg_array(i)];
+        msg_new = [msg_new msg_array(i)];
     end
     msg_new = [msg_new uint8(239)];
     fwrite(serial_port, msg_new, 'uint8','async');

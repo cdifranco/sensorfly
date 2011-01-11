@@ -1,10 +1,7 @@
 initialization;
 %%
-for main_loop_count = 1000:1000
+for main_loop_count = 10:10
     for base_number = base_number_s: base_number_e
-        %testing paths
-        %generate_paths;
-        
         basic_cluster;
         %{
         fprintf('-----start: base station number %d testing1-----\n', base_number);
@@ -26,7 +23,6 @@ for main_loop_count = 1000:1000
         %}
 
     end
-    clear_up;
 end
 
     

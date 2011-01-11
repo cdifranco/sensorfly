@@ -6,12 +6,11 @@ e = 0;
 e_o = 0;
 total_bump_count = 0;
 total_bump_count_o = 0;
+packet_id = 0;
 
 for j = 1:testing_round
-    startX = path(j,1);
-    startY = path(j,2);
-    destX = path(j,3);
-    destY = path(j,4);
+    startArea = input('start area: ');
+    destArea = input('stop area: ');
     %create matrix
     noOfNodes = size(trans_history,1);
     matrix = zeros(noOfNodes, noOfNodes);
@@ -26,7 +25,7 @@ for j = 1:testing_round
             end;
         end;
     end;
-    [succ sigRoute clusterRoute coordRoute startClus destClus bump_count] = navigate_basic([startX, startY], [destX, destY], step_len, b, base_number, trans_history, center_sig, room, coefficient, matrix);
+    [succ sigRoute clusterRoute coordRoute startClus destClus bump_count] = navigate_basic(packet_id, startArea, destArea, step_len, b, base_number, trans_history, center_sig, room, coefficient, matrix);
     [succ_o sigRoute_o clusterRoute_o coordRoute_o startClus_o destClus_o bump_count_o] = navigate_obstacle([startX, startY], [destX, destY], step_len, b, base_number, direction_number, trans_history, obstacle_history, center_sig, room, coefficient, matrix);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);

@@ -1,4 +1,4 @@
-function [path direction_count direction_order totalCost] = guide(currentSig, destCluster, transHistory, centers, matrix)
+function [path direction_count direction_order totalCost] = guide(reading, currentSig, destCluster, transHistory, centers, matrix)
 
 noOfNodes  = size(transHistory,1);
 direction_count = [];
@@ -12,7 +12,7 @@ else
     farthestPreviousHop(1:noOfNodes) = 1:noOfNodes;     % used to compute the RTS/CTS range;
     farthestNextHop(1:noOfNodes) = 1:noOfNodes;
 
-    startPoint = get_cluster(centers, currentSig);
+    startPoint = get_cluster(reading, currentSig, size(centers,1));
     endPoint = destCluster;
     [path, totalCost] = dijkstra(noOfNodes, matrix, startPoint, endPoint, farthestPreviousHop, farthestNextHop);
     if ~isempty(path)

@@ -1,6 +1,6 @@
 initialization;
 %%
-for main_loop_count = 10:10
+for main_loop_count = 50:50
     for base_number = base_number_s: base_number_e
         basic_cluster;
         %{

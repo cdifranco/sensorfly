@@ -4,7 +4,14 @@ trans_history = [];
 packet_id = 0;
 bel = [];
 bel(1:size(center,1)) = 1/size(center,1);
-    
+% open the serial port
+try
+    fopen(serial_port);
+catch ME
+   % print out warning
+   error('fail to open the serial port, check connection and name'); 
+end
+
 for mainloop = 1 : main_loop_count
     mainloop
     node_id = 12;
@@ -15,10 +22,13 @@ for mainloop = 1 : main_loop_count
     %if get_dir == 0
     %    break;
     %end
-    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, port);
+    fprintf('get readings\n');
+    tic;
+    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
     reading(sig_count, 3) = 0;%get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
-    [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, port, base_number);
+    [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
+    toc;
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
     for j = 1:size(center,1)
@@ -73,4 +83,13 @@ hold on;
 draw_center;
 hold off;
 %}
+try    
+    stopasync(serial_port);
+    fclose(serial_port);
+    delete(serial_port);
+    clear serial_port;
+catch ME
+    % print out warning
+   error('fail to close the serial port, check connection and name'); 
+end
 center_sig = center(:,5:end);

@@ -13,7 +13,7 @@ catch ME
 end
 
 for mainloop = 1 : main_loop_count
-    mainloop
+    fprintf('round %d\n',mainloop);
     node_id = 12;
     %initiate the believe vector
 
@@ -74,7 +74,7 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-    pause(2);
+    %pause(0.5);
 end
 %{
 figure;

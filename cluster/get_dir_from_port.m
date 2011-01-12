@@ -1,5 +1,4 @@
 function [dir packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
-fprintf('get dir\n');
 packet_id = mod(packet_id + 1, 255);
 msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
 % send request of direction to anchor
@@ -40,6 +39,7 @@ while 1
         break;
     catch ME
         % send request of direction to anchor
+        fprintf('stack at getting dir\n');
         try
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
@@ -66,4 +66,7 @@ while 1
         continue;
     end
 end
+flushinput(serial_port);
+%stopasync(serial_port);
+%flushoutput(serial_port);             
 

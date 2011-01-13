@@ -1,9 +1,9 @@
 center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];     
-packet_id = floor(rand*254);
 bel = [];
 bel(1:size(center,1)) = 1/size(center,1);
+serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 % open the serial port
 try
     fopen(serial_port);
@@ -11,7 +11,7 @@ catch ME
    % print out warning
    error('fail to open the serial port, check connection and name'); 
 end
-
+% main loop
 for mainloop = 1 : main_loop_count
     fprintf('round %d\n',mainloop);
     node_id = 12;
@@ -23,9 +23,9 @@ for mainloop = 1 : main_loop_count
         break;
     end
     tic;
-    %[reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
-    reading(sig_count,2) = 1;
-    reading(sig_count, 3) = 1;%get_area();%area id 
+    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
+    %reading(sig_count,2) = 1;
+    reading(sig_count, 3) = get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
     [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
     toc;
@@ -76,14 +76,8 @@ for mainloop = 1 : main_loop_count
     sig_count = sig_count + 1;
     %pause(0.5);
 end
-%{
-figure;
-draw_cluster(1,size(center,1),reading);
-hold on;
-draw_center;
-hold off;
-%}
-try    
+% close port
+try
     stopasync(serial_port);
     fclose(serial_port);
     delete(serial_port);
@@ -92,4 +86,6 @@ catch ME
     % print out warning
    error('fail to close the serial port, check connection and name'); 
 end
+%filter the centers
+cn = 1/size(center,1)*center_filter*main_loop_count;
 center_sig = center(:,5:end);

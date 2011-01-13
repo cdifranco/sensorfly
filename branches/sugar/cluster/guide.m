@@ -1,4 +1,4 @@
-function [path direction_count direction_order totalCost] = guide(reading, currentSig, destCluster, transHistory, centers, matrix)
+function [path direction_count direction_order totalCost] = guide(currentSig, destCluster, transHistory, centers, matrix)
 
 noOfNodes  = size(transHistory,1);
 direction_count = [];

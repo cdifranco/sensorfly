@@ -33,9 +33,9 @@ for anchor_id = 1:base_number
         % wait for respense of direction to anchor
         try
             rx_pkt_info = fscanf(serial_port);
-            temp_double = textscan(rx_pkt_info, '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
-            data_double = temp_double{10};
-            data_error = temp_double{11};
+            temp_double = textscan(rx_pkt_info,  '%f,%f');
+            data_double = temp_double{1};
+            data_error = temp_double{2};
             
             if data_error ~= 0.0
                 continue;
@@ -43,7 +43,7 @@ for anchor_id = 1:base_number
             sig(anchor_id) = data_double;
             break;
         catch ME
-            fprintf('stack at anchor %d\n',anchor_id+1);
+            fprintf(2, 'stack at anchor %d\n',anchor_id+1);
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('g'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % id, type, checksum, dest, src, length, data_int[5], data_float[2]
@@ -63,7 +63,7 @@ for anchor_id = 1:base_number
                 error('fail to write to the serial port, check connection and name'); 
             end
             tx_pkt_count = tx_pkt_count + 1;
-            if tx_pkt_count > 4
+            if tx_pkt_count > 20
                 stopasync(serial_port);
                 fclose(serial_port);
                 error('fail to read from the serial port, check connection and name'); 

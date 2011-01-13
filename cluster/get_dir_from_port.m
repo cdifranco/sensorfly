@@ -23,7 +23,7 @@ tx_pkt_count = 1;
 while 1
     % wait for respense of direction to anchor
     try
-        rx_pkt_info = fscanf(serial_port)
+        rx_pkt_info = fscanf(serial_port);
         temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
         pkt_rx = char(temp_str);
         data_int = str2num(pkt_rx(7,:));

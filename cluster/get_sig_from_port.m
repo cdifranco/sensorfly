@@ -1,7 +1,5 @@
 function [sig packet_id] = get_sig_from_port(packet_id, serial_port, base_number)
-
 sig = zeros(1, base_number);
-
 for anchor_id = 1:base_number
     %fprintf('get sig: %d\n',anchor_id+1);
     packet_id = mod(packet_id + 1, 255);

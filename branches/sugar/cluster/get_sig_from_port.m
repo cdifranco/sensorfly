@@ -1,11 +1,6 @@
 function [sig packet_id] = get_sig_from_port(packet_id, serial_port, base_number)
 
 sig = zeros(1, base_number);
-%fprintf('generate array');
-%tic;
-
-%toc;
-
 
 for anchor_id = 1:base_number
     %fprintf('get sig: %d\n',anchor_id+1);
@@ -38,10 +33,9 @@ for anchor_id = 1:base_number
         % wait for respense of direction to anchor
         try
             rx_pkt_info = fscanf(serial_port);
-            temp_str = strread(rx_pkt_info, '%s', 'delimiter', sprintf(','));
-            pkt_rx = char(temp_str);
-            data_double = str2double(pkt_rx(1,:));
-            data_error = str2double(pkt_rx(2,:));
+            temp_double = textscan(rx_pkt_info, '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
+            data_double = temp_double{10};
+            data_error = temp_double{11};
             
             if data_error ~= 0.0
                 continue;

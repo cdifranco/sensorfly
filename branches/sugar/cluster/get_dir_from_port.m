@@ -39,7 +39,7 @@ while 1
         break;
     catch ME
         % send request of direction to anchor
-        fprintf('stack at getting dir\n');
+        fprintf(2, 'stack at getting dir\n');
         try
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
@@ -59,7 +59,7 @@ while 1
              error('fail to write to the serial port, check connection and name'); 
         end
         tx_pkt_count = tx_pkt_count + 1;
-        if tx_pkt_count > 4
+        if tx_pkt_count > 20
             fclose(serial_port);
             error('fail to read from the serial port, check connection and name'); 
         end

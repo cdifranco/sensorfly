@@ -3,6 +3,11 @@ initialization;
 for main_loop_count = 100:100
     for base_number = base_number_s: base_number_e
         basic_cluster;
+        gotesting = input('testing?(yes:1/no:0)');
+        if gotesting == 0
+            break;
+        end
+        testing;
         %{
         fprintf('-----start: base station number %d testing1-----\n', base_number);
         testing;

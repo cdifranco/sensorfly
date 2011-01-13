@@ -38,7 +38,7 @@ for anchor_id = 1:base_number
             data_error = temp_double{2};
             
             if data_error ~= 0.0
-                continue;
+                throw(ME);
             end
             sig(anchor_id) = data_double;
             break;

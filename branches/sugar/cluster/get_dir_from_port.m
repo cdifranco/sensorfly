@@ -23,7 +23,7 @@ tx_pkt_count = 1;
 while 1
     % wait for respense of direction to anchor
     try
-        rx_pkt_info = fscanf(serial_port);
+        rx_pkt_info = fscanf(serial_port)
         temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
         pkt_rx = char(temp_str);
         data_int = str2num(pkt_rx(7,:));
@@ -39,7 +39,7 @@ while 1
         break;
     catch ME
         % send request of direction to anchor
-        fprintf(2, 'stack at getting dir\n');
+        fprintf(2, 'stack at getting dir: %s\n',rx_pkt_info);
         try
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
@@ -66,7 +66,5 @@ while 1
         continue;
     end
 end
-flushinput(serial_port);
-%stopasync(serial_port);
-%flushoutput(serial_port);             
+flushinput(serial_port);            
 

@@ -18,11 +18,11 @@ for mainloop = 1 : main_loop_count
     %initiate the believe vector
     reading(sig_count,1) = 0;
     fprintf('get readings\n');
-    tic;
     get_dir = input('ready to get direction? (1:yes; 0:no)');
     if get_dir == 0
         break;
     end
+    tic;
     [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
     reading(sig_count, 3) = 0;%get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure

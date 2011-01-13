@@ -9,7 +9,7 @@ base_number_e = 10;
 testing_round = 1;
 bel_threshold =0.0001;
 port = 'COM5';
-serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 2);
+serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 %measurements
 time = [];
 accuracy = [];

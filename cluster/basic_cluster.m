@@ -1,7 +1,7 @@
 center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
 sig_count = 1;
 trans_history = [];     
-packet_id = 0;
+packet_id = floor(rand*254);
 bel = [];
 bel(1:size(center,1)) = 1/size(center,1);
 % open the serial port
@@ -23,8 +23,9 @@ for mainloop = 1 : main_loop_count
         break;
     end
     tic;
-    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
-    reading(sig_count, 3) = 0;%get_area();%area id 
+    %[reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
+    reading(sig_count,2) = 1;
+    reading(sig_count, 3) = 1;%get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
     [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
     toc;

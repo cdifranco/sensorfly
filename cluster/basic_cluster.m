@@ -18,10 +18,10 @@ for mainloop = 1 : main_loop_count
     %initiate the believe vector
     reading(sig_count,1) = 0;
     fprintf('get readings\n');
-    get_dir = input('ready to get direction? (1:yes; 0:no)');
-    if get_dir == 0
-        break;
-    end
+    %get_dir = input('ready to get direction? (1:yes; 0:no)');
+    %if get_dir == 0
+    %    break;
+    %end
     tic;
     [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
     %reading(sig_count,2) = 1;
@@ -74,7 +74,8 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-    %pause(0.5);
+    save '1_14_noon.mat';
+    pause(1);
 end
 % close port
 try
@@ -88,4 +89,21 @@ catch ME
 end
 %filter the centers
 cn = 1/size(center,1)*center_filter*main_loop_count;
-center_sig = center(:,5:end);
+center_new = [];
+count_to_id = [];
+for cc = 1 : size(center,1)
+   if center(cc,2) > cn 
+      center_new = [center_new; center(cc,:)];
+      count_to_id = [count_to_id, center(cc, 1)]
+   else
+      rc = 1;
+      while rc <= size(reading, 1)
+      	if reading(rc, 1) == center(cc, 1)
+            reading(rc, :) = [];
+        else
+            rc = rc + 1;
+        end
+      end
+   end
+end
+center_sig = center_new(:,5:end);

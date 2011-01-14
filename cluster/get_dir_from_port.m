@@ -1,7 +1,8 @@
 function [dir packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
+%%
 packet_id = mod(packet_id + 1, 255);
 msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
-% send request of direction to anchor
+%%
 try
     % id, type, checksum, dest, src, length, data_int[5], data_float[2]
     msg_new = [uint8(255)];
@@ -18,7 +19,7 @@ catch ME
      fclose(serial_port);
      error('fail to write to the serial port, check connection and name'); 
 end
-%fprintf('wait for dir\n');
+%%
 tx_pkt_count = 1;
 while 1
     % wait for respense of direction to anchor
@@ -35,6 +36,7 @@ while 1
         else
             dir = 4;
         end
+        dir
         break;
     catch ME
         % send request of direction to anchor
@@ -66,4 +68,3 @@ while 1
     end
 end
 flushinput(serial_port);            
-

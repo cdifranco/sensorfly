@@ -25,7 +25,7 @@ for mainloop = 1 : main_loop_count
     tic;
     [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
     %reading(sig_count,2) = 1;
-    reading(sig_count, 3) = get_area();%area id 
+    reading(sig_count, 3) = 1;%get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
     [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
     toc;

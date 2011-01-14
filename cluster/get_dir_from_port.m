@@ -24,14 +24,13 @@ while 1
     % wait for respense of direction to anchor
     try
         rx_pkt_info = fscanf(serial_port);
-        temp_str = strread(rx_pkt_info, '%s', 'delimiter', ',')';
-        pkt_rx = char(temp_str);
-        data_int = str2num(pkt_rx(7,:));
-        if data_int <= 450 || data_int > 3150
+        temp_double = textscan(rx_pkt_info,  '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
+        data_int = temp_double{7}
+        if  data_int <= 900
             dir = 1;
-        elseif data_int > 450 && data_int <= 1350
+        elseif data_int <= 1800
             dir = 2;
-        elseif data_int > 1350 && data_int <= 2250
+        elseif data_int <= 2700
             dir = 3;
         else
             dir = 4;

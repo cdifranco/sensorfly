@@ -8,8 +8,8 @@ fprintf('read current signature');
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:base_number) = currentSig;
 currentCluster = get_cluster_sig(center_sig, currentSig)
-destCluster = get_cluster_area(reading, destArea, size(center_sig,1), count_to_id)
-%destCluster = area_cluster_relation(destArea);
+%destCluster = get_cluster_area(reading, destArea, size(center_sig,1), count_to_id)
+destCluster = area_cluster_relation(destArea);
 %%
 while 1
     if  currentCluster == destCluster

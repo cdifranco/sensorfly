@@ -10,7 +10,7 @@ catch ME
    error('fail to open the serial port, check connection and name'); 
 end
 %%
-area_to_cluster;
+%area_to_cluster;
 %%
 for j = 1:testing_round
     destArea = input('destiny area: ');

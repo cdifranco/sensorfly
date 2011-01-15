@@ -11,6 +11,7 @@ catch ME
    % print out warning
    error('fail to open the serial port, check connection and name'); 
 end
+reading = zeros(main_loop_count, 4+base_number);
 % main loop
 for mainloop = 1 : main_loop_count
     fprintf('round %d\n',mainloop);
@@ -23,11 +24,10 @@ for mainloop = 1 : main_loop_count
     %    break;
     %end
     tic;
-    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
-    %reading(sig_count,2) = 1;
-    reading(sig_count, 3) = 1;%get_area();%area id 
+    reading(sig_count, 3) = get_area();%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
     [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
+    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
     toc;
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
@@ -65,7 +65,6 @@ for mainloop = 1 : main_loop_count
         %update the trans_history
         trans_history(1:size(center, 1), 1:direction_number, size(center, 1)) = trans_init_number;
         trans_history(size(center, 1), 1:direction_number, 1:size(center, 1)) = trans_init_number;
-        obstacle_history(size(center, 1), 1:direction_number) = 0;
     end
     if mainloop ~= 1
         trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))+1;
@@ -74,7 +73,7 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-    save '1_14_noon.mat';
+    save '1_15_morning.mat';
     pause(1);
 end
 % close port
@@ -107,3 +106,4 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end);
+save '1_15_morning.mat';

@@ -1,6 +1,8 @@
 len = 0;
 error = 0;
 e = 0;
+guiding_success = zeros(testing_round);
+guiding_error = zeros(testing_round);
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 %%
 try
@@ -32,7 +34,8 @@ for j = 1:testing_round
             end;
         end;
     end;
-    [succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, area_cluster_relation, matrix);
+    %[succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, area_cluster_relation, matrix);
+    [succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, matrix, top);
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     stillcontinue = input('still continue? (yes:1/no:0)');
     if stillcontinue == 0

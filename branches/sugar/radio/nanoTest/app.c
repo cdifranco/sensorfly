@@ -319,9 +319,11 @@ void APLPoll (void)
 						// send ranging pkt
 						SendRange();
 						// inform ARM that the transform is correct	
+#ifndef IS_BASE
 						cli();
 						sendSuccAck();
 						sei();
+#endif
 				}
 				else if (pktARM2AVR->type == PKT_TYPE_SETTING)
 				{

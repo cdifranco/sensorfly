@@ -12,6 +12,7 @@ bel_threshold =0.0001;
 port = 'COM5';
 packet_id = floor(rand*254);
 center_filter = 0.40;
+top = 2; % choose top x to be areas' cluster
 %measurements
 time = [];
 accuracy = [];

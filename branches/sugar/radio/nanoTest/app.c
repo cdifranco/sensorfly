@@ -164,17 +164,17 @@ void APLCallback (MyMsgT *msg)
 					pkt_rx = (Packet *)msg->data;					
 					if(memcmp(msg->rxAddr,apl->src,6) != 0)
 					{
-							cli();
+							//cli();
 							//printf("msg for %d and addr is %d \r\n",msg->rxAddr[5],apl->src[5]);
-							sei();
+							//sei();
 							break;
 					}
 					// Check length of packet
 					if (memcmp(&(msg->len),&(pkt_rx->length),1) != 0)
 					{
-							cli();
+							//cli();
 							//printf("length of the pkt is not consistent, should be %d but only get %d \n",pkt_rx->length,msg->len);
-							sei();
+							//sei();
 							break;
 					}
 				  	cli();
@@ -294,32 +294,35 @@ void APLPoll (void)
 		// check if the packet's format is correct
 		if (pktARM2AVR->checksum != 0)
 		{
-			cli();
-			sendFailAck();
-			sei();
+				cli();
+				sendFailAck();
+				sei();
 		}
 		else
-		{// checksum is correct: ADD CHECKSUM !!!
+		{
 				apl->dest[5] = pktARM2AVR->dest;
 #ifndef IS_BASE
-				cli();printf("ARMtoAVR:", count_pkt);PrintPacketLog(pktARM2AVR);sei();
+				cli();
+				printf("ARMtoAVR:", count_pkt);PrintPacketLog(pktARM2AVR);
+				sei();
 #endif
 				if (pktARM2AVR->type == PKT_TYPE_DATA || pktARM2AVR->type == PKT_TYPE_RESULT)
-				{count_pkt++;
+				{
+						count_pkt++;
 						// send the data packet
 						pktARM2AVR->src = apl->src[5];			
 						SendBuffer();
 						// inform ARM that the transform is correct
 						cli();
-						sendSuccAck();//printf("result count: %d\r\n", count_pkt);
+						sendSuccAck();
 						sei();
 				}
 				else if (pktARM2AVR->type == PKT_TYPE_RANGING)
 				{
 						// send ranging pkt
 						SendRange();
-						// inform ARM that the transform is correct	
 #ifndef IS_BASE
+						// inform ARM that the transform is correct	
 						cli();
 						sendSuccAck();
 						sei();
@@ -339,13 +342,12 @@ void APLPoll (void)
 						// terminal mode
 						pktARM2AVR->type = PKT_TYPE_REQUEST;
 						SendBuffer();
-						//printf("success");
 				}
 				else
 				{
 						apl->len = 0;
+						
 						cli();
-						//printf("packet type error: %c \n", pktARM2AVR->type);
 						sendFailAck();
 						sei();
 				}

@@ -64,7 +64,8 @@ grid{27}.y = [35 35 40 40];
 save 'grid_in_lab.mat';
 
 %}
-
+%% draw the main frame
+load 'grid.mat';
 Z = zeros(4);
 figure;
 for i =  1 : area_number
@@ -74,6 +75,8 @@ for i =  1 : area_number
     hold on;
 end
 axis([-inf,inf,-inf,inf,0,10]);
+%% input grid number and draw
+%{
 while 1
     cont = input('continue?');
     if cont == 0
@@ -91,5 +94,29 @@ while 1
     %colorbar
     hold on;
 end
+%}
+%% draw cluster
+while 1
+    cont = input('continue?');
+    if cont == 0 
+        break;
+    end
+    for i =  1 : area_number
+        surf(grid{i}.x, grid{i}.y, ones(4)*0, ones(4)*0);
+        colormap([1 1 0; 0 1 1])
+        %colorbar
+        hold on;
+    end
+    center_id = input('center id:');
+    for i = 1 : area_number
+        if area_cluster_relation{i} == -1 
+            continue;
+        elseif ~isempty(find(ismember(area_cluster_relation{i}, center_id), 1))
+            surf(grid{i}.x, grid{i}.y, ones(4)*0, ones(4)*-1);
+        end
+    end
+    
+end
+%%
 hold off;
 close all;

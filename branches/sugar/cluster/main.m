@@ -1,8 +1,9 @@
 initialization;
 %%
-for main_loop_count = 100:100
+for main_loop_count = 1000:1000
     for base_number = base_number_s: base_number_e
         basic_cluster;
+        area_to_cluster;
         gotesting = input('testing?(yes:1/no:0)');
         if gotesting == 0
             break;

@@ -1,4 +1,4 @@
-function [dir packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
+function [dir data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
 %%
 packet_id = mod(packet_id + 1, 255);
 msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
@@ -27,16 +27,7 @@ while 1
         rx_pkt_info = fscanf(serial_port);
         temp_double = textscan(rx_pkt_info,  '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
         data_int = temp_double{7}
-        if  data_int <= 900
-            dir = 1;
-        elseif data_int <= 1800
-            dir = 2;
-        elseif data_int <= 2700
-            dir = 3;
-        else
-            dir = 4;
-        end
-        dir
+        dir = direction_convert(data_int)
         break;
     catch ME
         % send request of direction to anchor

@@ -21,9 +21,6 @@ for i = 1 : direction_number
 end
 trans_history = trans_history_new;
 %%
-obstacle_history_new = recluster_table * obstacle_history;    
-obstacle_history = obstacle_history_new;
-%%
 %{
 figure;
 draw_cluster(size(reading,2),size(center,1),reading);

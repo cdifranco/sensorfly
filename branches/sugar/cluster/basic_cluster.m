@@ -1,4 +1,4 @@
-center = []; %cluster_id, contain_reading_number, real_x, real_y,sig1,sig2,sig3...sigN
+center = []; %cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
 sig_count = 1;
 trans_history = [];     
 bel = [];
@@ -19,15 +19,10 @@ for mainloop = 1 : main_loop_count
     %initiate the believe vector
     reading(sig_count,1) = 0;
     fprintf('get readings\n');
-    %get_dir = input('ready to get direction? (1:yes; 0:no)');
-    %if get_dir == 0
-    %    break;
-    %end
     tic;
-    reading(sig_count, 3) = get_area(area_number);%area id 
     reading(sig_count, 4) = 0; %researved element in the structure
     [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
-    [reading(sig_count,2) packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
+    [reading(sig_count,2:3) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
     toc;
     % initialize the bel_bar
     bel_bar = zeros(1,size(center,1));
@@ -43,7 +38,7 @@ for mainloop = 1 : main_loop_count
         end
     end
     % get the distance reading and the new bel
-    for j = 1:size(center,1) %check all the centers
+    for j = 1:size(center,1) % check all the centers
         edist = sum((reading(sig_count,5:end)-center(j,5:end)).^2).^.5;
         p = possibility(edist,distribution_table{base_number});
         bel(j) = p * bel_bar(j);
@@ -66,14 +61,21 @@ for mainloop = 1 : main_loop_count
         trans_history(1:size(center, 1), 1:direction_number, size(center, 1)) = trans_init_number;
         trans_history(size(center, 1), 1:direction_number, 1:size(center, 1)) = trans_init_number;
     end
+    
     if mainloop ~= 1
-        trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))+1;
+        if abs(reading(sig_count-1,2)-reading(sig_count,2)) == 2
+            trans_history(reading(sig_count-1,1), reading(sig_count,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count,2), reading(sig_count,1))+1;
+        elseif abs(reading(sig_count-1,3)-reading(sig_count,3)) > 450
+            trans_history(reading(sig_count-1,1), reading(sig_count,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count,2), reading(sig_count,1))+1;
+        else
+            trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))=trans_history(reading(sig_count-1,1), reading(sig_count-1,2), reading(sig_count,1))+1;
+        end
     end
     %normalize the bel
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-    save '1_15_morning_afterwards_1.mat';
+    save '1_18_morning_afterwards_movement_1p0.mat';
     pause(1);
 end
 % close port
@@ -106,4 +108,4 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end);
-save '1_15_morning_afterwards_1.mat';
+save '1_18_morning_afterwards_movement_1p0.mat';

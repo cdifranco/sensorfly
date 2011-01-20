@@ -22,12 +22,16 @@ while 1
         suggest_dir = uint32(direction_order(1));
         if abs(current_dir - suggest_dir) == 2
             fprintf('go back');
+            server('b',125,10);
         elseif (current_dir - suggest_dir) == 1 || (current_dir - suggest_dir) == -3
             fprintf('turn left');
+            server('l',125,10);
         elseif (current_dir - suggest_dir) == -1 || (current_dir - suggest_dir) == 3
             fprintf('turn right');
+            server('r',125,10);
         else
             fprintf('keep up');
+            server('u',125,10);
         end
         %{
         fprintf('at %d go: ', currentCluster);

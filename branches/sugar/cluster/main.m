@@ -3,6 +3,7 @@ initialization;
 for main_loop_count = 1000:1000
     for base_number = base_number_s: base_number_e
         basic_cluster;
+        %recluster_kemeans;
         area_to_cluster;
         gotesting = input('testing?(yes:1/no:0)');
         if gotesting == 0

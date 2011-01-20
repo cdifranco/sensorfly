@@ -1,4 +1,4 @@
-%% Init socket
+%% Initialize socket
 import java.net.ServerSocket
 import java.io.*
 port = 8964;
@@ -14,7 +14,7 @@ try
 catch ME
     error('socket fail to open');
 end
-%% Init
+%% Initialization
 clr = input('clear record?');
 if clr == 1
     step = [];
@@ -30,23 +30,22 @@ serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
 while 1
     retry = retry + 1;
     try
+        %%
         fprintf('start %d succ\n', succ);
         if ((number_of_retries > 0) && (retry > number_of_retries))
             fprintf(1, 'Too many retries\n');
             break;
         end
-
-        fprintf(2, ['Try %d waiting for client to connect to this ' ...
-                    'host on port : %d\n'], retry, port);
-    
+        %%
+        fprintf('try %d waiting for client to connect to this host on port : %d\n', retry, port); 
         fprintf('wait for connection, get success connection %d once\n', succ);
         connection  = server_socket.accept;
-
+        %%
         succ = succ + 1;
-        fprintf('Connected\n');
+        fprintf('connected\n');
         break;
     catch ME
-        error('Connection fail\n');
+        error('connection fail\n');
     end
 end
 %% Set up IO
@@ -56,7 +55,7 @@ try
     d_output_stream = DataOutputStream(output_stream);
     d_input_stream = DataInputStream(input_stream);
 catch ME
-    fprintf(2, 'IO set up fail\n');
+    error('IO set up fail\n');
 end
 %% Open serial port
 try
@@ -71,6 +70,7 @@ for j = start_round:testing_round
     destArea = socket_receive(d_input_stream, 1);
     %create matrix
     number_of_center = size(center_new,1);
+    %% generate the matrix
     matrix = zeros(number_of_center, number_of_center);
     for l = 1:number_of_center
         for m = 1:number_of_center
@@ -87,8 +87,10 @@ for j = start_round:testing_round
             end;
         end;
     end;
+    %% call for navigate
     [succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
     %[succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, matrix, top);
+    %% record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     s = input('success?(yes:1/no:0)');
     success=  [success, s];
@@ -104,6 +106,7 @@ for j = start_round:testing_round
         step = [step, -1];
     end
     save '1_20_afternoon_afterwards_movement_t_cf0p7_1.mat'
+    %% continue
     cont = input('still continue? (yes:1/no:0)');
     if cont == 0
         break;

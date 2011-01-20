@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>images/sensorfly.png</file>
         <file>images/mainImg.png</file>
+        <file>images/back_arrow.png</file>
+        <file>images/left-arrow.png</file>
+        <file>images/right_arrow.png</file>
+        <file>images/forward_arrow.png</file>
     </qresource>
 </RCC>

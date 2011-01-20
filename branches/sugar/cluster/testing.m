@@ -1,4 +1,20 @@
-%% init
+%% Init socket
+import java.net.ServerSocket
+import java.io.*
+port = 8964;
+number_of_retries = 100; 
+retry = 0;
+message = '';
+connection  = [];
+succ_socket = 0;
+try
+    % wait for 1 second for client to connect server socket
+    server_socket = ServerSocket(port);
+    server_socket.setSoTimeout(10000);
+catch ME
+    error('socket fail to open');
+end
+%% Init
 clr = input('clear record?');
 if clr == 1
     step = [];
@@ -10,16 +26,49 @@ else
     start_round = input('from which round:');
 end
 serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
-%% Open port
+%% Open socket
+while 1
+    retry = retry + 1;
+    try
+        fprintf('start %d succ\n', succ);
+        if ((number_of_retries > 0) && (retry > number_of_retries))
+            fprintf(1, 'Too many retries\n');
+            break;
+        end
+
+        fprintf(2, ['Try %d waiting for client to connect to this ' ...
+                    'host on port : %d\n'], retry, port);
+    
+        fprintf('wait for connection, get success connection %d once\n', succ);
+        connection  = server_socket.accept;
+
+        succ = succ + 1;
+        fprintf('Connected\n');
+        break;
+    catch ME
+        error('Connection fail\n');
+    end
+end
+%% Set up IO
+try
+    output_stream   = connection.getOutputStream;
+    input_stream = connection.getInputStream;
+    d_output_stream = DataOutputStream(output_stream);
+    d_input_stream = DataInputStream(input_stream);
+catch ME
+    fprintf(2, 'IO set up fail\n');
+end
+%% Open serial port
 try
     fopen(serial_port);
 catch ME
    % print out warning
    error('fail to open the serial port, check connection and name'); 
 end
-%% testing loop
+%% Testing loop
 for j = start_round:testing_round
-    destArea = input('destiny area: ');
+    %destArea = input('destiny area: ');
+    destArea = socket_receive(d_input_stream, 1);
     %create matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
@@ -38,7 +87,7 @@ for j = start_round:testing_round
             end;
         end;
     end;
-    [succ sigRoute] = navigate_basic(packet_id, node_id, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
+    [succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
     %[succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, matrix, top);
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     s = input('success?(yes:1/no:0)');
@@ -71,7 +120,15 @@ catch ME
     % print out warning
     error('fail to close the serial port, check connection and name'); 
 end
-%%
+%% Close socket
+if ~isempty(server_socket)
+    server_socket.close
+end
+
+if ~isempty(connection)
+   connection.close
+end
+%% Clear 
 clear cont;
 clear l;
 clear m;

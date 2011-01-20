@@ -71,9 +71,6 @@ while 1
         message = receive_msg;
         fprintf('Writing %d bytes\n', length(message));
         socket_send(d_output_stream, message);
-        
-        
-
     catch
         fprintf('IO fail\n');
         %if ~isempty(server_socket)
@@ -87,10 +84,9 @@ while 1
         % pause before retrying
         pause(1);
     end
-%%
 end
 
-% clean up
+%% Clean up
 if ~isempty(server_socket)
     server_socket.close
 end

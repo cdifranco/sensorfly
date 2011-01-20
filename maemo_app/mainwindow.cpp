@@ -2,14 +2,19 @@
 #include <QtDBus/QtDBus>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/socket.h>
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
+#include <arpa/inet.h>
+//#include <bluetooth/bluetooth.h>
+//#include <bluetooth/rfcomm.h>
 
 #include "mainwindow.h"
-#include "packet.h"
+//#include "packet.h"
 
 #define INTI_BT_ADDR "C8:97:9F:6D:E2:40" //"00:06:66:04:B1:61"
+#define INTI_NET_ADDR "192.168.1.107"
+#define INIT_NET_PORT 8964
+#define MAX_DEST_NUM 27
 
 /*****Public Methods*****/
 MainWindow::MainWindow(QWidget *parent)
@@ -19,13 +24,48 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(centralWidgets);
 
-    initBluetoothConn();
+    //initBluetoothConn();
+    /*initNetConn();
+    char buf[4];
+    bzero(buf, 4);
+    buf[0] = 'a';
+    buf[1] = 'b';
+    buf[2] = 'c';
+    char inbuf[4];
+    while(1){
+        buf[0] = 'a';
+        buf[1] = 'b';
+        buf[2]++;
+        while(send(netSocket,buf,3,0) < 0);
+        qDebug() << "sent";
+        bzero(inbuf, 4);
+        while(recv(netSocket,inbuf,1,0) < 0);
+        while(recv(netSocket,inbuf+1,1,0) < 0);
+        while(recv(netSocket,inbuf+2,1,0) < 0);
+
+        qDebug() << "start";
+        qDebug() << inbuf[0];
+        qDebug() << '1';
+        qDebug() << inbuf[1];
+        qDebug() << '2';
+        qDebug() << inbuf[2];
+        qDebug() << "end";
+
+        qDebug() << "recv";
+        qDebug() << inbuf;
+    }*/
 }
 
 MainWindow::~MainWindow()
 {
+    qDebug() << qPrintable(QDBusConnection::systemBus().lastError().message());
     if(btSocket != -1){
+        ::shutdown(btSocket, 2);
         ::close(btSocket);
+    }
+    if(netSocket != -1){
+        ::shutdown(netSocket, 2);
+        ::close(netSocket);
     }
 }
 
@@ -38,18 +78,52 @@ void MainWindow::about(void) const
     aboutSensorfly->show();
 }
 
-void MainWindow::sendData(void) const
-{
-
-}
-
 void MainWindow::btChangeDone(QString btAddr, QString btName, QString btIcon, QString majorClass, QString minorClass, bool trusted, QStringList services)
 {
     qDebug() <<btAddr << btName << btIcon << majorClass << minorClass << trusted << services;
     sfbtAddr = &btAddr;
-    setupBluetoothConn();
+    //setupBluetoothConn();
 }
 
+void MainWindow::enableGoButton(const QString &text) const
+{
+    goButton->setEnabled(!text.isEmpty());
+}
+
+void MainWindow::naviBegin(void) const
+{
+    QString dest = destEdit->text();
+    if(dest.toShort() > 0){
+        char outBuf[2];
+        outBuf[0] = 's';
+        outBuf[1] = dest.toShort();
+       // while(send(netSocket,outBuf,2,0) < 0);
+        destEdit->setReadOnly(true);
+        goButton->setEnabled(false);
+        cancelButton->setEnabled(true);
+        arriButton->setEnabled(true);
+
+        //TODO
+    }
+}
+
+void MainWindow::naviCanceled(void) const
+{
+    destEdit->clear();
+    destEdit->setReadOnly(false);
+    goButton->setEnabled(false);
+    cancelButton->setEnabled(false);
+    arriButton->setEnabled(false);
+}
+
+void MainWindow::arrived(void) const
+{
+    destEdit->clear();
+    destEdit->setReadOnly(false);
+    goButton->setEnabled(false);
+    cancelButton->setEnabled(false);
+    arriButton->setEnabled(false);
+}
 
 /*****Private Methods*****/
 
@@ -134,8 +208,7 @@ void MainWindow::createNaviWidget(void)
     naviMenu = new QMenu;
     naviMenu->addAction(backAction);
 
-    naviSubWidget = new QWidget;
-    //TODO: construct the navigate widget
+    createNaviSubWidget();
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
     leftLayout->addWidget(naviLabel);
@@ -143,9 +216,10 @@ void MainWindow::createNaviWidget(void)
     leftLayout->addStretch();
     QHBoxLayout *naviLayout = new QHBoxLayout;
     naviLayout->addLayout(leftLayout);
-
+    naviLayout->addStretch();
     naviLayout->addWidget(naviSubWidget);
     naviLayout->addStretch();
+
     naviWidget->setLayout(naviLayout);
 }
 
@@ -159,7 +233,7 @@ void MainWindow::createCtrlWidget(void)
     //ctrlSubWidget = new QWidget;
     //TODO: construct the control widget
     QPushButton *testSendButton = new QPushButton(tr("send"));
-    connect(testSendButton, SIGNAL(clicked()), this, SLOT(sendData()));
+    //connect(testSendButton, SIGNAL(clicked()), this, SLOT(sendData()));
     ctrlSubWidget = dynamic_cast<QWidget *>(testSendButton);
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
@@ -170,11 +244,108 @@ void MainWindow::createCtrlWidget(void)
     ctrlLayout->addLayout(leftLayout);
     ctrlLayout->addStretch();
     ctrlLayout->addWidget(ctrlSubWidget);
+    ctrlLayout->addStretch();
 
     ctrlWidget->setLayout(ctrlLayout);
 }
 
-void MainWindow::initBluetoothConn(void)
+void MainWindow::createNaviDirect(void)
+{
+    naviDirect = new QStackedWidget;
+    QWidget *forwardWidget = new QWidget;
+    QWidget *backWidget = new QWidget;
+    QWidget *leftWidget = new QWidget;
+    QWidget *rightWidget = new QWidget;
+    QLabel *naviDirectLabel;
+    QImage *naviDirectImg;
+    //forward
+    naviDirectLabel = new QLabel();
+    naviDirectImg = new QImage(":/images/forward_arrow.png");
+    naviDirectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    naviDirectLabel->setAlignment(Qt::AlignCenter);
+    naviDirectLabel->setPixmap(QPixmap::fromImage(*naviDirectImg, Qt::AutoColor));
+    forwardWidget = dynamic_cast<QWidget *>(naviDirectLabel);
+    forwardIndex = naviDirect->addWidget(forwardWidget);
+    //back
+    naviDirectLabel = new QLabel();
+    naviDirectImg = new QImage(":/images/back_arrow.png");
+    naviDirectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    naviDirectLabel->setAlignment(Qt::AlignCenter);
+    naviDirectLabel->setPixmap(QPixmap::fromImage(*naviDirectImg, Qt::AutoColor));
+    backWidget = dynamic_cast<QWidget *>(naviDirectLabel);
+    backIndex = naviDirect->addWidget(backWidget);
+    //left
+    naviDirectLabel = new QLabel();
+    naviDirectImg = new QImage(":/images/left_arrow.png");
+    naviDirectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    naviDirectLabel->setAlignment(Qt::AlignCenter);
+    naviDirectLabel->setPixmap(QPixmap::fromImage(*naviDirectImg, Qt::AutoColor));
+    leftWidget = dynamic_cast<QWidget *>(naviDirectLabel);
+    leftIndex = naviDirect->addWidget(leftWidget);
+    //right
+    naviDirectLabel = new QLabel();
+    naviDirectImg = new QImage(":/images/right_arrow.png");
+    naviDirectLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    naviDirectLabel->setAlignment(Qt::AlignCenter);
+    naviDirectLabel->setPixmap(QPixmap::fromImage(*naviDirectImg, Qt::AutoColor));
+    rightWidget = dynamic_cast<QWidget *>(naviDirectLabel);
+    rightIndex = naviDirect->addWidget(rightWidget);
+}
+
+void MainWindow::createNaviDest(void)
+{
+    naviDest = new QWidget;
+
+    QLabel *destLabel = new QLabel(tr("Dest:"));
+    destEdit = new QLineEdit;
+    destLabel->setBuddy(destEdit);
+    QValidator *editValidator = new QIntValidator(1, MAX_DEST_NUM, destEdit);
+    destEdit->setValidator(editValidator);
+
+    goButton = new QPushButton(tr("Go!"));
+    goButton->setDefault(true);
+    goButton->setEnabled(false);
+
+    cancelButton = new QPushButton(tr("Cancel"));
+    cancelButton->setEnabled(false);
+
+    arriButton = new QPushButton(tr("I Arrive"));
+    arriButton->setEnabled(false);
+
+    QHBoxLayout *naviDestEditLayout = new QHBoxLayout;
+    naviDestEditLayout->addWidget(destLabel);
+    naviDestEditLayout->addWidget(destEdit);
+    QVBoxLayout *naviDestLayout = new QVBoxLayout;
+    naviDestLayout->addLayout(naviDestEditLayout);
+    naviDestLayout->addWidget(goButton);
+    naviDestLayout->addWidget(cancelButton);
+    naviDestLayout->addWidget(arriButton);
+    naviDestLayout->addStretch();
+
+    naviDest->setLayout(naviDestLayout);
+
+    connect(destEdit, SIGNAL(textChanged(const QString &)), this, SLOT(enableGoButton(const QString &)));
+    connect(goButton, SIGNAL(clicked()), this, SLOT(naviBegin()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(naviCanceled()));
+    connect(arriButton, SIGNAL(clicked()), this, SLOT(arrived()));
+}
+
+void MainWindow::createNaviSubWidget(void)
+{
+    createNaviDirect();
+    createNaviDest();
+
+    naviSubWidget = new QWidget;
+
+    QHBoxLayout *naviSubWidgetLayout = new QHBoxLayout;
+    naviSubWidgetLayout->addWidget(naviDirect);
+    naviSubWidgetLayout->addWidget(naviDest);
+
+    naviSubWidget->setLayout(naviSubWidgetLayout);
+
+}
+
+/*void MainWindow::initBluetoothConn(void)
 {
     btSocket = -1;
     sfbtAddr = new QString(INTI_BT_ADDR);
@@ -187,6 +358,7 @@ void MainWindow::initBluetoothConn(void)
 void MainWindow::setupBluetoothConn(void)
 {
     if(btSocket != -1){
+        ::shutdown(btSocket, 2);
         ::close(btSocket);
     }
 
@@ -206,6 +378,7 @@ void MainWindow::setupBluetoothConn(void)
 
     if(status != 0){
         //TODO:handle exception
+        qDebug() << "Fail to connect bluetooth.";
     }
 }
 
@@ -218,9 +391,53 @@ void MainWindow::changeBluetoothConn(void)
         exit(1);
     }
     interface->call(QDBus::AutoDetect, *btSearchReq, QString(""), QString(""), QStringList(""), QString("require"));
+}*/
+
+void MainWindow::initNetConn(void)
+{
+    netSocket = -1;
+    sfnetAddr = new QString(INTI_NET_ADDR);
+
+    setupNetConn();
 }
 
-void MainWindow::sendPkt(Packet *buf) const
+void MainWindow::setupNetConn(void)
+{
+    if(netSocket != -1){
+        ::shutdown(netSocket, 2);
+        ::close(netSocket);
+    }
+
+    //allocate a socket
+    netSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    //set the connection parameters (who to connect to)
+    sockaddr_in addr;
+    bzero(&addr, sizeof(addr));
+    QByteArray na = sfnetAddr->toLatin1();
+    char *dest = na.data();
+    addr.sin_family = AF_INET;
+    inet_pton(AF_INET, dest, &addr.sin_addr);
+    addr.sin_port = htons(INIT_NET_PORT);
+
+    //connect to server
+    int status;
+    do{
+        status = ::connect(netSocket, (struct sockaddr *)&addr, sizeof(addr));
+    }while(status != 0);
+
+    if(status != 0){
+        //TODO:handle exception
+        qDebug() << "Fail to connect network.";
+    }
+}
+
+void MainWindow::changeNetConn(void)
+{
+
+}
+
+/*void MainWindow::sendPkt(Packet *buf) const
 {
 
 }
@@ -228,7 +445,7 @@ void MainWindow::sendPkt(Packet *buf) const
 Packet *MainWindow::resvPkt() const
 {
     return NULL;
-}
+}*/
 
 
 /*****Static Elements*****/

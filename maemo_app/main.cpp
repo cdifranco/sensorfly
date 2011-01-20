@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     splashScn->showMessage(QObject::tr("Welcome to Sensorfly world..."), topRight, Qt::white);
     MainWindow mainWin;
 
-    sleep(1);
+    //sleep(1);
 
 #if defined(Q_WS_S60)
     mainWin.showMaximized();

@@ -10,13 +10,12 @@ QT       += dbus
 TARGET = Sensorfly
 TEMPLATE = app
 
-LIBS += -lbluetooth
+#LIBS += -lbluetooth
 
 SOURCES += main.cpp\
         mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    packet.h
+HEADERS  += mainwindow.h
 
 CONFIG += mobility
 unix:!symbian {

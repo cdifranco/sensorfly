@@ -23,7 +23,7 @@ while 1
         current_dir = get_dir_from_port(packet_id, node_id, serial_port);
         [path direction_order] = guide(currentCluster, destCluster(1), transHistory, count_to_id, matrix);
         suggest_dir = uint32(direction_order(1));
-        %% Current order
+        %% Current command
         if abs(current_dir - suggest_dir) == 2
             fprintf('go back');
             socket_send(d_output_stream, 'b');
@@ -37,7 +37,7 @@ while 1
             fprintf('keep up');
             socket_send(d_output_stream, 'u');
         end
-        %% Original order
+        %% Original command
         %{
         fprintf('at %d go: ', currentCluster);
         if isempty(path)

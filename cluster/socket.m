@@ -21,12 +21,11 @@ while 1
     try
         fprintf('start %d succ\n', succ);
         if ((number_of_retries > 0) && (retry > number_of_retries))
-            fprintf(1, 'Too many retries\n');
+            fprintf(1, 'too many retries\n');
             break;
         end
 
-        fprintf(2, ['Try %d waiting for client to connect to this ' ...
-                    'host on port : %d\n'], retry, port);
+        fprintf('try %d waiting for client to connect to this host on port : %d\n', retry, port);
     
         fprintf('wait for connection, get success connection %d once\n', succ);
         connection  = server_socket.accept;
@@ -34,58 +33,44 @@ while 1
         succ = succ + 1;
         fprintf('Connected\n');
         break;
-    catch
+    catch ME
         fprintf('Connection fail\n');
-        %if ~isempty(server_socket)
-        %    server_socket.close
-        %end
-
-        %if ~isempty(connection)
-        %    connection.close
-        %end
-
-        % pause before retrying
         pause(1);
     end
 end
 %%
-while 1
-    cont = input('continue?');
-    if cont == 0
-        break;
-    end
-    
+while 1 
     try
+        %%
         output_stream   = connection.getOutputStream;
         input_stream = connection.getInputStream;
         d_output_stream = DataOutputStream(output_stream);
         d_input_stream = DataInputStream(input_stream);
-
-        
+        %%
         fprintf('start to receive\n');
-        receive_msg = socket_receive(d_input_stream, 3)
-        fprintf('end of receive\n');
-        
+        receive_msg = socket_receive(d_input_stream, 1)
+        fprintf('received %d\n',char(receive_msg));
+        if receive_msg == 0
+            break;
+        elseif ismember(2:27,receive_msg)
+            fprintf('get area id\n');
+        elseif receive_msg == 1
+            fprintf('get continue\n');
+        else
+            fprintf(2, 'receive aaa\n');
+        end
+        %%
         % output the data over the DataOutputStream
         % Convert to stream of bytes
-        message = receive_msg;
-        fprintf('Writing %d bytes\n', length(message));
+        message = 'f';
+        fprintf('writing %d bytes\n', length(message));
         socket_send(d_output_stream, message);
-    catch
+    catch ME
         fprintf('IO fail\n');
-        %if ~isempty(server_socket)
-        %    server_socket.close
-        %end
-
-        %if ~isempty(connection)
-        %    connection.close
-        %end
-
-        % pause before retrying
         pause(1);
     end
 end
-
+fprintf('end of the process, ready to close socket\n');
 %% Clean up
 if ~isempty(server_socket)
     server_socket.close

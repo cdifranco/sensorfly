@@ -4,4 +4,3 @@ message = zeros(1, bytes_available, 'uint8');
 for i = 1:bytes_available
     message(i) = d_input_stream.readByte;
 end
-message = char(message);

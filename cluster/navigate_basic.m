@@ -1,9 +1,9 @@
-function [succ sigRoute] = navigate_basic(packet_id, port, destArea, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation)
+function [succ sigRoute] = navigate_basic(packet_id, node_id, port, destArea, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation)
 %%
 step_threshold = 50;
 succ = 1;
 totalCnt = 0;
-directionNumber = size(transHistory, 2);
+%directionNumber = size(transHistory, 2);
 fprintf('read current signature');
 [currentSig packet_id] = get_sig_from_port(packet_id, port, base_number);
 totalCnt = totalCnt + 1;
@@ -17,13 +17,26 @@ while 1
         fprintf('u r in the dest area %d\n', destArea);
         break;
     else
+        current_dir = get_dir_from_port(packet_id, node_id, serial_port);
         [path direction_order] = guide(currentCluster, destCluster(1), transHistory, count_to_id, matrix);
+        suggest_dir = uint32(direction_order(1));
+        if abs(current_dir - suggest_dir) == 2
+            fprintf('go back');
+        elseif (current_dir - suggest_dir) == 1 || (current_dir - suggest_dir) == -3
+            fprintf('turn left');
+        elseif (current_dir - suggest_dir) == -1 || (current_dir - suggest_dir) == 3
+            fprintf('turn right');
+        else
+            fprintf('keep up');
+        end
+        %{
         fprintf('at %d go: ', currentCluster);
         if isempty(path)
             fprintf(' random pick--> %d\n',uint32(unidrnd(directionNumber)));  
         else
-            fprintf(' pick based on map--> %d\n', uint32(direction_order(1)));
+            fprintf(' pick based on map--> %d\n',);
         end
+        %}
         cont = input('continue?(yes:1/no:0)');
         if cont == 0
             break;

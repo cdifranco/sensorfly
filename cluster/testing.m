@@ -38,7 +38,7 @@ for j = start_round:testing_round
             end;
         end;
     end;
-    [succ sigRoute] = navigate_basic(packet_id, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
+    [succ sigRoute] = navigate_basic(packet_id, node_id, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
     %[succ sigRoute] = navigate_basic(packet_id, serial_port, reading, destArea, base_number, trans_history, center_sig, count_to_id, matrix, top);
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     s = input('success?(yes:1/no:0)');
@@ -54,7 +54,7 @@ for j = start_round:testing_round
         error = [error, -1];
         step = [step, -1];
     end
-    save '1_18_afternoon_afterwards_movement_t_cf0p7_1.mat'
+    save '1_20_afternoon_afterwards_movement_t_cf0p7_1.mat'
     cont = input('still continue? (yes:1/no:0)');
     if cont == 0
         break;

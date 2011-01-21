@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
 
     Qt::Alignment topRight = Qt::AlignLeft | Qt::AlignTop;
     splashScn->showMessage(QObject::tr("Welcome to Sensorfly world..."), topRight, Qt::white);
+    sleep(1);
+    splashScn->showMessage(QObject::tr("Initializing Network..."), topRight, Qt::white);
     MainWindow mainWin;
-
-    //sleep(1);
 
 #if defined(Q_WS_S60)
     mainWin.showMaximized();

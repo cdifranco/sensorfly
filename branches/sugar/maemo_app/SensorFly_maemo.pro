@@ -10,7 +10,7 @@ QT       += dbus
 TARGET = Sensorfly
 TEMPLATE = app
 
-#LIBS += -lbluetooth
+LIBS += -lbluetooth
 
 SOURCES += main.cpp\
         mainwindow.cpp

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QtCore/QThread>
 
 //class Packet;
 class QBuffer;
@@ -13,6 +14,43 @@ class QMenu;
 class QAction;
 class QLineEdit;
 class QPushButton;
+
+class naviThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    naviThread(QLineEdit *destEdit,
+               int socket,
+               QStackedWidget *centralWidgets,
+               int naviIndex,
+               int forwardIndex,
+               int backIndex,
+               int leftIndex,
+               int rightIndex);
+
+    void stop();
+
+signals:
+    void directRefreshed(int directIndex);
+    void cancelSignal();
+    void arriSignal();
+
+protected:
+    void run();
+
+private:
+    QLineEdit *destEdit;
+    int socket;
+    QStackedWidget *centralWidgets;
+    int naviIndex;
+    int forwardIndex;
+    int backIndex;
+    int leftIndex;
+    int rightIndex;
+
+    volatile bool isNavi;
+};
 
 class MainWindow : public QMainWindow
 {
@@ -28,9 +66,9 @@ private slots:
     void about(void) const;
     void btChangeDone(QString btAddr, QString btName, QString btIcon, QString majorClass, QString minorClass, bool trusted, QStringList services);
     void enableGoButton(const QString &text) const;
-    void naviBegin(void) const;
-    void naviCanceled(void) const;
-    void arrived(void) const;
+    void naviBegin(void);
+    void naviCanceled(void);
+    void naviArrived(void);
 
 private:
     /*****Methods*****/
@@ -44,16 +82,17 @@ private:
     void createNaviDest(void);
     void createNaviSubWidget(void);
 
-    /*void initBluetoothConn(void);
+    void initBluetoothConn(void);
     void setupBluetoothConn(void);
-    void changeBluetoothConn(void);*/
+    void changeBluetoothConn(void);
     void initNetConn(void);
     void setupNetConn(void);
     void changeNetConn(void);
     //void sendPkt(Packet *buf) const;
     //Packet *resvPkt() const;
+    void initNaviThread(void);
 
-    /******Static Constant*****/
+    /*****Static Constant*****/
     static const QString* const btDbusService;
     static const QString* const btDbusInterface;
     static const QString* const btDbusPath;
@@ -107,6 +146,10 @@ private:
     int btSocket;
     QString *sfnetAddr;  //Sensorfly Network Address
     int netSocket;
+
+    naviThread *naviThd;
 };
+
+
 
 #endif // MAINWINDOW_H

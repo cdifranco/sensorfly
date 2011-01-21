@@ -5,16 +5,105 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-//#include <bluetooth/bluetooth.h>
-//#include <bluetooth/rfcomm.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/rfcomm.h>
 
 #include "mainwindow.h"
 //#include "packet.h"
 
 #define INTI_BT_ADDR "C8:97:9F:6D:E2:40" //"00:06:66:04:B1:61"
-#define INTI_NET_ADDR "192.168.1.107"
+#define INTI_NET_ADDR "10.0.16.193"
 #define INIT_NET_PORT 8964
 #define MAX_DEST_NUM 27
+
+/*****Navigation Thread*****/
+naviThread::naviThread(QLineEdit *destEdit,
+                       int socket,
+                       QStackedWidget *centralWidgets,
+                       int naviIndex,
+                       int forwardIndex,
+                       int backIndex,
+                       int leftIndex,
+                       int rightIndex)
+                       :
+                       destEdit(destEdit),
+                       socket(socket),
+                       centralWidgets(centralWidgets),
+                       naviIndex(naviIndex),
+                       forwardIndex(forwardIndex),
+                       backIndex(backIndex),
+                       leftIndex(leftIndex),
+                       rightIndex(rightIndex)
+{
+    isNavi = false;
+}
+
+void naviThread::stop()
+{
+    isNavi = false;
+}
+
+void naviThread::run()
+{
+    isNavi = true;
+    QString dest = destEdit->text();
+
+    ushort outBuf;
+    outBuf = dest.toUShort();
+    qDebug() << dest.toUShort() <<"before";
+    while(isNavi && send(socket,&outBuf,1,0) < 0);
+    qDebug() << dest.toUShort();
+
+    char inBuf;
+    bool manualStop = true;
+    while(isNavi && centralWidgets->currentIndex() == naviIndex){
+        inBuf = ushort(0);
+        while(isNavi && recv(socket, &inBuf, 1, 0) < 0);
+        qDebug() << inBuf;
+        switch(inBuf){
+            case 'f':
+                emit directRefreshed(forwardIndex);
+                sleep(2);
+                outBuf = ushort(1);
+                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                break;
+            case 'b':
+                emit directRefreshed(backIndex);
+                sleep(2);
+                outBuf = ushort(1);
+                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                break;
+            case 'l':
+                emit directRefreshed(leftIndex);
+                sleep(2);
+                outBuf = ushort(1);
+                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                break;
+            case 'r':
+                emit directRefreshed(rightIndex);
+                sleep(2);
+                outBuf = ushort(1);
+                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                break;
+            case 's':
+                emit arriSignal();
+                manualStop = false;
+                break;
+            case 'e':
+                emit cancelSignal();
+                manualStop = false;
+                break;
+            default:
+                break;
+        }
+    }
+    if(manualStop){
+        qDebug() << "stop";
+        outBuf = ushort(0);
+        while(send(socket,&outBuf,1,0) < 0);
+    }
+}
+
 
 /*****Public Methods*****/
 MainWindow::MainWindow(QWidget *parent)
@@ -25,40 +114,12 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(centralWidgets);
 
     //initBluetoothConn();
-    /*initNetConn();
-    char buf[4];
-    bzero(buf, 4);
-    buf[0] = 'a';
-    buf[1] = 'b';
-    buf[2] = 'c';
-    char inbuf[4];
-    while(1){
-        buf[0] = 'a';
-        buf[1] = 'b';
-        buf[2]++;
-        while(send(netSocket,buf,3,0) < 0);
-        qDebug() << "sent";
-        bzero(inbuf, 4);
-        while(recv(netSocket,inbuf,1,0) < 0);
-        while(recv(netSocket,inbuf+1,1,0) < 0);
-        while(recv(netSocket,inbuf+2,1,0) < 0);
-
-        qDebug() << "start";
-        qDebug() << inbuf[0];
-        qDebug() << '1';
-        qDebug() << inbuf[1];
-        qDebug() << '2';
-        qDebug() << inbuf[2];
-        qDebug() << "end";
-
-        qDebug() << "recv";
-        qDebug() << inbuf;
-    }*/
+    initNetConn();
+    initNaviThread();
 }
 
 MainWindow::~MainWindow()
 {
-    qDebug() << qPrintable(QDBusConnection::systemBus().lastError().message());
     if(btSocket != -1){
         ::shutdown(btSocket, 2);
         ::close(btSocket);
@@ -80,9 +141,9 @@ void MainWindow::about(void) const
 
 void MainWindow::btChangeDone(QString btAddr, QString btName, QString btIcon, QString majorClass, QString minorClass, bool trusted, QStringList services)
 {
-    qDebug() <<btAddr << btName << btIcon << majorClass << minorClass << trusted << services;
+    qDebug() << btAddr << btName << btIcon << majorClass << minorClass << trusted << services;
     sfbtAddr = &btAddr;
-    //setupBluetoothConn();
+    setupBluetoothConn();
 }
 
 void MainWindow::enableGoButton(const QString &text) const
@@ -90,39 +151,44 @@ void MainWindow::enableGoButton(const QString &text) const
     goButton->setEnabled(!text.isEmpty());
 }
 
-void MainWindow::naviBegin(void) const
+//Clicked goButton
+void MainWindow::naviBegin(void)
 {
     QString dest = destEdit->text();
     if(dest.toShort() > 0){
-        char outBuf[2];
-        outBuf[0] = 's';
-        outBuf[1] = dest.toShort();
-       // while(send(netSocket,outBuf,2,0) < 0);
         destEdit->setReadOnly(true);
         goButton->setEnabled(false);
         cancelButton->setEnabled(true);
         arriButton->setEnabled(true);
-
-        //TODO
+        qDebug() << "Navi begins";
+        naviThd->start();
+    }else{
+        destEdit->clear();
     }
 }
 
-void MainWindow::naviCanceled(void) const
+//Clicked cancelButton
+void MainWindow::naviCanceled(void)
 {
+    naviThd->stop();
     destEdit->clear();
     destEdit->setReadOnly(false);
     goButton->setEnabled(false);
     cancelButton->setEnabled(false);
     arriButton->setEnabled(false);
+    qDebug() << "Navi canceled";
 }
 
-void MainWindow::arrived(void) const
+//Clicked arriButton or get arriMsg
+void MainWindow::naviArrived(void)
 {
+    naviThd->stop();
     destEdit->clear();
     destEdit->setReadOnly(false);
     goButton->setEnabled(false);
     cancelButton->setEnabled(false);
     arriButton->setEnabled(false);
+    qDebug() << "Navi arrived";
 }
 
 /*****Private Methods*****/
@@ -303,7 +369,6 @@ void MainWindow::createNaviDest(void)
     destEdit->setValidator(editValidator);
 
     goButton = new QPushButton(tr("Go!"));
-    goButton->setDefault(true);
     goButton->setEnabled(false);
 
     cancelButton = new QPushButton(tr("Cancel"));
@@ -327,7 +392,7 @@ void MainWindow::createNaviDest(void)
     connect(destEdit, SIGNAL(textChanged(const QString &)), this, SLOT(enableGoButton(const QString &)));
     connect(goButton, SIGNAL(clicked()), this, SLOT(naviBegin()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(naviCanceled()));
-    connect(arriButton, SIGNAL(clicked()), this, SLOT(arrived()));
+    connect(arriButton, SIGNAL(clicked()), this, SLOT(naviArrived()));
 }
 
 void MainWindow::createNaviSubWidget(void)
@@ -345,7 +410,7 @@ void MainWindow::createNaviSubWidget(void)
 
 }
 
-/*void MainWindow::initBluetoothConn(void)
+void MainWindow::initBluetoothConn(void)
 {
     btSocket = -1;
     sfbtAddr = new QString(INTI_BT_ADDR);
@@ -391,7 +456,7 @@ void MainWindow::changeBluetoothConn(void)
         exit(1);
     }
     interface->call(QDBus::AutoDetect, *btSearchReq, QString(""), QString(""), QStringList(""), QString("require"));
-}*/
+}
 
 void MainWindow::initNetConn(void)
 {
@@ -447,6 +512,20 @@ Packet *MainWindow::resvPkt() const
     return NULL;
 }*/
 
+void MainWindow::initNaviThread(void)
+{
+    naviThd = new naviThread(destEdit,
+                             netSocket,
+                             centralWidgets,
+                             naviIndex,
+                             forwardIndex,
+                             backIndex,
+                             leftIndex,
+                             rightIndex);
+    connect(naviThd, SIGNAL(directRefreshed(int)), naviDirect, SLOT(setCurrentIndex(int)));
+    connect(naviThd, SIGNAL(cancelSignal()), this, SLOT(naviCanceled()));
+    connect(naviThd, SIGNAL(arriSignal()), this, SLOT(naviArrived()));
+}
 
 /*****Static Elements*****/
 

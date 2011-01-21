@@ -26,4 +26,4 @@ figure;
 draw_cluster(size(reading,2),size(center,1),reading);
 %}
 center_sig = ctrs;
-save '1_20_morning_afterwards_movement_km_1p0.mat';
+save '1_18_morning_afterwards_movement_km_1p0_cf0p4_2.mat';

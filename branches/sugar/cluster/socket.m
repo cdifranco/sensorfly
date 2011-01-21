@@ -4,9 +4,10 @@ import java.io.*
 port = 8964;
 number_of_retries = 100; 
 retry = 0;
-message = 'aaa';
+message = ['r','f','b','l'];
 connection  = [];
 succ = 0;
+count = 1;
 %%
 try
     % wait for 1 second for client to connect server socket
@@ -39,9 +40,11 @@ while 1
     end
 end
 %%
-while 1 
+while 1
+    count = mod(count+1,4);
     try
         %%
+        fprintf('set IO stream\n');
         output_stream   = connection.getOutputStream;
         input_stream = connection.getInputStream;
         d_output_stream = DataOutputStream(output_stream);
@@ -62,11 +65,27 @@ while 1
         %%
         % output the data over the DataOutputStream
         % Convert to stream of bytes
-        message = 'f';
-        fprintf('writing %d bytes\n', length(message));
-        socket_send(d_output_stream, message);
+        
+        fprintf('writing %d bytes\n', 1);
+        socket_send(d_output_stream, message(count+1));
     catch ME
         fprintf('IO fail\n');
+        %% close socket
+        if ~isempty(server_socket)
+            server_socket.close
+        end
+
+        if ~isempty(connection)
+           connection.close
+        end
+        try
+        server_socket = ServerSocket(port);
+        server_socket.setSoTimeout(10000);
+        connection  = server_socket.accept;
+        catch ME
+            fprintf('Connection fail\n');
+            pause(1);
+        end
         pause(1);
     end
 end

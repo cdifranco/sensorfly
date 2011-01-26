@@ -1,5 +1,5 @@
 %% Initialize socket
-
+%{
 import java.net.ServerSocket
 import java.io.*
 socket_port = 8964;
@@ -29,7 +29,7 @@ else
 end
 serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
 %% Open socket
-
+%{
 while 1
     retry = retry + 1;
     try
@@ -66,12 +66,12 @@ try
     fopen(serial_port);
 catch ME
    % print out warning
-   fprintf('fail to open the serial port, check connection and name'); 
+   error('fail to open the serial port, check connection and name'); 
 end
 %% Testing loop
 for j = start_round:testing_round
-    %destArea = input('destiny area: ');
-    destArea = socket_receive(d_input_stream, 1);
+    destArea = input('destiny area: ');
+    %destArea = socket_receive(d_input_stream, 1);
      %% generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
@@ -91,34 +91,36 @@ for j = start_round:testing_round
         end;
     end;
     %% call for navigate
-    [succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history,center_sig, count_to_id, matrix, area_cluster_relation);% for socket
+    %[succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history,center_sig, count_to_id, matrix, area_cluster_relation);% for socket
     %test
-    %[succ sigRoute] = navigate_basic(packet_id, node_id, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
+    [succ sigRoute] = navigate_basic(packet_id, node_id, serial_port, destArea, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
     %[succ sigRoute] = navigate_basic(packet_id, serial_port, reading, 
     %destArea, base_number, trans_history, center_sig, count_to_id, matrix, top);
     %% record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     s = input('success?(yes:1/no:0)');
-    success=  [success, s];
-    if s == 1
+    if s ~= 0
+        success=  [success, 1];
         os = input('observed step: ');
         observed_step = [observed_step, os];
         e = input('error: ');
         error = [error, e];
         step = [step, size(sigRoute,1)];
     else
-        observed_step = [observed_step, -1];
-        error = [error, -1];
-        step = [step, -1];
+        success=  [success, 0];
+        observed_step = [observed_step, inf];
+        error = [error, inf];
+        step = [step, inf];
     end
-    save '1_18_morning_afterwards_movement_t_1p0_cf0p4_socket.mat'
+    save '1_25_morning_afterwards_movement_t_0p7_1.mat'
     %% continue
     cont = input('still continue? (yes:1/no:0)');
     if cont == 0
         break;
     end
 end
-step_rate = step(step(:)~=-1)/observed_step(observed_step(:)~=-1)
+step_rate = step(step(:)~=inf)/observed_step(observed_step(:)~=inf)
+ave_error = sum(error(error(:)~=inf))/size(error(error(:)~=inf),2)
 %% Close port
 try    
     stopasync(serial_port);
@@ -130,7 +132,7 @@ catch ME
     error('fail to close the serial port, check connection and name'); 
 end
 %% Close socket
-
+%{
 if ~isempty(server_socket)
     server_socket.close
 end

@@ -59,7 +59,7 @@ for anchor_id = 1:base_number
             catch ME
                 stopasync(serial_port);
                 fclose(serial_port);
-                warning('fail to write to the serial port, check connection and name'); 
+                error('fail to write to the serial port, check connection and name'); 
             end
             %% check for time out
             tx_pkt_count = tx_pkt_count + 1;
@@ -67,7 +67,7 @@ for anchor_id = 1:base_number
                 sig(anchor_id) = -1;
                 stopasync(serial_port);
                 fclose(serial_port);
-                warning('fail to read from the serial port, check connection and name'); 
+                error('fail to read from the serial port, check connection and name'); 
             end
             continue;
         end

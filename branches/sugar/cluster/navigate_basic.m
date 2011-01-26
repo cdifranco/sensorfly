@@ -1,11 +1,11 @@
-function [succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation)
+function [succ sigRoute] = navigate_basic(packet_id, node_id, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation)
 %% Initialization
-step_threshold = 50;
+step_threshold = 500;
 succ = 1;
 totalCnt = 0;
 directionNumber = size(transHistory, 2);
 destCluster = [];
-direction_pool = ['b','l','f','r'];
+%direction_pool = ['b','l','f','r'];
 fprintf('read current signature');
 [currentSig packet_id] = get_sig_from_port(packet_id, port, base_number);
 totalCnt = totalCnt + 1;
@@ -30,11 +30,11 @@ while 1
     %%
     if  ~isempty(find(ismember(destCluster, currentCluster), 1))
         fprintf('u r in the dest area %d\n', dest_area);
-        socket_send(d_output_stream, 's');
+        %socket_send(d_output_stream, 's');
         break;
     else
         %%
-        current_dir = get_dir_from_port(packet_id, node_id, port)
+        %current_dir = get_dir_from_port(packet_id, node_id, port)
         [path direction_order] = guide(currentCluster, destCluster(1), transHistory, count_to_id, matrix);
         if isempty(path)
             fprintf('random-->');
@@ -42,7 +42,7 @@ while 1
         else
             suggest_dir = double(direction_order(1))
         end
-        socket_send(d_output_stream, direction_pool(suggest_dir));
+        %socket_send(d_output_stream, direction_pool(suggest_dir));
        
         %% Current command
         %{
@@ -69,6 +69,12 @@ while 1
             fprintf(' pick based on map--> %d\n',);
         end
         %}
+         %% Continue?
+        cont = input('continue?(yes:1/no:0)');    
+        %cont = socket_receive(d_input_stream, 1);
+        if cont == 0
+            break;
+        end
         %%
         currentSig = get_sig_from_port(packet_id, port, base_number);
         totalCnt = totalCnt + 1;
@@ -79,11 +85,5 @@ while 1
         end
         sigRoute(totalCnt, 1:base_number) = currentSig;
         currentCluster = get_cluster_sig(center_sig, currentSig);
-    end
-    %% Continue?
-    %cont = input('continue?(yes:1/no:0)');    
-    cont = socket_receive(d_input_stream, 1);
-    if cont == 0
-        break;
     end
 end

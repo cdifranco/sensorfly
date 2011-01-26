@@ -111,7 +111,7 @@ while 1
     for i = 1 : area_number
         if area_cluster_relation{i} == -1 
             continue;
-        elseif ~isempty(find(ismember(area_cluster_relation{i}, center_id), 1))
+        elseif sum(area_cluster_relation{i} == center_id) > 10 %~isempty(find(ismember(area_cluster_relation{i}, center_id), 1))
             surf(grid{i}.x, grid{i}.y, ones(4)*0, ones(4)*-1);
         end
     end

@@ -30,7 +30,7 @@ while 1
       cluster_in_one_area(cluster_in_one_area(:) == mode(cluster_in_one_area))=[];
     end
     area_cluster_relation{area_id} = temp;
-    save '1_18_morning_afterwards_movement_1p0_ac_4(re_all).mat'
+    save '1_25_morning_afterwards_movement_0p7_ac_2.mat'
     cont = input('still continue?');
     if cont == 0
        break;

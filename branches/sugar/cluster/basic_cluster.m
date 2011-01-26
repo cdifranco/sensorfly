@@ -16,7 +16,6 @@ reading = zeros(main_loop_count, 4+base_number);
 %% Main loop
 for mainloop = 1 : main_loop_count
     fprintf('round %d\n',mainloop);
-    node_id = 12;
     reading(sig_count,1) = 0;
     %% get readings
     fprintf('get readings\n');

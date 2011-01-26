@@ -4,12 +4,16 @@ if clear_record == 1
 	sig_count = 1;
 	x = 100;
 	y = 0;
-	reading = zeros(main_loop_count, 4+base_number);
+	reading = [];
 else
     sig_count = input('from which round?\n');
 end
 iteration = 20;
+base_number = 10;
+port = 'COM11';
+packet_id = floor(rand*254);
 node_id = 2;
+center_filter = 0.70;
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 %% Open the serial port
 try

@@ -11,6 +11,7 @@ area_number = 27;
 bel_threshold =0.0001;
 port = 'COM11';
 packet_id = floor(rand*254);
+node_id = 2;
 center_filter = 0.70;
 %host = '192.168.1.112';
 %measurements

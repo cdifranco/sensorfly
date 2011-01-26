@@ -1,7 +1,7 @@
 function [dir data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
 %%
 packet_id = mod(packet_id + 1, 255);
-msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
 %%
 try
     % id, type, checksum, dest, src, length, data_int[5], data_float[2]
@@ -24,7 +24,7 @@ tx_pkt_count = 1;
 while 1
     % wait for respense of direction to anchor
     try
-        rx_pkt_info = fscanf(serial_port);
+        rx_pkt_info = fscanf(serial_port)
         temp_double = textscan(rx_pkt_info,  '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
         data_int = temp_double{7}
         dir = direction_convert(data_int)

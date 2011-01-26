@@ -2,8 +2,13 @@
 <session>
  <Bookmarks/>
  <Breakpoints>
+<<<<<<< .mine
+  <BreakpointListItem line="159" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+  <BreakpointListItem line="163" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+=======
   <BreakpointListItem line="159" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
   <BreakpointListItem line="163" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="2" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\basic_sensors\main.c" expression="" />
+>>>>>>> .r368
   <BreakpointListItem line="96" action="" hardwareBreakpoint="" trigger="" useHWbreakpoint="false" group="Breakpoints" type="Breakpoint" state="4" counter="0" isFunctionBreakpoint="false" filename="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\SF_Network\sf_network.c" expression="" />
  </Breakpoints>
  <ExecutionCountWindow/>
@@ -23,7 +28,10 @@
   <ProjectSessionItem path="basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors" name="unnamed" />
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files" name="unnamed" />
+<<<<<<< .mine
+=======
   <ProjectSessionItem path="basic_sensors;basic_sensors;Source Files;SF_Firmware" name="unnamed" />
+>>>>>>> .r368
  </Project>
  <Register1>
   <RegisterWindow openNodes="" binaryNodes="" hiddenNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
@@ -59,8 +67,15 @@
   <Watches active="0" update="Never" />
  </Watch4>
  <Files>
+<<<<<<< .mine
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="24" debugPath="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" y="126" path="D:\sensorfly_impl\sensorfly4_1\basic_sensors\main.c" left="0" selected="1" name="unnamed" top="101" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" y="26" path="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.h" left="0" selected="0" name="unnamed" top="21" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.c" y="138" path="D:\sensorfly_impl\sensorfly4_1\SF_Network\sf_network.c" left="0" selected="0" name="unnamed" top="126" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="D:\sensorfly_impl\sensorfly4_1\SF_Firmware\SF_UART\sf_uart.c" y="224" path="D:\sensorfly_impl\sensorfly4_1\SF_Firmware\SF_UART\sf_uart.c" left="0" selected="0" name="unnamed" top="108" />
+=======
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="45" debugPath="/home/bernard/Workspace/sensorfly_impl/sensorfly4_1/basic_sensors/main.c" y="80" path="/home/bernard/Workspace/sensorfly_impl/sensorfly4_1/basic_sensors/main.c" left="0" selected="0" name="unnamed" top="118" />
   <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/home/bernard/Workspace/sensorfly_impl/sensorfly4_1/SF_Firmware/SF_Sensors/sf_compass.c" y="258" path="/home/bernard/Workspace/sensorfly_impl/sensorfly4_1/SF_Firmware/SF_Sensors/sf_compass.c" left="0" selected="1" name="unnamed" top="252" />
+>>>>>>> .r368
  </Files>
  <ARMCrossStudioWindow activeProject="basic_sensors" autoConnectTarget="Olimex ARM-USB-TINY" debugSearchFileMap="" fileDialogInitialDirectory="\home\jennifer\Workspace\sensorfly_lab\sensorfly4_1\SF_Firmware\SF_Sensors" fileDialogDefaultFilter="*.c" autoConnectCapabilities="388479" debugSearchPath="" buildConfiguration="ARM Flash Debug" />
 </session>

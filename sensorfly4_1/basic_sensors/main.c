@@ -33,11 +33,11 @@
 // Pin 0.20
 #define RTS_MASK (1<<20)
 // Source Address
-#define SRC_ADDR 1
+#define SRC_ADDR 2
 
 // #define ANCHOR 1
-//#define NODE 1
-#define BASE 1
+#define NODE 1
+//#define BASE 1
 
 
 unsigned int task_app_stack[TASK_APP_STK_SIZE];
@@ -117,6 +117,8 @@ void task_app_func(void * par)
 #endif
 #ifdef NODE
     // get compass reading 
+    uint8_t ranging_dest;
+    Packet * pkt_ranging_result = NULL;
     uint16_t heading;
     uint16_t pitch; 
     uint16_t roll;
@@ -143,7 +145,6 @@ void task_app_func(void * par)
 #ifdef ANCHOR
       // waiting for command
       pkt_rx = sf_network_pkt_receive();
-
       ranging_dest = (uint8_t)pkt_rx->data_int[0];
       // execute command     
       while (1)
@@ -168,27 +169,59 @@ void task_app_func(void * par)
           }
       }
       // get ranging result packet
+      pkt_ranging_result->id = packet_id;
       pkt_ranging_result->src = SRC_ADDR;
       pkt_ranging_result->dest = 1;
       sf_network_pkt_send(pkt_ranging_result);       
-  
 #endif
 
 #ifdef NODE
       pkt_rx = sf_network_pkt_receive();
-
-      // check if it is the right order
-      while((GetCompassHeading(&heading, &pitch, &roll)));
-      // generate packet and send back
-      // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
-      sf_network_pkt_gen(&pkt, 12, PKT_TYPE_DATA, 0, 1, SRC_ADDR);
-      // put data into packet
-      pkt.data_int[0] = heading;
-      pkt.data_int[1] = pitch;
-      pkt.data_int[2] = roll;
-      sf_network_pkt_send(&pkt);
+      uint8_t packet_id = pkt_rx->id;
+      if (pkt_rx->type == PKT_TYPE_REQUEST)
+      {
+          if (pkt_rx->data_int[0] == 'c')
+          {
+              // check if it is the right order
+              while((GetCompassHeading(&heading, &pitch, &roll)));
+              // generate packet and send back
+              // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+              sf_network_pkt_gen(&pkt, packet_id , PKT_TYPE_RESULT, 0, 1, SRC_ADDR);
+              // put data into packet
+              pkt.data_int[0] = heading;
+              pkt.data_int[1] = pitch;
+              pkt.data_int[2] = roll;
+              sf_network_pkt_send(&pkt);    
+          }
+          else
+          {
+              ranging_dest = (uint8_t)pkt_rx->data_int[0];
+              // execute command     
+              while (1)
+              {
+                  // para: Packet *pkt, uint8_t id, uint8_t type, uint8_t checksum, uint8_t dest, uint8_t src
+                  sf_network_pkt_gen(&pkt, packet_id, PKT_TYPE_RANGING, 0, ranging_dest, SRC_ADDR);
+                  // send ranging packet
+                  // TODO: add time out part
+                  sf_network_pkt_send(&pkt);       
+                  pkt_ranging_result = sf_network_pkt_receive();
+                  if (pkt_ranging_result == NULL)
+                  {
+                      continue;
+                  }
+                  else
+                  {
+                      break; 
+                  }
+              }
+              // get ranging result packet
+              pkt_ranging_result->id = packet_id;
+              pkt_ranging_result->src = SRC_ADDR;
+              pkt_ranging_result->dest = 1;
+              sf_network_pkt_send(pkt_ranging_result); 
+          }
+      }
 #endif
-
       /* Sleep 2000 ticks */
       tn_task_sleep(2000);
 

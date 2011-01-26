@@ -138,13 +138,13 @@ void sf_network_pkt_send(Packet * pkt)
     {
         sf_uart0_pkt_send(pkt);
         // wait for ACK
-        fail = tn_event_wait(&eventFail,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,500);
+        fail = tn_event_wait(&eventFail,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,1000);
         if (fail == TERR_NO_ERR)
         {
             tn_event_clear(&eventFail,0x00000000);
             continue;
         }
-        succ = tn_event_wait(&eventSucc,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,500);
+        succ = tn_event_wait(&eventSucc,0x00000001,TN_EVENT_WCOND_OR,&eventPattern,5000);
         if (succ == TERR_NO_ERR)
         {
             tn_event_clear(&eventSucc,0x00000000);

@@ -1,6 +1,6 @@
 initialization;
 %%
-for main_loop_count = 1000:1000
+for main_loop_count = 2000:2000
     for base_number = base_number_s: base_number_e
         basic_cluster;
         %recluster_kemeans;

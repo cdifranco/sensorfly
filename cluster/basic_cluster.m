@@ -75,7 +75,7 @@ for mainloop = 1 : main_loop_count
     bel_total =sum(bel(:));
     bel = bel / bel_total;
     sig_count = sig_count + 1;
-    save '1_20_morning_afterwards_movement_1p0.mat';
+    save '1_25_morning_afterwards_movement_0p7.mat';
     pause(1);
 end
 %% Close port
@@ -108,4 +108,4 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end);
-save '1_20_morning_afterwards_movement_1p0.mat';
+save '1_25_morning_afterwards_movement_0p7.mat';

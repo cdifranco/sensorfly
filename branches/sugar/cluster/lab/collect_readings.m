@@ -19,7 +19,6 @@ serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 try
     fopen(serial_port);
 catch ME
-   % print out warning
    error('fail to open the serial port, check connection and name'); 
 end
 %% Main loop
@@ -32,13 +31,11 @@ while 1
 		end
 	end
 	fprintf('round %d\n',sig_count);
-    %% get readings
     fprintf('get readings\n');
-    tic;
-	%reading(realx, realy, dir, dir_reading, signature)
     if sig_count ~=1
         [x y] = get_real_location(x, y); %real location
     end
+    tic;
     for c = 1 : iteration
         reading(sig_count, 1:2) = [x, y];
         [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number);
@@ -46,9 +43,7 @@ while 1
         sig_count = sig_count + 1;
     end
     toc;
-    %% calculate the believe
-    save '1_26_raw_data.mat';
-    pause(1);
+    save 'raw_data.mat';
 end
 %% Close port
 try
@@ -60,4 +55,4 @@ catch ME
     % print out warning
    error('fail to close the serial port, check connection and name'); 
 end
-save '1_26_raw_data.mat';
+save 'raw_data.mat';

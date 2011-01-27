@@ -42,7 +42,7 @@ while 1
     for c = 1 : iteration
         reading(sig_count, 1:2) = [x, y];
         [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number);
-        [reading(sig_count,3:4) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
+        [reading(sig_count,3) reading(sig_count,4) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
         sig_count = sig_count + 1;
     end
     toc;

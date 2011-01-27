@@ -55,4 +55,5 @@ catch ME
     % print out warning
    error('fail to close the serial port, check connection and name'); 
 end
+%% Clear up
 save 'raw_data.mat';

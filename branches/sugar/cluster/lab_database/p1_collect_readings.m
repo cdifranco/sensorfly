@@ -4,7 +4,7 @@ if clear_record == 1
 	sig_count = 1;
 	x = 100;
 	y = 0;
-	reading = [];
+	reading = []; % reading(real_x, real_y, dir, compass_reading, sig)
 else
     sig_count = input('from which round?\n');
 end

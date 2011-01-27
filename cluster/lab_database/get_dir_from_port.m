@@ -52,17 +52,14 @@ while 1
         end
         tx_pkt_count = tx_pkt_count + 1;
         if tx_pkt_count > 20
+            data_int = inf;
+            dir = -1;
+            stopasync(serial_port);
             fclose(serial_port);
-            error('fail to read from the serial port, check connection and name'); 
+            fprintf('fail to read from the serial port, check connection and name'); 
         end
         continue;
     end
 end
 %% Clear up
 flushinput(serial_port);         
-clear msg_array;
-clear msg_new;
-clear tx_pkt_count;
-clear rx_pkt_info;
-clear temp_double;
-clear i;

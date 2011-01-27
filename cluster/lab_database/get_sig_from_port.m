@@ -39,10 +39,9 @@ for anchor_id = 1:base_number
             sig(anchor_id) = data_double;
             break;
         catch ME
-            %%
             pause(tx_pkt_count/4);
             fprintf(2, 'stack at anchor %d: %s\n',anchor_id+2, rx_pkt_info);
-            %% generate the ranging packet again
+            %% Generate the ranging packet again
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(anchor_id+2),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % id, type, checksum, dest, src, length, data_int[5], data_float[2]
@@ -54,7 +53,7 @@ for anchor_id = 1:base_number
                  msg_new = [msg_new msg_array(i)];
             end
             msg_new = [msg_new uint8(239)];
-            %% write to the serial port again
+            %% Write to the serial port again
             try
                 fwrite(serial_port, msg_new, 'uint8','async');
             catch ME

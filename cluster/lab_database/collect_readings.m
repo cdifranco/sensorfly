@@ -52,8 +52,14 @@ try
     delete(serial_port);
     clear serial_port;
 catch ME
-    % print out warning
-   error('fail to close the serial port, check connection and name'); 
+    error('fail to close the serial port, check connection and name'); 
 end
 %% Clear up
+clear port;
+clear packet_id;
+clear node_id;
+clear serial_port;
+clear cont;
+clear c;
+%% Save data
 save 'raw_data.mat';

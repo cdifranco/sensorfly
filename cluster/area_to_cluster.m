@@ -1,4 +1,5 @@
-%% init
+% this script runs after getting signature information, it will collecting cluster information in different Area (used in stage 3 experiment) 
+%% Initialization
 serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
 clr = input('clear area cluster relation form?');
 if clr ~=0
@@ -14,7 +15,7 @@ catch ME
    % print out warning
    error('fail to open the serial port, check connection and name'); 
 end
-%% loop for each area
+%% Loop for Each Area
 while 1
     area_id = input('area id: ');
     area_cluster_relation{area_id} = [];
@@ -30,7 +31,7 @@ while 1
       cluster_in_one_area(cluster_in_one_area(:) == mode(cluster_in_one_area))=[];
     end
     area_cluster_relation{area_id} = temp;
-    save '1_25_morning_afterwards_movement_0p7_ac_2.mat'
+    save '1_25_morning_area_to_cluster_0p7_2.mat'
     cont = input('still continue?');
     if cont == 0
        break;

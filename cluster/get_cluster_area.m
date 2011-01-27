@@ -1,3 +1,4 @@
+% get clusters which are in certain area
 function cluster = get_cluster_area(reading, area, cluster_num, count_to_id)
 cluster_count = zeros(1, cluster_num);
 for i = 1:size(reading,1)

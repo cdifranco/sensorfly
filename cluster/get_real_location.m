@@ -1,3 +1,4 @@
+% record real location of the signature (used only for stage 4 experiment)
 function [x y] = get_real_location(old_x, old_y)
 %%
 while 1

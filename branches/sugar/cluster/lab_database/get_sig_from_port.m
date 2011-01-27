@@ -68,10 +68,19 @@ for anchor_id = 1:base_number
                 sig(anchor_id) = inf;
                 stopasync(serial_port);
                 fclose(serial_port);
-                fprintf('fail to read from the serial port, check connection and name'); 
+                error('fail to read from the serial port, check connection and name'); 
             end
             continue;
         end
     end
     flushinput(serial_port);
 end
+%% Clear up
+clear anchor_id;
+clear i;
+clear temp_double;
+clear rx_pkt_info;
+clear msg_new;
+clear msg_array;
+clear data_error;
+clear data_double;

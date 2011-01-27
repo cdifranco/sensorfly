@@ -56,10 +56,15 @@ while 1
             dir = -1;
             stopasync(serial_port);
             fclose(serial_port);
-            fprintf('fail to read from the serial port, check connection and name'); 
+            error('fail to read from the serial port, check connection and name'); 
         end
         continue;
     end
 end
 %% Clear up
-flushinput(serial_port);         
+flushinput(serial_port);  
+clear i;
+clear temp_double;
+clear rx_pkt_info;
+clear msg_new;
+clear msg_array;

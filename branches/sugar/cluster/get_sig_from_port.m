@@ -1,3 +1,4 @@
+% use serial port to get signature from anchors
 function [sig packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number)
 sig = zeros(1, base_number);
 for anchor_id = 1:base_number

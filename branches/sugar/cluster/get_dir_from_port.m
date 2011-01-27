@@ -1,10 +1,10 @@
 function [dir data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
-%%
+%% Initialization
 packet_id = mod(packet_id + 1, 255);
 msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
-%%
+%% Send request
 try
-    % id, type, checksum, dest, src, length, data_int[5], data_float[2]
+    % pkt: id, type, checksum, dest, src, length, data_int[5], data_float[2]
     msg_new = [uint8(255)];
     for i = 1 : length(msg_array)
         if msg_array(i) == uint8(255) || msg_array(i) == uint8(27) || msg_array(i) == uint8(239)
@@ -19,7 +19,7 @@ catch ME
      fclose(serial_port);
      error('fail to write to the serial port, check connection and name'); 
 end
-%%
+%% Wait for reply
 tx_pkt_count = 1;
 while 1
     % wait for respense of direction to anchor
@@ -34,8 +34,8 @@ while 1
         fprintf(2, 'stack at getting dir: %s\n',rx_pkt_info);
         try
             packet_id = mod(packet_id + 1, 255);
-            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
-            % id, type, checksum, dest, src, length, data_int[5], data_float[2]
+            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+            % pkt : id, type, checksum, dest, src, length, data_int[5], data_float[2]
             msg_new = [uint8(255)];
             for i = 1 : length(msg_array)
                 if msg_array(i) == uint8(255) || msg_array(i) == uint8(27) || msg_array(i) == uint8(239)
@@ -58,4 +58,11 @@ while 1
         continue;
     end
 end
-flushinput(serial_port);            
+%% Clear up
+flushinput(serial_port);         
+clear msg_array;
+clear msg_new;
+clear tx_pkt_count;
+clear rx_pkt_info;
+clear temp_double;
+clear i;

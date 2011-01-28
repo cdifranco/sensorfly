@@ -3,7 +3,6 @@ center = []; %cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, si
 sig_count = 1;
 trans_history = [];     
 bel = [];
-bel(1:size(center,1)) = 1/size(center,1); % initiate the believe vector
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 %% Open the serial port
 try
@@ -107,4 +106,4 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end);
-save '1_25_morning_afterwards_movement_0p7.mat';
+save '1_25_morning_afterwards_0p7.mat';

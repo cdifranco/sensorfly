@@ -1,11 +1,10 @@
-function [succ sig_route] = navigate(dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation)
+function [succ sig_route] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures)
 %% Initialization
 step_threshold = 500;
 succ = 1;
 total_count = 0;
 dir_number = size(trans_history, 2);
-% TODO: get current_sig, start from any point
-current_sig = 0;
+current_sig = signatures(signatures(:,1:2)==current_point, 5:end);
 total_count = total_count + 1;
 sig_route(total_count, 1:base_number) = current_sig;
 current_cluster = get_cluster_sig(center_sig, current_sig);
@@ -39,7 +38,8 @@ while 1
         end
         fprintf('direction : %d', suggest_dir);
         %% Go based on command
-        current_sig = 0; % TODO : add next point
+        current_point = next_step(current_point, suggest_dir, signatures);
+        current_sig = signatures(signatures(:,1:2)==current_point, 5:end);
         total_count = total_count + 1;
         if total_count > step_threshold
             succ = 0;

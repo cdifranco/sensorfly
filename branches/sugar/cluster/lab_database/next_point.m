@@ -1,9 +1,9 @@
-function [next_point compass_reading] = next_point(current_point, signature)
+% used for generate data set, used in generate cluster
+function [next_point compass_reading] = next_point(current_point, signatures)
 %% Initialization
-next_point = [-1, -1];
 current_x = current_point(1);
 current_y = current_point(2);
-reference_dir = signature(signature(1:2) == current_point, 4);
+reference_dir = signatures(signatures(1:2) == current_point, 4);
 isvalid_sig = 0;
 
 %% Get Next Point
@@ -15,7 +15,7 @@ while isvalid_sig == 0
     end
     new_x = current_x + x_change;
     new_y = current_y + y_change;
-    if isempty(find(signature(:,1)==new_x & signature(:,2) == new_y, 1))
+    if isempty(find(signatures(:,1)==new_x & signatures(:,2) == new_y, 1))
         continue;
     else
         isvalid_sig = 1;

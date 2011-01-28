@@ -5,6 +5,8 @@ area_number = 27;
 %% Testing loop
 for j = 1:testing_round
     dest_area = unidrnd(area_number);
+    random_start_point = unidrnd(size(signatures, 1));
+    current_point = signatures(random_start_point, 1:2);
      %% generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
@@ -24,7 +26,7 @@ for j = 1:testing_round
         end;
     end;
     %% call for navigate
-    [succ sigRoute] = navigate_basic(dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation);
+    [succ sigRoute] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures);
      %% record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     s = input('success?(yes:1/no:0)');

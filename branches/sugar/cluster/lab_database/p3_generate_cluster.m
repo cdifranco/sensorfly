@@ -23,8 +23,8 @@ for mainloop = 1 : reading_amount
     fprintf('round %d\n',mainloop);
     reading(sig_count,1) = 0; % initiate cluster id
     reading(sig_count,2:3) = current_point; % real location
-    [next_reading dir] = next_point(current_point, signature);
-    reading(sig_count,4) = dir;
+    [next_reading compass_reading] = next_point(current_point, signature);
+    reading(sig_count,4) = direction_covert(compass_reading);
     reading(sig_count,5) = signatures(signatures(:,2:3) == current_point, 4); % get compass reading
     reading(sig_count,6:end) = signatures(signatures(:,2:3) == current_point, 5:end); % get signature
     %% Calculate the believe

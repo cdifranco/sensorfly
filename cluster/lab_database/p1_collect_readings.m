@@ -6,9 +6,11 @@ if clear_record == 1
 	y = 0;
 	reading = []; % reading(real_x, real_y, dir, compass_reading, sig)
 else
-    sig_count = input('from which round?\n');
+    load ('raw_data.mat');
+    sig_count = floor(sig_count/20)*20+1;  %input('from which round?\n');
+    fprintf('current location: %d, %d \n',reading(sig_count-1,1),reading(sig_count-1,2));
 end
-iteration = 20;
+iteration = 5;
 base_number = 10;
 port = 'COM11';
 packet_id = floor(rand*254);
@@ -23,23 +25,16 @@ catch ME
 end
 %% Main loop
 while 1
-	if mod(sig_count,100) == 0
-		fprintf(2,'continue?');
-		cont = input('(yes: 1/ no:0)');
-		if cont == 0 
-			break;
-		end
-	end
 	fprintf('round %d\n',sig_count);
-    fprintf('get readings\n');
     if sig_count ~=1
         [x y] = get_real_location(x, y); %real location
     end
     tic;
+    [dir compass_reading packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
     for c = 1 : iteration
         reading(sig_count, 1:2) = [x, y];
+        reading(sig_count,3:4) = [dir compass_reading];
         [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number);
-        [reading(sig_count,3) reading(sig_count,4) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
         sig_count = sig_count + 1;
     end
     toc;
@@ -62,4 +57,4 @@ clear serial_port;
 clear cont;
 clear c;
 %% Save data
-save 'raw_data.mat';
+%save 'raw_data.mat';

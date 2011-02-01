@@ -1,10 +1,12 @@
 % get signature from 'signatures'
-function cluster_in_one_area = get_cluster_in_one_area(start_x, start_y, end_x, end_y, signatures)
+function cluster_in_one_area = get_cluster_in_one_area(start_x, start_y, end_x, end_y, signatures, center_sig)
 cluster_in_one_area = [];
 for width = start_x:10:end_x
     for length = start_y:10:end_y
-        current_sig = signatures(5:end);
-        cluster_in_one_area = [cluster_in_one_area, get_cluster_sig(center_sig, current_sig)];
+        current_sig = signatures(signatures(:,1) == width & signatures(:,2) == length , 5:end);
+        if ~isempty(current_sig)
+            cluster_in_one_area = [cluster_in_one_area, get_cluster_sig(center_sig, current_sig)];
+        end
     end
 end
 temp = [];

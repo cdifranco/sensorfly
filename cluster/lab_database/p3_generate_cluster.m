@@ -1,12 +1,14 @@
 % Select 3000 Readings for Clustering
 %% Initialization
 load ('processed_data.mat');
-load ('./loading_files/distribution_table_0p7.mat');
+load ('../loading_files/distribution_table_0p8.mat');
 direction_number = 4; % how many direction can each sensorfly take
 trans_init_number = 1;
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
 trans_history = [];     
 bel = [];
+bel_threshold = 0.0001;
+center_filter = 0.7;
 dir = 0;
 base_number = 10;
 reading_count = 1;
@@ -23,19 +25,20 @@ for mainloop = 1 : reading_amount
     fprintf('round %d\n',mainloop);
     reading(reading_count,1) = 0; % initiate cluster id
     reading(reading_count,2:3) = current_point; % real location
-    [next_reading compass_reading] = next_point(current_point, signature);
-    reading(reading_count,4) = direction_covert(compass_reading);
-    reading(reading_count,5) = signatures(signatures(:,2:3) == current_point, 4); % get compass reading
-    reading(reading_count,6:end) = signatures(signatures(:,2:3) == current_point, 5:end); % get signature
+    [next_reading(1) next_reading(2) compass_reading] = next_point(current_point, signatures);
+    cr = round(compass_reading);
+    reading(reading_count,4) = direction_convert(cr); % get direction 
+    reading(reading_count,5) = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4); % get compass reading
+    reading(reading_count,6:end) = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 5:end); % get signature
     %% Calculate the believe
     bel_bar = zeros(1,size(center,1)); % initialize the bel_bar
     for j = 1:size(center,1)
-        total_count = sum(trans_history(j, reading(reading_count-1,2), :));
+        total_count = sum(trans_history(j, reading(reading_count-1,4), :));
         for k = 1:size(center,1)
             if total_count == 0
                 trans_p = 0;
             else
-                trans_p = trans_history(j, reading(reading_count-1,2), k)/total_count;
+                trans_p = trans_history(j, reading(reading_count-1,4), k)/total_count;
             end
             bel_bar(k) = bel_bar(k) + trans_p * bel(j);
         end
@@ -66,7 +69,7 @@ for mainloop = 1 : reading_amount
     end
     %% Record into trans_history
     if mainloop ~= 1
-        trans_history(reading(reading_count-1,1), reading(reading_count-1,2), reading(reading_count,1))=trans_history(reading(reading_count-1,1), reading(reading_count-1,2), reading(reading_count,1))+1;
+        trans_history(reading(reading_count-1,1), reading(reading_count-1,4), reading(reading_count,1))=trans_history(reading(reading_count-1,1), reading(reading_count-1,4), reading(reading_count,1))+1;
     end
     %% Normalize believe
     bel_total = sum(bel(:));
@@ -76,7 +79,26 @@ for mainloop = 1 : reading_amount
     save 'clustering.mat';
     current_point = next_reading;
 end
-
+%filter the centers
+cn = 1/size(center,1)*center_filter*reading_amount;
+center_new = [];
+count_to_id = [];
+for cc = 1 : size(center,1)
+   if center(cc,2) > cn 
+      center_new = [center_new; center(cc,:)];
+      count_to_id = [count_to_id, center(cc, 1)]
+   else
+      rc = 1;
+      while rc <= size(reading, 1)
+      	if reading(rc, 1) == center(cc, 1)
+            reading(rc, :) = [];
+        else
+            rc = rc + 1;
+        end
+      end
+   end
+end
+center_sig = center_new(:,5:end);
 %% Clear up 
 clear reading_amount;
 clear reading_count;
@@ -85,7 +107,6 @@ clear start_point;
 clear random_start_point;
 clear current_point;
 clear next_reading;
-clear trans_init_number;
 clear j;
 clear bel_total;
 clear temp;

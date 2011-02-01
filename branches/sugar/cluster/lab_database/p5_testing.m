@@ -1,7 +1,11 @@
 %% Initialization
 load 'area_cluster.mat';
 testing_round = 1000;
-area_number = 27;
+area_number = 12;
+success = [];
+observed_step = [];
+error = [];
+step = [];
 %% Testing loop
 for j = 1:testing_round
     dest_area = unidrnd(area_number);
@@ -26,29 +30,25 @@ for j = 1:testing_round
         end;
     end;
     %% call for navigate
-    [succ sigRoute] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures);
+    dest_location = get_area_location(dest_area);
+    os = sqrt(sum((dest_location(:) - current_point(:)) .^ 2));
+    [succ sigRoute e] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures);
      %% record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
-    s = input('success?(yes:1/no:0)');
-    if s ~= 0
+    if size(sigRoute,1) < 500
         success=  [success, 1];
-        os = input('observed step: ');
-        observed_step = [observed_step, os];
-        e = input('error: ');
         error = [error, e];
         step = [step, size(sigRoute,1)];
+        observed_step = [observed_step, os];
     else
         success=  [success, 0];
-        observed_step = [observed_step, inf];
         error = [error, inf];
         step = [step, inf];
+        observed_step = [observed_step, inf];
     end
-    save '1_25_morning_afterwards_movement_t_0p7_1.mat'
-    %% continue
-    cont = input('still continue? (yes:1/no:0)');
-    if cont == 0
-        break;
-    end
+    save 'testing.mat';
 end
-step_rate = step(step(:)~=inf)/observed_step(observed_step(:)~=inf)
+step_rate = step(step(:)~=inf)/observed_step(observed_step(:)~=inf)*100
 ave_error = sum(error(error(:)~=inf))/size(error(error(:)~=inf),2)
+success_rate = sum(success)/size(success,2)
+save 'testing.mat';

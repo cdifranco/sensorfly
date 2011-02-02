@@ -1,10 +1,8 @@
-function [succ sig_route error] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures, test_type)
-%% Initialization
+function [succ sig_route error] = rand_go(current_point, dest_area, base_number, dir_number, center_sig, area_cluster_relation,  signatures)
 step_threshold = 500;
 succ = 1;
 error = 0;
 total_count = 0;
-dir_number = size(trans_history, 2);
 current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:end);
 total_count = total_count + 1;
 sig_route(total_count, 1:base_number) = current_sig;
@@ -26,9 +24,8 @@ current_area = get_area_id(current_point);
 fprintf('start from cluster : %d to cluster : %d\n',current_cluster, dest_cluster(1));
 fprintf('start from area : %d to area : %d\n',current_area, dest_area);
 fprintf('a: %d',current_area);
-%% Main while loop
+
 while 1
-    %%
     if  ~isempty(find(ismember(dest_cluster, current_cluster), 1))
         fprintf('u r in the destination area %d\n', dest_area);
         current_area = get_area_id(current_point);
@@ -38,14 +35,7 @@ while 1
         fprintf('the actual area %d\n', current_area);
         break;
     else
-        %% Get direction
-        [path direction_order] = guide(current_cluster, dest_cluster(1), trans_history, count_to_id, matrix, test_type);
-        if isempty(path)
-            fprintf('random pick:  ');
-            suggest_dir = double(unidrnd(dir_number));
-        else
-            suggest_dir = double(direction_order(1));
-        end
+        suggest_dir = ceil(dir_number*rand);
         fprintf(' --%d--> ', suggest_dir);
         %% Go based on command
         current_point = next_step(current_point, suggest_dir, signatures);

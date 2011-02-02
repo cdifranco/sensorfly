@@ -1,6 +1,6 @@
 % March clusters to 27 areas, since the areas are greographical unique, the
 % cluster and area matching should be done separately
-load ('clustering.mat');
+%load ('clustering.mat');
 %% Area 1
 area_cluster_relation{1} = get_cluster_in_one_area(400, 0, 480, 90, signatures, center_sig);
 %% Area 2
@@ -16,15 +16,15 @@ area_cluster_relation{6} = get_cluster_in_one_area(200, 100, 290, 190, signature
 %% Area 7
 area_cluster_relation{7} = get_cluster_in_one_area(400, 100, 480, 190, signatures, center_sig);
 %% Area 8
-area_cluster_relation{8} = get_cluster_in_one_area(400, 200, 480, 250, signatures, center_sig);
+area_cluster_relation{8} = get_cluster_in_one_area(400, 200, 480, 290, signatures, center_sig);
 %% Area 9
-area_cluster_relation{9} = get_cluster_in_one_area(300, 200, 390, 250, signatures, center_sig);
+area_cluster_relation{9} = get_cluster_in_one_area(300, 200, 390, 290, signatures, center_sig);
 %% Area 10
-area_cluster_relation{10} = get_cluster_in_one_area(200, 200, 290, 250, signatures, center_sig);
+area_cluster_relation{10} = get_cluster_in_one_area(200, 200, 290, 290, signatures, center_sig);
 %% Area 11
-area_cluster_relation{11} = get_cluster_in_one_area(100, 200, 190, 250, signatures, center_sig);
+area_cluster_relation{11} = get_cluster_in_one_area(100, 200, 190, 290, signatures, center_sig);
 %% Area 12
-area_cluster_relation{12} = get_cluster_in_one_area(0, 200, 90, 250, signatures, center_sig);
+area_cluster_relation{12} = get_cluster_in_one_area(0, 200, 90, 290, signatures, center_sig);
 %{
 %% Area 13
 area_cluster_relation{13} = get_cluster_in_one_area(100, 0, 190, 90, signatures, center_sig);

@@ -1,7 +1,7 @@
 % Select 3000 Readings for Clustering
 %% Initialization
 load ('processed_data.mat');
-load ('../loading_files/distribution_table_0p8.mat');
+load ('../loading_files/distribution_table_0p7.mat');
 direction_number = 4; % how many direction can each sensorfly take
 trans_init_number = 1;
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
@@ -9,7 +9,6 @@ trans_history = [];
 bel = [];
 bel_threshold = 0.0001;
 center_filter = 0.7;
-dir = 0;
 base_number = 10;
 reading_count = 1;
 reading_amount = 3000;
@@ -99,6 +98,9 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end);
+%% Draw Cluster
+colors = randperm(size(center,1));
+scatter(reading(:,2),reading(:,3),75,colors(reading(:,1)),'filled');
 %% Clear up 
 clear reading_amount;
 clear reading_count;
@@ -110,5 +112,9 @@ clear next_reading;
 clear j;
 clear bel_total;
 clear temp;
+clear colors;
+clear cc;
+clear rc;
+clear cr;
 %% Save 
 save 'clustering.mat';

@@ -63,7 +63,7 @@ for anchor_id = 1:base_number
             end
             %% check for time out
             tx_pkt_count = tx_pkt_count + 1;
-            if tx_pkt_count > 5
+            if tx_pkt_count > 20
                 sig(anchor_id) = inf;
                 stopasync(serial_port);
                 fprintf(2, 'fail to read from the serial port, check connection and name'); 

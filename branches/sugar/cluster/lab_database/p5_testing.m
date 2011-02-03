@@ -24,10 +24,10 @@ for j = 1:testing_round
     dest_area = unidrnd(area_number);
     random_start_point = unidrnd(size(signatures, 1));
     current_point = signatures(random_start_point, 1:2);
-     %% generate the matrix
+     %% Generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
-    if test_type == 1 || test_type == 2
+    if test_type == 1 || test_type == 2 %use old size trans_history table
         for l = 1:number_of_center
             for m = 1:number_of_center
                 sumIJ = sum(trans_history(count_to_id(l),:,count_to_id(m)));
@@ -43,7 +43,7 @@ for j = 1:testing_round
                 end;
             end;
         end;
-    elseif test_type == 3
+    elseif test_type == 3 %use new size trans_history table
         for l = 1:number_of_center
             for m = 1:number_of_center
                 sumIJ = sum(trans_history(l,:,m));
@@ -60,15 +60,15 @@ for j = 1:testing_round
             end;
         end; 
     end
-    %% call for navigate
+    %% Call for navigate
     dest_location = get_area_location(dest_area);
     os = sqrt(sum((dest_location(:) - current_point(:)) .^ 2));
-    if test_type == 4 
+    if test_type == 4 % random test
         [succ sigRoute e] = rand_go(current_point, dest_area, base_number, direction_number, center_sig, area_cluster_relation,  signatures);
     else
         [succ sigRoute e] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures, test_type);
     end
-     %% record metric
+     %% Record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
     if size(sigRoute,1) < 500
         success=  [success, 1];

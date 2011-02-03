@@ -1,10 +1,11 @@
-function dir = direction_convert(real_dir)
-if  real_dir <= 900
-    dir = 4;
-elseif real_dir <= 1800
-    dir = 3;
-elseif real_dir <= 2700
+function dir = direction_convert(real_dir, reference_dir)
+relative_dir = mod(reference_dir - real_dir, 3600);
+if  relative_dir <= 450 || relative_dir > 3150
     dir = 2;
-else
+elseif real_dir <= 1350
     dir = 1;
+elseif real_dir <= 2250
+    dir = 3;
+else
+    dir = 4;
 end

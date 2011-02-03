@@ -1,7 +1,7 @@
 % Select 3000 Readings for Clustering
 %% Initialization
 load ('processed_data.mat');
-load ('../loading_files/distribution_table_0p7.mat');
+load ('../loading_files/distribution_table_0p9.mat');
 direction_number = 4; % how many direction can each sensorfly take
 trans_init_number = 1;
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
@@ -24,10 +24,11 @@ for mainloop = 1 : reading_amount
     fprintf('round %d\n',mainloop);
     reading(reading_count,1) = 0; % initiate cluster id
     reading(reading_count,2:3) = current_point; % real location
+    reference_compass_reading = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4);
     [next_reading(1) next_reading(2) compass_reading] = next_point(current_point, signatures);
     cr = round(compass_reading);
-    reading(reading_count,4) = direction_convert(cr); % get direction 
-    reading(reading_count,5) = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4); % get compass reading
+    reading(reading_count,4) = direction_convert(cr, reference_compass_reading); % get direction 
+    reading(reading_count,5) =  reference_compass_reading; % get reference compass reading
     reading(reading_count,6:end) = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 5:end); % get signature
     %% Calculate the believe
     bel_bar = zeros(1,size(center,1)); % initialize the bel_bar

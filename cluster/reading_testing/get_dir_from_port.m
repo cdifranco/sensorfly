@@ -1,11 +1,12 @@
-function [dir data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
+function [data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
 %%
 packet_id = mod(packet_id + 1, 255);
-msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+data_int = -1;
 %%
 try
     % id, type, checksum, dest, src, length, data_int[5], data_float[2]
-    msg_new = [uint8(255)];
+    msg_new = uint8(255);
     for i = 1 : length(msg_array)
         if msg_array(i) == uint8(255) || msg_array(i) == uint8(27) || msg_array(i) == uint8(239)
             msg_new = [msg_new uint8(27)];
@@ -14,6 +15,7 @@ try
     end
     msg_new = [msg_new uint8(239)];
     fwrite(serial_port, msg_new, 'uint8','async');
+    fprintf('write to port\n');
 catch ME
      stopasync(serial_port);
      fclose(serial_port);
@@ -26,17 +28,16 @@ while 1
     try
         rx_pkt_info = fscanf(serial_port);
         temp_double = textscan(rx_pkt_info,  '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
-        data_int = temp_double{7}
-        dir = direction_convert(data_int)
+        data_int = temp_double{7};
         break;
     catch ME
         % send request of direction to anchor
         fprintf(2, 'stack at getting dir: %s\n',rx_pkt_info);
         try
             packet_id = mod(packet_id + 1, 255);
-            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % id, type, checksum, dest, src, length, data_int[5], data_float[2]
-            msg_new = [uint8(255)];
+            msg_new = uint8(255);
             for i = 1 : length(msg_array)
                 if msg_array(i) == uint8(255) || msg_array(i) == uint8(27) || msg_array(i) == uint8(239)
                     msg_new = [msg_new uint8(27)];
@@ -51,9 +52,11 @@ while 1
              error('fail to write to the serial port, check connection and name'); 
         end
         tx_pkt_count = tx_pkt_count + 1;
-        if tx_pkt_count > 20
-            fclose(serial_port);
-            error('fail to read from the serial port, check connection and name'); 
+        if tx_pkt_count > 5
+            data_int = inf;
+            stopasync(serial_port);
+            fprintf(2, 'fail to read from the serial port, check connection and name'); 
+            break;
         end
         continue;
     end

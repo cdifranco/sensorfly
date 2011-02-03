@@ -27,9 +27,9 @@ for anchor_id = 1:base_number
         try
             %% reading from serial port
             rx_pkt_info = fscanf(serial_port);
-            temp_double = textscan(rx_pkt_info,  '%f,%f');
-            data_double = temp_double{1};
-            data_error = temp_double{2};
+            temp_double = textscan(rx_pkt_info,   '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
+            data_double = temp_double{10};
+            data_error = temp_double{11};
             %% check if the ranging is correct
             if data_error ~= 0.0
                 throw(ME);
@@ -40,7 +40,7 @@ for anchor_id = 1:base_number
         catch ME
             %%
             pause(tx_pkt_count/4);
-            fprintf(2, 'stack at anchor %d: %s\n',anchor_id+1, rx_pkt_info);
+            fprintf(2, 'stack at anchor %d: %s\n',anchor_id+2, rx_pkt_info);
             %% generate the ranging packet again
             packet_id = mod(packet_id + 1, 255);
             msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(anchor_id+2),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
@@ -63,9 +63,11 @@ for anchor_id = 1:base_number
             end
             %% check for time out
             tx_pkt_count = tx_pkt_count + 1;
-            if tx_pkt_count > 10
+            if tx_pkt_count > 5
                 sig(anchor_id) = inf;
+                stopasync(serial_port);
                 fprintf(2, 'fail to read from the serial port, check connection and name'); 
+                break;
             end
             continue;
         end

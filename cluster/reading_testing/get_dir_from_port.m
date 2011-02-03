@@ -52,7 +52,7 @@ while 1
              error('fail to write to the serial port, check connection and name'); 
         end
         tx_pkt_count = tx_pkt_count + 1;
-        if tx_pkt_count > 5
+        if tx_pkt_count > 20
             data_int = inf;
             stopasync(serial_port);
             fprintf(2, 'fail to read from the serial port, check connection and name'); 

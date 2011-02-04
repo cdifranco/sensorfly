@@ -25,13 +25,13 @@ area_cluster_relation{10} = get_cluster_in_one_area(200, 200, 290, 290, signatur
 area_cluster_relation{11} = get_cluster_in_one_area(100, 200, 190, 290, signatures, center_sig);
 %% Area 12
 area_cluster_relation{12} = get_cluster_in_one_area(0, 200, 90, 290, signatures, center_sig);
-%{
 %% Area 13
-area_cluster_relation{13} = get_cluster_in_one_area(100, 0, 190, 90, signatures, center_sig);
+area_cluster_relation{13} = get_cluster_in_one_area(0, 300, 90, 390, signatures, center_sig);
 %% Area 14
-area_cluster_relation{14} = get_cluster_in_one_area(100, 0, 190, 90, signatures, center_sig);
+area_cluster_relation{14} = get_cluster_in_one_area(100, 300, 190, 390, signatures, center_sig);
 %% Area 15
-area_cluster_relation{15} = get_cluster_in_one_area(100, 0, 190, 90, signatures, center_sig);
+area_cluster_relation{15} = get_cluster_in_one_area(200, 300, 290, 390, signatures, center_sig);
+%{
 %% Area 16
 area_cluster_relation{16} = get_cluster_in_one_area(100, 0, 190, 90, signatures, center_sig);
 %% Area 17

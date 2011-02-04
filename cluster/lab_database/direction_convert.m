@@ -5,7 +5,7 @@ if  relative_dir <= 450 || relative_dir > 3150
 elseif real_dir <= 1350
     dir = 1;
 elseif real_dir <= 2250
-    dir = 3;
-else
     dir = 4;
+else
+    dir = 3;
 end

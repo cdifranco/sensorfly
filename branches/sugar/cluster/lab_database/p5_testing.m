@@ -1,5 +1,6 @@
 %% Initialization
 clear all;
+close all;
 test_type = 0;
 while test_type ~= 1 && test_type ~= 2 && test_type ~= 3 && test_type ~= 4
     test_type = input('1--original; 2--kmeans convert; 3--kmeans new; 4--random');
@@ -13,8 +14,8 @@ elseif test_type == 3
     load 'kmeans_new.mat';
     trans_history = trans_history_new;
 end
-testing_round = 1000;
-area_number = 12;
+testing_round = 1;
+area_number = 12; 
 success = [];
 observed_step = [];
 error = [];

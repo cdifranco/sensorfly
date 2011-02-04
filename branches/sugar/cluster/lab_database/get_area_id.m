@@ -29,5 +29,13 @@ elseif current_point(2) >= 200 && current_point(2) <= 290
     else
         area_id = 8;
     end
+elseif current_point(2) >= 300 && current_point(2) <= 390
+    if current_point(1) >= 0 && current_point(1) <= 90
+        area_id = 13;
+    elseif current_point(1) >= 100 && current_point(1) <= 190
+        area_id = 14;
+    else
+        area_id = 15;
+    end
 end
 

@@ -41,7 +41,7 @@ while 1
         %% Get direction
         [path direction_order] = guide(current_cluster, dest_cluster(1), trans_history, count_to_id, matrix, test_type);
         if isempty(path)
-            fprintf('random pick:  ');
+            fprintf('random :  ');
             suggest_dir = double(unidrnd(dir_number));
         else
             suggest_dir = double(direction_order(1));
@@ -50,8 +50,12 @@ while 1
         %% Go based on command
         current_point = next_step(current_point, suggest_dir, signatures);
         current_area = get_area_id(current_point);
-        fprintf('a: %d ', current_area);
-        current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:end);
+        fprintf('area: %d, cluster %d, location: (%d , %d) path: ', current_area, current_cluster, current_point(1), current_point(1));
+        for pc = 1 : size(path, 2)
+            fprintf('%d  ', path(pc));
+        end
+        fprintf('\n');
+        current_sig = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 5:end);
         total_count = total_count + 1;
         if total_count > step_threshold
             succ = 0;
@@ -59,5 +63,6 @@ while 1
         end
         sig_route(total_count, 1:base_number) = current_sig;
         current_cluster = get_cluster_sig(center_sig, current_sig);
+        %cont = input('cont\n');
     end
 end

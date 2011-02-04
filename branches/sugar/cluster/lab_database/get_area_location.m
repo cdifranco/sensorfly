@@ -23,4 +23,10 @@ elseif area_id == 11
     area_location = [150 250];
 elseif area_id == 12
     area_location = [50 250];
+elseif area_id == 13
+    area_location = [50 350];
+elseif area_id == 14
+    area_location = [150 350];
+elseif area_id == 15
+    area_location = [250 350];
 end

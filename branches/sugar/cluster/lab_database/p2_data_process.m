@@ -1,5 +1,6 @@
 % this part is for raw data process, get average signatures 
 %% Initialization
+clear all;
 load ('raw_data.mat');
 raw_reading_count = size(reading, 1);
 reading_count = raw_reading_count/iteration;

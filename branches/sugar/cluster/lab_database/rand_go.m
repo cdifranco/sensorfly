@@ -1,12 +1,12 @@
-function [succ sig_route error] = rand_go(current_point, dest_area, base_number, dir_number, center_sig, area_cluster_relation,  signatures)
+function [succ sig_route error] = rand_go(current_point, dest_area, base_number, dir_number, center_sig, area_cluster_relation,  signatures, distribution_table)
 step_threshold = 500;
 succ = 1;
 error = 0;
 total_count = 0;
-current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:end);
+current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:2:end);
 total_count = total_count + 1;
 sig_route(total_count, 1:base_number) = current_sig;
-current_cluster = get_cluster_sig(center_sig, current_sig);
+current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table);
 dest_cluster = [];
 %% Get dest clusters
 clusters_in_area = area_cluster_relation{dest_area};
@@ -41,13 +41,13 @@ while 1
         current_point = next_step(current_point, suggest_dir, signatures);
         current_area = get_area_id(current_point);
         fprintf('a: %d ', current_area);
-        current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:end);
+        current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:2:end);
         total_count = total_count + 1;
         if total_count > step_threshold
             succ = 0;
             break;
         end
         sig_route(total_count, 1:base_number) = current_sig;
-        current_cluster = get_cluster_sig(center_sig, current_sig);
+        current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table);
     end
 end

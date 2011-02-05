@@ -15,5 +15,5 @@ while ~isvalid_point
         isvalid_point = 1;
     end
 end
-compass_reading = reference_compass_reading + (angle-90)*10;
+compass_reading = reference_compass_reading + (angle*180/pi-90)*10;
 compass_reading =  round(mod(compass_reading, 3600));

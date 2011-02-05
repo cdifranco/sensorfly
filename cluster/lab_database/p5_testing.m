@@ -14,7 +14,7 @@ elseif test_type == 3
     load 'kmeans_new.mat';
     trans_history = trans_history_new;
 end
-testing_round = 1;
+testing_round = 1000;
 area_number = 12; 
 success = [];
 observed_step = [];
@@ -67,7 +67,7 @@ for j = 1:testing_round
     if test_type == 4 % random test
         [succ sigRoute e] = rand_go(current_point, dest_area, base_number, direction_number, center_sig, area_cluster_relation,  signatures);
     else
-        [succ sigRoute e] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, signatures, test_type);
+        [succ sigRoute e] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, std_sig, distribution_table, test_type);
     end
      %% Record metric
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));

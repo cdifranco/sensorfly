@@ -1,19 +1,20 @@
 % Select 3000 Readings for Clustering
 %% Initialization
 load ('processed_data.mat');
-load ('../loading_files/distribution_table_0p9.mat');
+load ('../loading_files/distribution_table_1p0.mat');
 direction_number = 4; % how many direction can each sensorfly take
 trans_init_number = 1;
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
-trans_history = [];     
-bel = [];
-bel_threshold = 0.0001;
-center_filter = 0.7;
+trans_history = [];      
+bel = []; % belief
+bel_threshold = 0.0001; % threshold of belief
+std_threshold = 2; % threshold stand deviation
+valid_reading_threshold = 0.7; % percentage require of valid reading in one signature
+center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 10;
-reading_count = 1;
-reading_amount = 3000;
+reading_count = 1; % used when generate readings
+reading_amount = 3000; % readings size
 reading = zeros(3000, size(signatures, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
-
 %% Start point
 random_start_point = unidrnd(size(signatures, 1));
 start_point = [signatures(random_start_point, 1) , signatures(random_start_point, 2)];
@@ -24,12 +25,25 @@ for mainloop = 1 : reading_amount
     fprintf('round %d\n',mainloop);
     reading(reading_count,1) = 0; % initiate cluster id
     reading(reading_count,2:3) = current_point; % real location
-    reference_compass_reading = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4);
-    [next_reading(1) next_reading(2) compass_reading] = next_point(current_point, signatures);
-    cr = round(compass_reading);
-    reading(reading_count,4) = direction_convert(cr, reference_compass_reading); % get direction 
+    reference_compass_reading = std_sig(std_sig(:,1) == current_point(1) & std_sig(:,2) == current_point(2), 4);
+    valid = 0;
+    while valid == 0
+        [next_point(1) next_point(2) compass_reading] = get_next_point(current_point, signatures);
+        next_std_sig_record = std_sig(std_sig(:,1) == next_point(1) & std_sig(:,2) == next_point(2), :);
+        [valid next_signature valid_reading] = valid_sig(next_std_sig_record, std_threshold, valid_reading_threshold, base_number);
+    end
+    reading(reading_count,4) = direction_convert(compass_reading, reference_compass_reading); % get direction 
     reading(reading_count,5) =  reference_compass_reading; % get reference compass reading
-    reading(reading_count,6:end) = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 5:end); % get signature
+    if mainloop == 1 % current_signature need to be generated
+        valid = 0;
+        while valid == 0
+            current_std_sig_record = std_sig(std_sig(:,1) == current_point(1) & std_sig(:,2) == current_point(2), :);
+            [valid current_signature current_valid_reading] = valid_sig(current_std_sig_record, std_threshold, valid_reading_threshold, base_number);
+        end
+    end
+    reading(reading_count, 6:5+base_number) = current_signature;
+    reading(reading_count, 6+base_number) = current_valid_reading;
+    
     %% Calculate the believe
     bel_bar = zeros(1,size(center,1)); % initialize the bel_bar
     for j = 1:size(center,1)
@@ -45,8 +59,19 @@ for mainloop = 1 : reading_amount
     end
     %% Get the distance reading and the new believe
     for j = 1:size(center,1) % check all the centers
-        edist = sum((reading(reading_count,6:end)-center(j,5:end)).^2).^.5;
-        p = possibility(edist,distribution_table{base_number});
+        edist = 0;
+        valid_reading_count = 0;
+        for sc = 1 : base_number
+            if reading(reading_count, 5+sc) ~= inf && center(j, 4+sc) ~= inf
+                edist = edist + (reading(reading_count, 5+sc)-center(j, 4+sc)).^2;
+                valid_reading_count = valid_reading_count + 1;
+            end
+        end
+        if valid_reading_count < 4  % no such distribution table
+            continue;
+        end
+        edist = edist.^.5;
+        p = possibility(edist,distribution_table{valid_reading_count});
         bel(j) = p * bel_bar(j);
         if bel(j) > bel_threshold && (reading(reading_count,1) == 0 || bel(j) > bel(reading(reading_count,1)))
             reading(reading_count,1) = j;
@@ -54,13 +79,14 @@ for mainloop = 1 : reading_amount
     end
     %% Clustering the new reading and generate new center if needed
     if reading(reading_count,1) ~= 0 % find the cluster center that the reading belongs
-        center(reading(reading_count,1),2) = center(reading(reading_count,1),2) + 1;
+        center(reading(reading_count, 1), 2) = center(reading(reading_count, 1), 2) + 1;
     else % add the new center to the count -- ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
         temp = [];
-        temp = [temp size(center,1)+1]; % cluster_id
+        temp = [temp size(center, 1)+1]; % cluster_id
         temp = [temp 1]; % contain_reading_number
-        temp = [temp reading(reading_count,2:3)]; % real_x, real_y
-        temp = [temp reading(reading_count,6:end)]; % sig
+        temp = [temp reading(reading_count, 2:3)]; % real_x, real_y
+        temp = [temp reading(reading_count, 6:5+base_number)]; % sig
+        temp = [temp reading(reading_count, end)]; % valid reading number
         center = [center; temp];
         reading(reading_count,1) = size(center,1); % cluster_id
         bel(size(center,1)) = 1; % add new element into  believe
@@ -75,9 +101,13 @@ for mainloop = 1 : reading_amount
     bel_total = sum(bel(:));
     bel = bel / bel_total; 
     %% Next reading
+    %scatter(reading(reading_count,2),reading(reading_count,3),75,colors(reading(reading_count,1)),'filled');
+    %hold on;
     reading_count = reading_count + 1;
     save 'clustering.mat';
-    current_point = next_reading;
+    current_point = next_point;
+    current_signature = next_signature;
+    current_valid_reading = valid_reading;
 end
 %filter the centers
 cn = 1/size(center,1)*center_filter*reading_amount;
@@ -98,8 +128,9 @@ for cc = 1 : size(center,1)
       end
    end
 end
-center_sig = center_new(:,5:end);
+center_sig = center_new(:,5:end-1);
 %% Draw Cluster
+%hold off;
 colors = randperm(size(center,1));
 scatter(reading(:,2),reading(:,3),75,colors(reading(:,1)),'filled');
 %% Clear up 
@@ -109,7 +140,7 @@ clear mainloop;
 clear start_point;
 clear random_start_point;
 clear current_point;
-clear next_reading;
+clear next_point;
 clear j;
 clear bel_total;
 clear temp;

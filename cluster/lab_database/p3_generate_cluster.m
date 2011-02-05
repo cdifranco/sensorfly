@@ -1,7 +1,8 @@
 % Select 3000 Readings for Clustering
 %% Initialization
+clear all;
 load ('processed_data.mat');
-load ('../loading_files/distribution_table_1p0.mat');
+load ('../loading_files/distribution_table_0p7.mat');
 direction_number = 4; % how many direction can each sensorfly take
 trans_init_number = 1;
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
@@ -14,10 +15,10 @@ center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 10;
 reading_count = 1; % used when generate readings
 reading_amount = 3000; % readings size
-reading = zeros(3000, size(signatures, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
+reading = zeros(3000, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
 %% Start point
-random_start_point = unidrnd(size(signatures, 1));
-start_point = [signatures(random_start_point, 1) , signatures(random_start_point, 2)];
+random_start_point = unidrnd(size(std_sig, 1));
+start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
 current_point = start_point;
 
 %% Main loop
@@ -28,7 +29,7 @@ for mainloop = 1 : reading_amount
     reference_compass_reading = std_sig(std_sig(:,1) == current_point(1) & std_sig(:,2) == current_point(2), 4);
     valid = 0;
     while valid == 0
-        [next_point(1) next_point(2) compass_reading] = get_next_point(current_point, signatures);
+        [next_point(1) next_point(2) compass_reading] = get_next_point(current_point, std_sig);
         next_std_sig_record = std_sig(std_sig(:,1) == next_point(1) & std_sig(:,2) == next_point(2), :);
         [valid next_signature valid_reading] = valid_sig(next_std_sig_record, std_threshold, valid_reading_threshold, base_number);
     end

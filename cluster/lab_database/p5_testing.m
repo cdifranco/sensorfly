@@ -23,8 +23,8 @@ step = [];
 %% Testing loop
 for j = 1:testing_round
     dest_area = unidrnd(area_number);
-    random_start_point = unidrnd(size(signatures, 1));
-    current_point = signatures(random_start_point, 1:2);
+    random_start_point = unidrnd(size(std_sig, 1));
+    current_point = std_sig(random_start_point, 1:2);
      %% Generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
@@ -65,7 +65,7 @@ for j = 1:testing_round
     dest_location = get_area_location(dest_area);
     os = sqrt(sum((dest_location(:) - current_point(:)) .^ 2));
     if test_type == 4 % random test
-        [succ sigRoute e] = rand_go(current_point, dest_area, base_number, direction_number, center_sig, area_cluster_relation,  signatures);
+        [succ sigRoute e] = rand_go(current_point, dest_area, base_number, direction_number, center_sig, area_cluster_relation,  std_sig, distribution_table);
     else
         [succ sigRoute e] = navigate(current_point, dest_area, base_number, trans_history, center_sig, count_to_id, matrix, area_cluster_relation, std_sig, distribution_table, test_type);
     end
@@ -87,11 +87,15 @@ step_rate = step(step(:)~=inf)/observed_step(observed_step(:)~=inf)*100
 ave_error = sum(error(error(:)~=inf))/size(error(error(:)~=inf),2)
 success_rate = sum(success)/size(success,2)
 if test_type == 1
+    clear test_type;
 	save 'original_testing.mat';
 elseif test_type == 2
+    clear test_type;   
     save 'kmeans_convert_testing.mat';
 elseif test_type == 3
+    clear test_type;
     save 'kmeans_new_testing.mat';
-else 
+else
+    clear test_type;
     save 'random_testing.mat';
 end

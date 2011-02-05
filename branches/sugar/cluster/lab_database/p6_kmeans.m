@@ -6,6 +6,8 @@ reading_end = size(reading,2);
 [reading(:,reading_end+1), ctrs] = kmeans(reading(:,6:reading_end), size(center_new,1), 'Distance','city', 'Replicates',20, 'Options',opts);
 center_sig = ctrs;
 p4_match_area_to_cluster;
+colors = randperm(size(center,1));
+scatter(reading(:,2),reading(:,3),75,colors(reading(:,end)),'filled');
 save 'kmeans_area_cluster.mat';
 %%  Generate the tables
 recluster_table = zeros(size(center,1),size(center,1));
@@ -36,10 +38,10 @@ save 'kmeans_convert.mat';
 %%
 clear all;
 load 'kmeans_area_cluster.mat';
-trans_history_new = ones(size(center_new,1),direction_number,size(center_new,1))*trans_init_number;%update the trans_history
+trans_history_new = ones(size(center_new,1),direction_number,size(center_new,1)) * trans_init_number;%update the trans_history
 for mainloop = 1 : size(reading,2)
     if mainloop ~= 1
-        trans_history_new(reading(mainloop-1,end), reading(mainloop-1,4), reading(mainloop,end))=trans_history_new(reading(mainloop-1,end), reading(mainloop-1,4), reading(mainloop,end))+1;
+        trans_history_new(reading(mainloop-1,end), reading(mainloop-1,4), reading(mainloop,end)) = trans_history_new(reading(mainloop-1,end), reading(mainloop-1,4), reading(mainloop,end)) + 1;
     end
 end
 clear mainloop;

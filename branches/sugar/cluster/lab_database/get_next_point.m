@@ -1,5 +1,5 @@
 % used for generate data set, used in generate cluster
-function [new_x new_y compass_reading] = next_point(current_point, signatures)
+function [new_x new_y compass_reading] = get_next_point(current_point, signatures)
 tx = current_point(1)/10;
 ty = current_point(2)/10;
 reference_compass_reading = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4);
@@ -16,4 +16,4 @@ while ~isvalid_point
     end
 end
 compass_reading = reference_compass_reading + (angle-90)*10;
-compass_reading =  mod(compass_reading, 3600);
+compass_reading =  round(mod(compass_reading, 3600));

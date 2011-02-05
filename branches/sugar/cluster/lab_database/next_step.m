@@ -1,6 +1,6 @@
 % used in testing, generate next step in guidance
 function next_step = next_step(current_point, suggest_dir, signatures)
-angle = 2*pi*suggest_dir/4 + (rand*2-1)*pi/4;
+angle = 2*pi*(suggest_dir-1)/4 + (rand*2-1)*pi/4;
 tx = current_point(1)/10;
 ty = current_point(2)/10;
 isvalid_point = 0;

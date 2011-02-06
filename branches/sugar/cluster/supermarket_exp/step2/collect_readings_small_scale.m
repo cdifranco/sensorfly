@@ -2,20 +2,20 @@
 clear_record = input('clear record?(yes: 1/ no:0)\n');
 if clear_record == 1
 	sig_count = 1;
-	x = 100;
+	x = 0;
 	y = 0;
 	reading = []; % reading(real_x, real_y, dir, compass_reading, sig)
 else
-    load ('raw_data.mat');
+    load ('raw_data_small_scale.mat');
     sig_count = floor(sig_count/20)*20+1;  %input('from which round?\n');
     fprintf('current location: %d, %d \n',reading(sig_count-1,1),reading(sig_count-1,2));
 end
-iteration = 5;
-base_number = 10;
+iteration_compass = 10;
+iteration_sig = 50;
+base_number = 15;
 port = 'COM11';
 packet_id = floor(rand*254);
 node_id = 2;
-center_filter = 0.70;
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 %% Open the serial port
 try
@@ -33,15 +33,18 @@ while 1
         break;
     end
     tic;
-    [dir compass_reading packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
-    for c = 1 : iteration
+        % 2 is virtual dir, 3 is real dir
+    for c = 1 : iteration_sig
         reading(sig_count, 1:2) = [x, y];
+        if mod(c,5) == 1
+             [dir compass_reading packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
+        end
         reading(sig_count,3:4) = [dir compass_reading];
         [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number);
         sig_count = sig_count + 1;
     end
     toc;
-    save 'raw_data.mat';
+    save 'raw_data_small_scale.mat';
 end
 %% Close port
 try
@@ -60,4 +63,4 @@ clear serial_port;
 clear cont;
 clear c;
 %% Save data
-%save 'raw_data.mat';
+save 'raw_data_small_scale.mat';

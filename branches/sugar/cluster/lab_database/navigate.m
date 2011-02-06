@@ -8,7 +8,7 @@ dir_number = size(trans_history, 2);
 current_sig = signatures(signatures(:,1)==current_point(1) & signatures(:,2)==current_point(2), 5:2:end);
 total_count = total_count + 1;
 sig_route(total_count, 1:base_number) = current_sig;
-current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table);
+current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table{5});
 dest_cluster = [];
 %% Get dest clusters
 clusters_in_area = area_cluster_relation{dest_area};
@@ -62,7 +62,7 @@ while 1
             break;
         end
         sig_route(total_count, 1:base_number) = current_sig;
-        current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table);
+        current_cluster = get_cluster_sig(center_sig, current_sig, base_number, distribution_table{5});
         %cont = input('cont\n');
     end
 end

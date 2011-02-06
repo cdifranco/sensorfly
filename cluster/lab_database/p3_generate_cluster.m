@@ -2,11 +2,18 @@
 %% Initialization
 clear all;
 load ('processed_data.mat');
-load ('../loading_files/distribution_table_0p7.mat');
+load ('distribution_table.mat'); % contains 7 distribution tables
+distr_init = 5;
+distribution_table_id = distr_init; % start with 0p9
+size_remain = 1; % to record the continuous staying step in one cluster
+size_remain_threshold = 5;
+size_change = 0;  % to record the continuous changing step in multiple clusters
+size_change_threshold = 5;
+last_cluster = 0; % record last_cluster for dynamic changing of threshold
 direction_number = 4; % how many direction can each sensorfly take
-trans_init_number = 1;
+trans_init_number = 1; % initiate number of transition histroy
 center = []; % ctr: cluster_id, contain_reading_number, real_x, real_y, sig1, sig2, sig3 ... sigN
-trans_history = [];      
+trans_history = []; % transition history     
 bel = []; % belief
 bel_threshold = 0.0001; % threshold of belief
 std_threshold = 2; % threshold stand deviation
@@ -16,10 +23,13 @@ base_number = 10;
 reading_count = 1; % used when generate readings
 reading_amount = 3000; % readings size
 reading = zeros(3000, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
+
+
 %% Start point
 random_start_point = unidrnd(size(std_sig, 1));
 start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
 current_point = start_point;
+
 
 %% Main loop
 for mainloop = 1 : reading_amount
@@ -58,8 +68,10 @@ for mainloop = 1 : reading_amount
             bel_bar(k) = bel_bar(k) + trans_p * bel(j);
         end
     end
+    
     %% Get the distance reading and the new believe
     for j = 1:size(center,1) % check all the centers
+        %% Calculate euclidean distance between reading and one center
         edist = 0;
         valid_reading_count = 0;
         for sc = 1 : base_number
@@ -72,10 +84,32 @@ for mainloop = 1 : reading_amount
             continue;
         end
         edist = edist.^.5;
-        p = possibility(edist,distribution_table{valid_reading_count});
+        %% Calculate the possibility of being in one center
+        p = possibility(edist,distribution_table{distribution_table_id}{valid_reading_count});
         bel(j) = p * bel_bar(j);
+        %% Record the cluster it belongs to and check whether the threshold need to be changed
         if bel(j) > bel_threshold && (reading(reading_count,1) == 0 || bel(j) > bel(reading(reading_count,1)))
-            reading(reading_count,1) = j;
+            %% Record
+            reading(reading_count,1) = j; % classify the point to one cluster
+            %% Check threshold -- Dynamic threshold
+            %{
+            if mainloop ~= 1
+                if j ~= last_cluster
+                    distribution_table_id = distr_init;
+                    size_remain = 1;
+                    size_change = size_change + 1;
+                    if size_change > size_change_threshold
+                        distribution_table_id = distribution_table_id + 1;
+                    end
+                else
+                    size_change = 0;
+                    size_remain = size_remain + 1;
+                    if size_remain > size_remain_threshold && distribution_table_id > 1
+                        distribution_table_id = distribution_table_id - 1;
+                    end
+                end
+            end
+            %}
         end         
     end
     %% Clustering the new reading and generate new center if needed
@@ -102,15 +136,16 @@ for mainloop = 1 : reading_amount
     bel_total = sum(bel(:));
     bel = bel / bel_total; 
     %% Next reading
-    %scatter(reading(reading_count,2),reading(reading_count,3),75,colors(reading(reading_count,1)),'filled');
-    %hold on;
-    reading_count = reading_count + 1;
     save 'clustering.mat';
+    last_cluster = reading(reading_count,1);
     current_point = next_point;
     current_signature = next_signature;
     current_valid_reading = valid_reading;
+    reading_count = reading_count + 1;
 end
-%filter the centers
+
+
+%% Filter the centers
 cn = 1/size(center,1)*center_filter*reading_amount;
 center_new = [];
 count_to_id = [];
@@ -130,10 +165,13 @@ for cc = 1 : size(center,1)
    end
 end
 center_sig = center_new(:,5:end-1);
+
+
 %% Draw Cluster
-%hold off;
 colors = randperm(size(center,1));
 scatter(reading(:,2),reading(:,3),75,colors(reading(:,1)),'filled');
+
+
 %% Clear up 
 clear reading_amount;
 clear reading_count;

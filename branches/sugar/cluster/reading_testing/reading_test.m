@@ -1,6 +1,6 @@
 %% Initialization
 clear all;
-port = 'COM41'; 
+port = 'COM25'; 
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
 packet_id = floor(rand*254);
 base_number = 10;

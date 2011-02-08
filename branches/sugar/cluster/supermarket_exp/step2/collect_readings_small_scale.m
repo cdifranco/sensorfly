@@ -7,8 +7,6 @@ if clear_record == 1
 	reading = []; % reading(real_x, real_y, dir, compass_reading, sig)
 else
     load ('raw_data_small_scale.mat');
-    sig_count = floor(sig_count/20)*20+1;  %input('from which round?\n');
-    fprintf('current location: %d, %d \n',reading(sig_count-1,1),reading(sig_count-1,2));
 end
 iteration_compass = 10;
 iteration_sig = 50;
@@ -36,11 +34,9 @@ while 1
         % 2 is virtual dir, 3 is real dir
     for c = 1 : iteration_sig
         reading(sig_count, 1:2) = [x, y];
-        if mod(c,5) == 1
-             [dir compass_reading packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
-        end
-        reading(sig_count,3:4) = [dir compass_reading];
-        [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, node_id, serial_port, base_number);
+        
+        [reading(sig_count, 3), reading(sig_count, 4), packet_id] = get_dir_from_port(packet_id, node_id, serial_port);
+        [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
         sig_count = sig_count + 1;
     end
     toc;

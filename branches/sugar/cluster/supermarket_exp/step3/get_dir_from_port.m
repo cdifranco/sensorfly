@@ -1,7 +1,7 @@
 function [dir data_int packet_id] = get_dir_from_port(packet_id, node_id, serial_port)
 %% Initialization
 packet_id = mod(packet_id + 1, 255);
-msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
 %% Send request
 try
     % pkt: id, type, checksum, dest, src, length, data_int[5], data_float[2]
@@ -34,7 +34,7 @@ while 1
         fprintf(2, 'stuck at getting dir: %s\n',rx_pkt_info);
         try
             packet_id = mod(packet_id + 1, 255);
-            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+            msg_array = [uint8(packet_id),uint8('t'),uint8(0),uint8(node_id),uint8(1),uint8(24), typecast(uint16('c'),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % pkt : id, type, checksum, dest, src, length, data_int[5], data_float[2]
             msg_new = [uint8(255)];
             for i = 1 : length(msg_array)
@@ -51,12 +51,12 @@ while 1
              error('fail to write to the serial port, check connection and name'); 
         end
         tx_pkt_count = tx_pkt_count + 1;
-        if tx_pkt_count > 20
+        if tx_pkt_count > 2
             data_int = inf;
             dir = -1;
             stopasync(serial_port);
-            fclose(serial_port);
-            error('fail to read from the serial port, check connection and name'); 
+            fprintf(2, 'fail to read from the serial port\n'); 
+			break;
         end
         continue;
     end

@@ -25,6 +25,7 @@ scatter(sig_euclid(:,1), sig_euclid(:,2),75,sig_euclid(:,end), 'Filled');
 save 'sig_analysis.mat'
 %}
 %%
+close all;
 load 'reading_test.mat';
 reading_test_result = reading_test_result(1: mainloop,:);
 %% Node 21
@@ -34,20 +35,23 @@ for c = 1 : size(reading_test_result, 1)
         valid_reading(c, :) = reading_test_result(c, :);
     end
 end
-node_21_reading = valid_reading(valid_reading(:,2)== 25, :);
+node_21_reading = valid_reading(valid_reading(:,2)== 23, :);
 node_21_timestamp = node_21_reading(:, 1);
 node_21_reading_compass = node_21_reading(:, 3);
-node_21_reading_sig_2 = node_21_reading(:, 5);
+node_21_reading_sig_2 = node_21_reading(:,10);
 node_21_reading_edist = zeros(1, size(node_21_reading, 1));
 for c = 1 : size(node_21_reading, 1);
     node_21_reading_edist(c) = sqrt(sum(node_21_reading(c, 4:end).*node_21_reading(c, 4:end)));
 end
-plot(node_21_timestamp, node_21_reading_compass);
-datetick;
-figure;
+%plot(node_21_timestamp, node_21_reading_compass);
+%axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_compass)]);
+%datetick;
+%figure;
 plot(node_21_timestamp, node_21_reading_sig_2);
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_2)]);
 datetick;
-figure;
-plot(node_21_timestamp, node_21_reading_edist);
-datetick;
-save 'reading_test_analysis.mat';
+%figure;
+%plot(node_21_timestamp, node_21_reading_edist);
+%axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_edist)]);
+%datetick;
+%save 'reading_test_analysis.mat';

@@ -11,13 +11,14 @@
 #include "mainwindow.h"
 //#include "packet.h"
 
+//#define ENABLE_BLUETOOTH
 #define INTI_BT_ADDR "C8:97:9F:6D:E2:40" //"00:06:66:04:B1:61"
 #define INTI_NET_ADDR "10.0.16.193"
 #define INIT_NET_PORT 8964
 #define MAX_DEST_NUM 27
 
 /*****Navigation Thread*****/
-naviThread::naviThread(QLineEdit *destEdit,
+naviThread::naviThread(QLineEdit *msgEdit,
                        int socket,
                        QStackedWidget *centralWidgets,
                        int naviIndex,
@@ -26,7 +27,7 @@ naviThread::naviThread(QLineEdit *destEdit,
                        int leftIndex,
                        int rightIndex)
                        :
-                       destEdit(destEdit),
+                       msgEdit(msgEdit),
                        socket(socket),
                        centralWidgets(centralWidgets),
                        naviIndex(naviIndex),
@@ -46,7 +47,7 @@ void naviThread::stop()
 void naviThread::run()
 {
     isNavi = true;
-    QString dest = destEdit->text();
+    QString dest = msgEdit->text();
 
     ushort outBuf;
     outBuf = dest.toUShort();
@@ -63,27 +64,27 @@ void naviThread::run()
         switch(inBuf){
             case 'f':
                 emit directRefreshed(forwardIndex);
-                sleep(2);
-                outBuf = ushort(1);
-                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                //sleep(2);
+                //outBuf = ushort(1);
+                //while(isNavi && send(socket,&outBuf,1,0) < 0);
                 break;
             case 'b':
                 emit directRefreshed(backIndex);
-                sleep(2);
-                outBuf = ushort(1);
-                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                //sleep(2);
+                //outBuf = ushort(1);
+                //while(isNavi && send(socket,&outBuf,1,0) < 0);
                 break;
             case 'l':
                 emit directRefreshed(leftIndex);
-                sleep(2);
-                outBuf = ushort(1);
-                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                //sleep(2);
+                //outBuf = ushort(1);
+                //while(isNavi && send(socket,&outBuf,1,0) < 0);
                 break;
             case 'r':
                 emit directRefreshed(rightIndex);
-                sleep(2);
-                outBuf = ushort(1);
-                while(isNavi && send(socket,&outBuf,1,0) < 0);
+                //sleep(2);
+                //outBuf = ushort(1);
+                //while(isNavi && send(socket,&outBuf,1,0) < 0);
                 break;
             case 's':
                 emit arriSignal();
@@ -113,8 +114,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(centralWidgets);
 
-    //initBluetoothConn();
+#ifdef ENABLE_BLUETOOTH
+    initBluetoothConn();
+#else
     initNetConn();
+#endif
     initNaviThread();
 }
 
@@ -148,34 +152,45 @@ void MainWindow::btChangeDone(QString btAddr, QString btName, QString btIcon, QS
 
 void MainWindow::enableGoButton(const QString &text) const
 {
-    goButton->setEnabled(!text.isEmpty());
+    qDebug() << text.toShort();
+    if(msgLabel->text() == QString(tr("Dest:")) && 0 < text.toShort() && text.toShort() <= MAX_DEST_NUM){
+        goButton->setEnabled(true);
+    }else{
+        goButton->setEnabled(false);
+    }
+}
+
+void MainWindow::msgEditSltChg(void)
+{
+    if(msgLabel->text() == QString(tr("Msg:"))){
+        msgLabel->setText(tr("Dest:"));
+        msgEdit->clear();
+    }
 }
 
 //Clicked goButton
 void MainWindow::naviBegin(void)
 {
-    QString dest = destEdit->text();
-    if(dest.toShort() > 0){
-        destEdit->setReadOnly(true);
-        goButton->setEnabled(false);
-        cancelButton->setEnabled(true);
-        arriButton->setEnabled(true);
-        qDebug() << "Navi begins";
-        naviThd->start();
-    }else{
-        destEdit->clear();
-    }
+    goButton->setEnabled(false);
+    cancelButton->setEnabled(true);
+    arriButton->setEnabled(true);
+    sendAreaButton->setEnabled(true);
+    msgLabel->setText(tr("Area:"));
+    qDebug() << "Navi begins";
+    naviThd->start();
 }
 
 //Clicked cancelButton
 void MainWindow::naviCanceled(void)
 {
     naviThd->stop();
-    destEdit->clear();
-    destEdit->setReadOnly(false);
+    msgEdit->clear();
     goButton->setEnabled(false);
     cancelButton->setEnabled(false);
     arriButton->setEnabled(false);
+    sendAreaButton->setEnabled((false));
+    msgLabel->setText(tr("Msg:"));
+    msgEdit->setText(tr("Navi Canceled"));
     qDebug() << "Navi canceled";
 }
 
@@ -183,12 +198,27 @@ void MainWindow::naviCanceled(void)
 void MainWindow::naviArrived(void)
 {
     naviThd->stop();
-    destEdit->clear();
-    destEdit->setReadOnly(false);
+    msgEdit->clear();
     goButton->setEnabled(false);
     cancelButton->setEnabled(false);
     arriButton->setEnabled(false);
+    sendAreaButton->setEnabled(false);
+    msgLabel->setText(tr("Msg:"));
+    msgEdit->setText(tr("Navi Arrived"));
     qDebug() << "Navi arrived";
+}
+
+//Clicked arriButton or get arriMsg
+void MainWindow::sendArea(void)
+{
+    QString dest = msgEdit->text();
+    ushort outBuf;
+    outBuf = dest.toUShort();
+#ifdef ENABLE_BLUETOOTH
+    while(send(btSocket,&outBuf,1,0) < 0);
+#else
+    while(send(netSocket,&outBuf,1,0) < 0);
+#endif
 }
 
 /*****Private Methods*****/
@@ -315,7 +345,7 @@ void MainWindow::createCtrlWidget(void)
     ctrlWidget->setLayout(ctrlLayout);
 }
 
-void MainWindow::createNaviDirect(void)
+void MainWindow::createNaviDirectWidget(void)
 {
     naviDirect = new QStackedWidget;
     QWidget *forwardWidget = new QWidget;
@@ -358,15 +388,15 @@ void MainWindow::createNaviDirect(void)
     rightIndex = naviDirect->addWidget(rightWidget);
 }
 
-void MainWindow::createNaviDest(void)
+void MainWindow::createNaviDestWidget(void)
 {
     naviDest = new QWidget;
 
-    QLabel *destLabel = new QLabel(tr("Dest:"));
-    destEdit = new QLineEdit;
-    destLabel->setBuddy(destEdit);
-    QValidator *editValidator = new QIntValidator(1, MAX_DEST_NUM, destEdit);
-    destEdit->setValidator(editValidator);
+    msgLabel = new QLabel(tr("Dest:"));
+    msgEdit = new QLineEdit;
+    msgLabel->setBuddy(msgEdit);
+    QValidator *editValidator = new QIntValidator(1, MAX_DEST_NUM, msgEdit);
+    msgEdit->setValidator(editValidator);
 
     goButton = new QPushButton(tr("Go!"));
     goButton->setEnabled(false);
@@ -377,28 +407,34 @@ void MainWindow::createNaviDest(void)
     arriButton = new QPushButton(tr("I Arrive"));
     arriButton->setEnabled(false);
 
-    QHBoxLayout *naviDestEditLayout = new QHBoxLayout;
-    naviDestEditLayout->addWidget(destLabel);
-    naviDestEditLayout->addWidget(destEdit);
+    sendAreaButton = new QPushButton(tr("Send Area"));
+    sendAreaButton->setEnabled(false);
+
+    QHBoxLayout *navimsgEditLayout = new QHBoxLayout;
+    navimsgEditLayout->addWidget(msgLabel);
+    navimsgEditLayout->addWidget(msgEdit);
     QVBoxLayout *naviDestLayout = new QVBoxLayout;
-    naviDestLayout->addLayout(naviDestEditLayout);
+    naviDestLayout->addLayout(navimsgEditLayout);
     naviDestLayout->addWidget(goButton);
     naviDestLayout->addWidget(cancelButton);
     naviDestLayout->addWidget(arriButton);
+    naviDestLayout->addWidget(sendAreaButton);
     naviDestLayout->addStretch();
 
     naviDest->setLayout(naviDestLayout);
 
-    connect(destEdit, SIGNAL(textChanged(const QString &)), this, SLOT(enableGoButton(const QString &)));
+    connect(msgEdit, SIGNAL(textChanged(const QString &)), this, SLOT(enableGoButton(const QString &)));
+    connect(msgEdit, SIGNAL(selectionChanged()), this, SLOT(msgEditSltChg()));
     connect(goButton, SIGNAL(clicked()), this, SLOT(naviBegin()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(naviCanceled()));
     connect(arriButton, SIGNAL(clicked()), this, SLOT(naviArrived()));
+    connect(sendAreaButton, SIGNAL(clicked()), this, SLOT(sendArea()));
 }
 
 void MainWindow::createNaviSubWidget(void)
 {
-    createNaviDirect();
-    createNaviDest();
+    createNaviDirectWidget();
+    createNaviDestWidget();
 
     naviSubWidget = new QWidget;
 
@@ -487,9 +523,9 @@ void MainWindow::setupNetConn(void)
 
     //connect to server
     int status;
-    do{
+    //do{
         status = ::connect(netSocket, (struct sockaddr *)&addr, sizeof(addr));
-    }while(status != 0);
+    //}while(status != 0);
 
     if(status != 0){
         //TODO:handle exception
@@ -514,7 +550,7 @@ Packet *MainWindow::resvPkt() const
 
 void MainWindow::initNaviThread(void)
 {
-    naviThd = new naviThread(destEdit,
+    naviThd = new naviThread(msgEdit,
                              netSocket,
                              centralWidgets,
                              naviIndex,

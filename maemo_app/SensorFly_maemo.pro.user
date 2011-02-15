@@ -148,7 +148,7 @@
     <value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug</value>
     <value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">Qt4ProjectManager.Qt4BuildConfiguration</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildConfiguration" type="int">2</value>
-    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/bernard/Workspace/SensorFly_maemo-build-maemo</value>
+    <value key="Qt4ProjectManager.Qt4BuildConfiguration.BuildDirectory" type="QString">/home/bernard/Workspace/2011.02.15.11.24_sugar/maemo_app</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.QtVersionId" type="int">2</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.ToolChain" type="int">9</value>
     <value key="Qt4ProjectManager.Qt4BuildConfiguration.UseShadowBuild" type="bool">true</value>
@@ -206,19 +206,23 @@
     <value key="Qt4ProjectManager.MaemoRunConfiguration.DeviceId" type="qulonglong">1</value>
     <valuelist key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedFiles" type="QVariantList">
      <value type="QString">10.0.16.60</value>
+     <value type="QString">10.0.16.60</value>
      <value type="QString">/home/bernard/Workspace/SensorFly_maemo-build-maemo/sensorfly_0.0.1_armel.deb</value>
     </valuelist>
     <valuelist key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedHosts" type="QVariantList">
+     <value type="QString">/home/bernard/Workspace/2011.02.15.11.24_sugar/maemo_app/sensorfly_0.0.1_armel.deb</value>
      <value type="QString">/home/bernard/Workspace/SensorFly_maemo-build-maemo/sensorfly_0.0.1_armel.deb</value>
      <value type="QString">10.0.16.60</value>
     </valuelist>
     <valuelist key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedRemotePaths" type="QVariantList">
      <value type="QString">/home/developer/sensorfly_0.0.1_armel.deb</value>
      <value type="QString">/home/developer/sensorfly_0.0.1_armel.deb</value>
+     <value type="QString">/home/developer/sensorfly_0.0.1_armel.deb</value>
     </valuelist>
     <valuelist key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedTimes" type="QVariantList">
-     <value type="QDateTime">2011-01-20T21:04:36</value>
-     <value type="QDateTime">2011-01-20T18:29:31</value>
+     <value type="QDateTime">2011-02-15T14:31:18</value>
+     <value type="QDateTime">2011-02-15T12:08:59</value>
+     <value type="QDateTime">2011-02-15T11:29:17</value>
     </valuelist>
    </valuemap>
    <value key="ProjectExplorer.Target.RunConfigurationCount" type="int">1</value>

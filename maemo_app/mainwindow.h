@@ -20,7 +20,7 @@ class naviThread : public QThread
     Q_OBJECT
 
 public:
-    naviThread(QLineEdit *destEdit,
+    naviThread(QLineEdit *msgEdit,
                int socket,
                QStackedWidget *centralWidgets,
                int naviIndex,
@@ -40,7 +40,7 @@ protected:
     void run();
 
 private:
-    QLineEdit *destEdit;
+    QLineEdit *msgEdit;
     int socket;
     QStackedWidget *centralWidgets;
     int naviIndex;
@@ -66,9 +66,11 @@ private slots:
     void about(void) const;
     void btChangeDone(QString btAddr, QString btName, QString btIcon, QString majorClass, QString minorClass, bool trusted, QStringList services);
     void enableGoButton(const QString &text) const;
+    void msgEditSltChg(void);
     void naviBegin(void);
     void naviCanceled(void);
     void naviArrived(void);
+    void sendArea(void);
 
 private:
     /*****Methods*****/
@@ -78,8 +80,8 @@ private:
     void createNaviWidget(void);
     void createCtrlWidget(void);
 
-    void createNaviDirect(void);
-    void createNaviDest(void);
+    void createNaviDirectWidget(void);
+    void createNaviDestWidget(void);
     void createNaviSubWidget(void);
 
     void initBluetoothConn(void);
@@ -128,10 +130,12 @@ private:
 
     QStackedWidget *naviDirect;
     QWidget *naviDest;
-    QLineEdit *destEdit;
+    QLabel *msgLabel;
+    QLineEdit *msgEdit;
     QPushButton *goButton;
     QPushButton *cancelButton;
     QPushButton *arriButton;
+    QPushButton *sendAreaButton;
 
     int mainIndex;
     int naviIndex;

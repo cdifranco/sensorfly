@@ -12,7 +12,10 @@ try
     server_socket = ServerSocket(socket_port);
     server_socket.setSoTimeout(10000);
 catch ME
-    fprintf('socket fail to open');
+    fprintf(2, 'socket fail to open');
+    if ~isempty(server_socket)
+        server_socket.close
+    end
 end
 %% Initialization
 clr = input('clear record?');

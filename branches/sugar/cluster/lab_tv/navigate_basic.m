@@ -1,4 +1,4 @@
-function [succ sigRoute] = navigate_basic(packet_id, node_id, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation, grid)
+function [succ sigRoute] = navigate_basic(packet_id, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation, grid)
 %% Initialization
 step_threshold = 500;
 succ = 1;
@@ -33,7 +33,6 @@ while 1
         break;
     else
         %%
-        %current_dir = get_dir_from_port(packet_id, node_id, port)
         [path direction_order] = guide(currentCluster, destCluster(1), transHistory, count_to_id, matrix);
         if isempty(path)
             fprintf('random-->');
@@ -44,34 +43,9 @@ while 1
         %% give out direction through socket 
         socket_send(d_output_stream, direction_pool(suggest_dir));
        
-        %% Current command
-        %{
-        if (current_dir - suggest_dir) == 2 || (current_dir - suggest_dir) == -2
-            fprintf('go back\n');
-            socket_send(d_output_stream, 'b');
-        elseif (current_dir - suggest_dir) == 1 || (current_dir - suggest_dir) == -3
-            fprintf('turn left\n');
-            socket_send(d_output_stream, 'l');
-        elseif (current_dir - suggest_dir) == -1 || (current_dir - suggest_dir) == 3
-            fprintf('turn right\n');
-            socket_send(d_output_stream, 'r');
-        else
-            fprintf('keep up\n');
-            socket_send(d_output_stream, 'u');
-        end
-        %}
-        %% Original command
-        %{
-        fprintf('at %d go: ', currentCluster);
-        if isempty(path)
-            fprintf(' random pick--> %d\n',uint32(unidrnd(directionNumber)));  
-        else
-            fprintf(' pick based on map--> %d\n',);
-        end
-        %}
-         %% Continue?
-        cont = input('continue?(yes:1/no:0)');    
-        %cont = socket_receive(d_input_stream, 1);
+         %% Continue? input area id
+        %cont = input('continue?(yes:1/no:0)');    
+        cont = socket_receive(d_input_stream, 1);
         if cont == 0
             break;
         end
@@ -94,7 +68,7 @@ while 1
         currentSig = get_sig_from_port(packet_id, port, base_number);
         totalCnt = totalCnt + 1;
         if totalCnt > step_threshold
-            %socket_send('e',125,10);
+            socket_send('e',125,10);
             succ = 0;
             break;
         end

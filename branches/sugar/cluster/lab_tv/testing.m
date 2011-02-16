@@ -31,7 +31,7 @@ end
 serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
 %% Draw the main frame
 area_number = 27;
-load './loading_files/grid.mat';
+load '../loading_files/grid.mat';
 Z = zeros(4);
 figure;
 for i =  1 : area_number
@@ -84,6 +84,12 @@ end
 for j = start_round:testing_round
     destArea = input('destiny area: ');
     %destArea = socket_receive(d_input_stream, 1);
+    %% Draw Dest Area
+    surf(grid{cont}.x, grid{cont}.y, ones(4)*0, ones(4)*1);
+    axis tight;
+    axis equal;
+    colormap([1 1 0; 0 1 1])
+    pause(1);
      %% generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);
@@ -103,7 +109,7 @@ for j = start_round:testing_round
         end;
     end;
     %% call for navigate
-    [succ sigRoute] = navigate_basic(packet_id, node_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history,center_sig, count_to_id, matrix, area_cluster_relation, grid);
+    [succ sigRoute] = navigate_basic(packet_id, d_input_stream, d_output_stream, serial_port, destArea, base_number, trans_history,center_sig, count_to_id, matrix, area_cluster_relation, grid);
     fprintf('you have forwarded %d steps\n',size(sigRoute,1));
      %% continue
     cont = input('still continue? (yes:1/no:0)');

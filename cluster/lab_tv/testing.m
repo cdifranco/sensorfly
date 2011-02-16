@@ -39,7 +39,6 @@ for i =  1 : area_number
     axis tight;
     axis equal;
     colormap([1 1 0; 0 1 1])
-    %colorbar
     hold on;
 end
 axis([-inf,inf,-inf,inf,0,10]);
@@ -83,13 +82,12 @@ end
 %% Testing loop
 for j = start_round:testing_round
     destArea = input('destiny area: ');
-    %destArea = socket_receive(d_input_stream, 1);
-    %% Draw Dest Area
+     %% Draw Dest Area
     surf(grid{cont}.x, grid{cont}.y, ones(4)*0, ones(4)*1);
     axis tight;
     axis equal;
     colormap([1 1 0; 0 1 1])
-    pause(1);
+    hold on;
      %% generate the matrix
     number_of_center = size(center_new,1);
     matrix = zeros(number_of_center, number_of_center);

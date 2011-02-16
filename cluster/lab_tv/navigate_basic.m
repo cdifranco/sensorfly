@@ -26,6 +26,25 @@ else
 end
 %% Main while loop
 while 1
+    
+    %% Draw on lab picture
+    area_id = socket_receive(d_input_stream, 1);
+    if area_id == 0 
+        break;
+    end
+    for j =  1 : 2
+        surf(grid{area_id}.x, grid{area_id}.y, ones(4)*0, ones(4)*-1);
+        axis tight;
+        axis equal;
+        colormap([1 1 0; 0 1 1])
+        pause(1);
+        surf(grid{area_id}.x, grid{area_id}.y, ones(4)*0, ones(4)*0);
+        axis tight;
+        axis equal;
+        colormap([1 1 0; 0 1 1])
+        pause(1);
+    end
+    hold on;
     %%
     if  ~isempty(find(ismember(destCluster, currentCluster), 1))
         fprintf('u r in the dest area %d\n', dest_area);
@@ -43,27 +62,6 @@ while 1
         %% give out direction through socket 
         socket_send(d_output_stream, direction_pool(suggest_dir));
        
-         %% Continue? input area id
-        %cont = input('continue?(yes:1/no:0)');    
-        cont = socket_receive(d_input_stream, 1);
-        if cont == 0
-            break;
-        end
-        %% Draw on lab picture
-         for j =  1 : 2
-            surf(grid{cont}.x, grid{cont}.y, ones(4)*0, ones(4)*-1);
-            axis tight;
-            axis equal;
-            colormap([1 1 0; 0 1 1])
-            pause(1);
-            surf(grid{cont}.x, grid{cont}.y, ones(4)*0, ones(4)*0);
-            axis tight;
-            axis equal;
-            colormap([1 1 0; 0 1 1])
-            pause(1);
-        end
-        %colorbar
-        hold on;
         %%
         currentSig = get_sig_from_port(packet_id, port, base_number);
         totalCnt = totalCnt + 1;

@@ -3,7 +3,7 @@
 clear all;
 load ('processed_data.mat');
 load ('distribution_table.mat'); % contains 7 distribution tables
-distr_init = 7;
+distr_init = 5;
 distribution_table_id = distr_init; % start with 0p9
 size_remain = 1; % to record the continuous staying step in one cluster
 size_remain_threshold = 5;
@@ -21,8 +21,8 @@ valid_reading_threshold = 0.1; % percentage require of valid reading in one sign
 center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 30;
 reading_count = 1; % used when generate readings
-reading_amount =  3000; % readings size
-reading = zeros(3000, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
+reading_amount = 10000; % readings size
+reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
 
 
 %% Start point

@@ -9,12 +9,15 @@ reading_count = raw_reading_count/iteration;
 std_sig = zeros(reading_count, size(data, 2) + base_number);
 %% Get average data for each point
 for i = 1 : reading_count
-    std_sig(i, 1:4) = mean(data(20*(i-1)+1:20*i,1:4));
+    std_sig(i, 1:3) = mean(data(20*(i-1)+1:20*i,1:3));
+    std_sig(i, 4) = mean(data(20*(i-1) + find(data(20*(i-1)+1:20*i,4) ~= inf), 4));
     for j = 1 : base_number
-        std_sig(i, 5+(j-1)*2) = mean(data(20*(i-1)+1:20*i,4+j));
-        std_sig(i, 6+(j-1)*2) =  std(data(20*(i-1)+1:20*i,4+j));
+        std_sig(i, 5+(j-1)*2) = mean(data(20*(i-1) + find(data(20*(i-1)+1:20*i,4+j) ~= inf), 4+j));
+        std_sig(i, 6+(j-1)*2) = std(data(20*(i-1) + find(data(20*(i-1)+1:20*i,4+j) ~= inf), 4+j));
     end
 end
+
+
 
 %% Clear up
 clear raw_reading_count;

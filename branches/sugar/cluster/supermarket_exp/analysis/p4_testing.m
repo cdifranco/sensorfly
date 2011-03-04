@@ -25,8 +25,8 @@ error = 0;
 e = 0;
 
 for j = 1:testing_round
-    startX = path(j,1)
-    startY = path(j,2)
+    startX = path(j,1);
+    startY = path(j,2);
     destX = path(j,3);
     destY = path(j,4);
     %create matrix
@@ -43,7 +43,7 @@ for j = 1:testing_round
             end;
         end;
     end;
-    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], step_len, base_number, trans_history, center_sig, points, matrix, std_sig);
+    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], step_len, base_number, trans_history, center_sig, points, matrix, std_sig, distribution_table);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
         error = error + sum((coordRoute(end,:)-[destX destY]).^2).^.5;

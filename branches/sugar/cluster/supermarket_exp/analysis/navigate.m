@@ -4,8 +4,8 @@ successCnt = 0;
 totalCnt = 0;
 directionNumber = size(transHistory, 2);
 currentCoord = startCoord;
-currentSig = std_sig(std_sig(:,1) == startCoord(1) & std_sig(:,2) == startCoord(2), 5:2:end)
-baseNumber
+currentSig = std_sig(std_sig(:,1) == startCoord(1) & std_sig(:,2) == startCoord(2), 5:2:end);
+distribution_table_id = 7;
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;

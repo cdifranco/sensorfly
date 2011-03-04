@@ -9,15 +9,15 @@ baseNumber
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;
-currentCluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table);
+currentCluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table{distribution_table_id});
 startCluster = currentCluster;
 clusterRoute(totalCnt) = currentCluster;
 
 destSig = std_sig(std_sig(:,1) == destCoord(1) & std_sig(:,2) == destCoord(2), 5:end);
-destCluster = get_cluster(centers, destSig);
+destCluster = get_cluster_sig(centers, destSig, baseNumber, distribution_table{distribution_table_id});
 
 while 1
-    if get_cluster(centers, currentSig) == destCluster
+    if get_cluster_sig(centers, currentSig, baseNumber, distribution_table{distribution_table_id}) == destCluster
         break;
     else
         [path direction] = guide(currentSig, destCluster, transHistory, centers, matrix);
@@ -35,7 +35,7 @@ while 1
         currentSig = std_sig(std_sig(:,1) == convert(1) & std_sig(:,2) == convert(2), 5:end);
         sigRoute(totalCnt, 1:baseNumber) = currentSig;
         coordRoute(totalCnt, 1:2) = currentCoord;
-        currentCluster = get_cluster(centers, currentSig);
+        currentCluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table{distribution_table_id});
         clusterRoute(totalCnt) = currentCluster;
         if length(path) >= 1 && currentCluster == path(2)
             successCnt = successCnt + 1;

@@ -3,7 +3,7 @@
 clear all;
 load ('processed_data.mat');
 load ('distribution_table.mat'); % contains 7 distribution tables
-distr_init = 5;
+distr_init = 7;
 distribution_table_id = distr_init; % start with 0p9
 size_remain = 1; % to record the continuous staying step in one cluster
 size_remain_threshold = 5;
@@ -21,14 +21,13 @@ valid_reading_threshold = 0.1; % percentage require of valid reading in one sign
 center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 30;
 reading_count = 1; % used when generate readings
-reading_amount = 10000; % readings size
+reading_amount = 1000; % readings size
 reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
 
 
 %% Start point
 %random_start_point = unidrnd(size(std_sig, 1));
 %start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
-%current_point = start_point;
 start_point = 1;
 start_point = [std_sig(start_point, 1) , std_sig(start_point, 2)];
 current_point = start_point;
@@ -98,25 +97,6 @@ for mainloop = 1 : reading_amount
         if bel(j) > bel_threshold && (reading(reading_count,1) == 0 || bel(j) > bel(reading(reading_count,1)))
             %% Record
             reading(reading_count,1) = j; % classify the point to one cluster
-            %% Check threshold -- Dynamic threshold
-            %{
-            if mainloop ~= 1
-                if j ~= last_cluster
-                    distribution_table_id = distr_init;
-                    size_remain = 1;
-                    size_change = size_change + 1;
-                    if size_change > size_change_threshold
-                        distribution_table_id = distribution_table_id + 1;
-                    end
-                else
-                    size_change = 0;
-                    size_remain = size_remain + 1;
-                    if size_remain > size_remain_threshold && distribution_table_id > 1
-                        distribution_table_id = distribution_table_id - 1;
-                    end
-                end
-            end
-            %}
         end         
     end
     %% Clustering the new reading and generate new center if needed
@@ -143,7 +123,7 @@ for mainloop = 1 : reading_amount
     bel_total = sum(bel(:));
     bel = bel / bel_total; 
     %% Next reading
-    save 'clustering.mat';
+    save 'clustering_0p9_1000.mat';
     last_cluster = reading(reading_count,1);
     current_point = next_point;
     current_signature = next_signature;
@@ -195,4 +175,4 @@ clear cc;
 clear rc;
 clear cr;
 %% Save 
-save 'clustering.mat';
+save 'clustering_0p9_1000.mat';

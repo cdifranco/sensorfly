@@ -22,9 +22,9 @@ while 1
         [path direction] = guide(currentSig, destCluster, transHistory, centers, matrix);
         if isempty(path)
             rand_direction = ceil(directionNumber*rand);
-            currentCoord = generate_next_step(rand_direction, stepLength, currentCoord(1),currentCoord(2),points);
+            currentCoord = get_next_step(rand_direction, stepLength, currentCoord(1),currentCoord(2),points);
         else
-            currentCoord = generate_next_step(direction(1), stepLength, currentCoord(1),currentCoord(2),points);
+            currentCoord = get_next_step(direction(1), stepLength, currentCoord(1),currentCoord(2),points);
         end
         totalCnt = totalCnt + 1;
         if totalCnt > 300

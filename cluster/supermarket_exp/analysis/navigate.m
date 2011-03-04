@@ -1,11 +1,10 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, stepLength, baseNumber, transHistory, centers, points, matrix, std_sig, distribution_table)
+function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, stepLength, baseNumber, transHistory, centers, points, matrix, std_sig, distribution_table, distribution_table_id)
 succ = 1;
 successCnt = 0;
 totalCnt = 0;
 directionNumber = size(transHistory, 2);
 currentCoord = startCoord;
 currentSig = std_sig(std_sig(:,1) == startCoord(1) & std_sig(:,2) == startCoord(2), 5:2:end);
-distribution_table_id = 7;
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;

@@ -21,7 +21,7 @@ valid_reading_threshold = 0.1; % percentage require of valid reading in one sign
 center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 30;
 reading_count = 1; % used when generate readings
-reading_amount = 1000; % readings size
+reading_amount = 10000; % readings size
 reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
 
 

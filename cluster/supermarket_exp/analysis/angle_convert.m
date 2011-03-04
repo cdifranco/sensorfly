@@ -1,10 +1,10 @@
 function angle = angle_convert(direction)
 if  direction == 2 
-    angle = mod(3150 + unidrnd(900),3600);
+    angle = mod(315 + unidrnd(90),360);
 elseif direction == 1
-    angle = 450 + unidrnd(900);
+    angle = 45 + unidrnd(90);
 elseif direction == 4
-    angle = 1350 + unidrnd(900);
+    angle = 135 + unidrnd(90);
 else
-    angle = 2250 + unidrnd(900);
+    angle = 225 + unidrnd(90);
 end

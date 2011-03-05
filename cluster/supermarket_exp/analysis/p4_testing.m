@@ -25,7 +25,6 @@ error = 0;
 e = 0;
 
 for j = 1:testing_round
-    j
     startX = path(j,1);
     startY = path(j,2);
     destX = path(j,3);
@@ -56,8 +55,3 @@ error_rate = error / (testing_round-e)
 step_ave = len / (testing_round-e)
 error_count = e
 
-%measurements
-%time = [time step_ave]
-%accuracy = [accuracy error_rate]
-%center_count = [center_count size(center, 1)]
-%error_time = [error_time e]

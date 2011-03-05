@@ -11,8 +11,8 @@ else
     fprintf('current location: %d, %d \n',reading(sig_count-1,1),reading(sig_count-1,2));
 end
 iteration = 20; % initialization
-base_number = 10;
-port = 'COM11';
+base_number = 22;
+port = 'COM5';
 packet_id = floor(rand*254);
 node_id = 2;
 serial_port = serial(port,'BaudRate',38400,'DataBits',8,'Timeout', 0.5);
@@ -26,10 +26,16 @@ end
 while 1
 	x = input('x:');
 	y = input('y:');
+    if x == -1 && y == -1 
+        break;
+    end
     for c = 1 : iteration
+        fprintf('iteration %d \n',c);
         reading(sig_count, 1:2) = [x, y];
-        [reading(sig_count,3), reading(sig_count,4) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
-        [reading(sig_count, 5:4+base_number) packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
+        [reading(sig_count,3) reading(sig_count,4) packet_id] = get_dir_from_port(packet_id, node_id, serial_port); % 2 is virtual dir, 3 is real dir
+        [temp_sig packet_id] = get_sig_from_port(packet_id, serial_port, base_number);
+        reading(sig_count, 5:4+base_number) = temp_sig;
+        temp_sig
         sig_count = sig_count + 1;
     end
     save 'raw_data_supermarket.mat';

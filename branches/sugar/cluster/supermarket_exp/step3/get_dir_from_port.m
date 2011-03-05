@@ -26,8 +26,8 @@ while 1
     try
         rx_pkt_info = fscanf(serial_port);
         temp_double = textscan(rx_pkt_info, '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
-        data_int = temp_double{7};
-        dir = direction_convert(data_int);
+        data_int = temp_double{7}
+        dir = 0;%direction_convert(data_int);
         break;
     catch ME
         % send request of direction to anchor

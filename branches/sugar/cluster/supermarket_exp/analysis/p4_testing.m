@@ -16,7 +16,7 @@ for i = 1:testing_round
     while end_index == start_index
         end_index = unidrnd(size(points,1));
     end
-    path = [path; points(start_index , :), points(start_index , :)];
+    path = [path; points(start_index , :), points(end_index , :)];
 end
 
 %% Testing loop
@@ -25,6 +25,7 @@ error = 0;
 e = 0;
 
 for j = 1:testing_round
+    j
     startX = path(j,1);
     startY = path(j,2);
     destX = path(j,3);
@@ -43,20 +44,20 @@ for j = 1:testing_round
             end;
         end;
     end;
-    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], step_len, base_number, trans_history, center_sig, points, matrix, std_sig, distribution_table, distribution_table_id);
+    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], base_number, trans_history, center_sig, points, matrix, std_sig, distribution_table{distribution_table_id}, base_number);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
         error = error + sum((coordRoute(end,:)-[destX destY]).^2).^.5;
-    else 
+    else
         e = e + 1;
     end
 end
-error_rate = error / (testing_round-e);
-step_ave = len / (testing_round-e);
-error_count = e;
+error_rate = error / (testing_round-e)
+step_ave = len / (testing_round-e)
+error_count = e
 
 %measurements
-time = [time step_ave]
-accuracy = [accuracy error_rate]
-center_count = [center_count size(center, 1)]
-error_time = [error_time e]
+%time = [time step_ave]
+%accuracy = [accuracy error_rate]
+%center_count = [center_count size(center, 1)]
+%error_time = [error_time e]

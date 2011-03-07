@@ -66,6 +66,7 @@ save 'grid_in_lab.mat';
 %}
 %% draw the main frame
 area_number = 27;
+start_point = 0;
 load './loading_files/grid.mat';
 Z = zeros(4);
 figure;
@@ -73,11 +74,21 @@ for i =  1 : area_number
     surf(grid{i}.x, grid{i}.y, ones(4)*0, ones(4)*0);
     axis tight;
     axis equal;
+    xlabel('Lab Width')
+    ylabel('Lab Length')
     colormap([1 1 0; 0 1 1])
     %colorbar
     hold on;
 end
 axis([-inf,inf,-inf,inf,0,10]);
+destArea = input('destiny area: ');
+     %% Draw Dest Area
+    surf(grid{destArea}.x, grid{destArea}.y, ones(4)*0, ones(4)*-1);
+    axis tight;
+    axis equal;
+    text(22.5, 32.5, 1, 'banner');
+    colormap([1 1 0; 0 1 1])
+    hold on;
 %% input grid number and draw
 while 1
     cont = input('continue?');
@@ -85,7 +96,7 @@ while 1
         break;
     end
     grid_id = input('grid id: ');
-    for j =  1 : 5
+    for j =  1 : 3
         surf(grid{grid_id}.x, grid{grid_id}.y, ones(4)*0, ones(4)*-1);
         axis tight;
         axis equal;
@@ -99,6 +110,10 @@ while 1
     end
     %colorbar
     hold on;
+    if start_point == 0
+        text(5.5, 2.5, 1, 'start');
+        start_point = 1;
+    end
 end
 
 %% draw cluster

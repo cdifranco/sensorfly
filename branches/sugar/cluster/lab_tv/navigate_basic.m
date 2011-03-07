@@ -1,7 +1,8 @@
-function [succ sigRoute] = navigate_basic(packet_id, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation, grid)
+function [succ sigRoute] = navigate_basic(packet_id, d_input_stream, d_output_stream, port, dest_area, base_number, transHistory, center_sig, count_to_id, matrix, area_cluster_relation, grid)
 %% Initialization
 step_threshold = 500;
 succ = 1;
+start_point = 0;
 totalCnt = 0;
 directionNumber = size(transHistory, 2);
 destCluster = [];
@@ -26,9 +27,8 @@ else
 end
 %% Main while loop
 while 1
-    
     %% Draw on lab picture
-    area_id = socket_receive(d_input_stream, 1);
+    area_id = input('area id:'); % socket_receive(d_input_stream, 1); 
     if area_id == 0 
         break;
     end
@@ -45,8 +45,12 @@ while 1
         pause(1);
     end
     hold on;
+    if start_point == 0
+        text(5.5, 2.5, 0, 'start');
+        start_point = 1;
+    end
     %%
-    if  ~isempty(find(ismember(destCluster, currentCluster), 1))
+    if  ~isempty(find(ismember(destCluster, currentCluster), 1)) || area_id == dest_area
         fprintf('u r in the dest area %d\n', dest_area);
         socket_send(d_output_stream, 's');
         break;

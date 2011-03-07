@@ -3,7 +3,7 @@ sig = zeros(1, base_number);
 for anchor_id = 1:base_number
     %% generate ranging packet
     packet_id = mod(packet_id + 1, 255);
-    msg_array = [uint8(packet_id),uint8('g'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+    msg_array = [uint8(packet_id),uint8('g'),uint8(0),uint8(anchor_id+2),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
     % id, type, checksum, dest, src, length, data_int[5], data_float[2]
     msg_new = [uint8(255)];
     for i = 1 : length(msg_array)
@@ -27,9 +27,9 @@ for anchor_id = 1:base_number
         try
             %% reading from serial port
             rx_pkt_info = fscanf(serial_port);
-            temp_double = textscan(rx_pkt_info,  '%f,%f');
-            data_double = temp_double{1};
-            data_error = temp_double{2};
+            temp_double = textscan(rx_pkt_info, '%d, %c, %d, %d, %d, %d, %d, %d, %d, %f, %f');
+            data_double = temp_double{10};
+            data_error = temp_double{11};
             %% check if the ranging is correct
             if data_error ~= 0.0
                 throw(ME);
@@ -40,10 +40,10 @@ for anchor_id = 1:base_number
         catch ME
             %%
             pause(tx_pkt_count/4);
-            fprintf(2, 'stack at anchor %d: %s\n',anchor_id+1, rx_pkt_info);
+            fprintf(2, 'stack at anchor %d: %s\n',anchor_id+2, rx_pkt_info);
             %% generate the ranging packet again
             packet_id = mod(packet_id + 1, 255);
-            msg_array = [uint8(packet_id),uint8('g'),uint8(0),uint8(anchor_id+1),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
+            msg_array = [uint8(packet_id),uint8('g'),uint8(0),uint8(anchor_id+2),uint8(1),uint8(24), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(uint16(0),'uint8'), typecast(single(0.0),'uint8'), typecast(single(0.0),'uint8')];
             % id, type, checksum, dest, src, length, data_int[5], data_float[2]
             msg_new = [uint8(255)];
             for i = 1 : length(msg_array)

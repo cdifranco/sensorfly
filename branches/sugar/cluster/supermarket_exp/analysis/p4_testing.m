@@ -1,7 +1,7 @@
 %% Initialization
 clear all;
 close all;
-load 'clustering_0p9_1000.mat';
+load 'clustering_0p9_10000.mat';
 testing_round = 1000;
 step_len = 3;
 success = [];
@@ -25,10 +25,11 @@ error = 0;
 e = 0;
 
 for j = 1:testing_round
-    startX = path(j,1);
-    startY = path(j,2);
-    destX = path(j,3);
-    destY = path(j,4);
+    j
+    startX = path(j,1)
+    startY = path(j,2)
+    destX = path(j,3)
+    destY = path(j,4)
     %create matrix
     noOfNodes = size(trans_history,1);
     matrix = zeros(noOfNodes, noOfNodes);
@@ -43,6 +44,7 @@ for j = 1:testing_round
             end;
         end;
     end;
+    fprintf('start to navigate\n');
     [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], base_number, trans_history, center_sig, points, matrix, std_sig, distribution_table{distribution_table_id}, base_number);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);

@@ -123,7 +123,7 @@ for mainloop = 1 : reading_amount
     bel_total = sum(bel(:));
     bel = bel / bel_total; 
     %% Next reading
-    save 'clustering_0p9_1000.mat';
+    save 'clustering_0p9_10000.mat';
     last_cluster = reading(reading_count,1);
     current_point = next_point;
     current_signature = next_signature;
@@ -175,4 +175,4 @@ clear cc;
 clear rc;
 clear cr;
 %% Save 
-save 'clustering_0p9_1000.mat';
+save 'clustering_0p9_10000.mat';

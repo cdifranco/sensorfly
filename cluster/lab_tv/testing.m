@@ -28,16 +28,19 @@ if clr == 1
 else
     start_round = input('from which round:');
 end
-serial_port = serial(port, 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
+serial_port = serial('COM5', 'BaudRate', 38400, 'DataBits', 8, 'Timeout', 0.5);
 %% Draw the main frame
 area_number = 27;
-load '../loading_files/grid.mat';
+load './loading_files/grid.mat';
 Z = zeros(4);
 figure;
 for i =  1 : area_number
     surf(grid{i}.x, grid{i}.y, ones(4)*0, ones(4)*0);
     axis tight;
     axis equal;
+    xlabel('Lab Width');
+    ylabel('Lab Length');
+    title('Lab Layout');
     colormap([1 1 0; 0 1 1])
     hold on;
 end
@@ -83,9 +86,10 @@ end
 for j = start_round:testing_round
     destArea = input('destiny area: ');
      %% Draw Dest Area
-    surf(grid{cont}.x, grid{cont}.y, ones(4)*0, ones(4)*1);
+    surf(grid{destArea}.x, grid{destArea}.y, ones(4)*0, ones(4)*-1);
     axis tight;
     axis equal;
+    text(22.5, 32.5, 0, 'banner');
     colormap([1 1 0; 0 1 1])
     hold on;
      %% generate the matrix

@@ -26,10 +26,8 @@ reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x
 
 
 %% Start point
-%random_start_point = unidrnd(size(std_sig, 1));
-%start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
-start_point = 1;
-start_point = [std_sig(start_point, 1) , std_sig(start_point, 2)];
+random_start_point = unidrnd(size(std_sig, 1));
+start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
 current_point = start_point;
 
 %% Main loop

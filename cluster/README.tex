@@ -1,0 +1,104 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[colorlinks]{hyperref}
+\begin{document}
+\begin{center}
+\LARGE \bf{SugarTrail Code Introduction}\\
+\end{center}
+
+\section{Phase 1: Signature Test}
+\begin{itemize}
+\item Location: 
+	\begin{itemize}
+	\item Getting Data: \textbackslash sugar\textbackslash cluster\textbackslash reading\_testing
+	\item Analysis: \textbackslash sugar\textbackslash cluster\textbackslash analysis\textbackslash lab\_signature
+	\end{itemize}
+\item Fig: 
+	\begin{itemize}
+	\item Stable reading for one node
+	\item Disturbed reading for one node
+	\item Relatively stable signature for one node
+	\end{itemize}
+\item Run: \textbackslash sugar\textbackslash cluster\textbackslash analysis\textbackslash lab\_signature\textbackslash sig\_analisis.m
+\end{itemize}
+
+
+\section{Phase 2: Distribution Table/Curve generate}
+\begin{itemize}
+\item Location: \textbackslash sugar\textbackslash cluster\textbackslash distribution
+\item Fig: 
+	\begin{itemize}
+	\item	 Relation of ranging distance and real distance
+	\end{itemize}
+\item Run: 
+\end{itemize}
+
+
+\section{Phase 3: Hallway Test}
+\begin{itemize}
+\item Location: \textbackslash sugar\textbackslash cluster\textbackslash hallway\_simulation
+\item Fig: 
+	\begin{itemize}
+	\item Cluster
+	\item Navigation
+	\item Base number and performance
+	\item Cluster size threshold and performance
+	\end{itemize}
+\item Run: main.c
+\end{itemize}
+
+
+\section{Phase 4 : Lab(Field Test)}
+\begin{itemize}
+\item Location: \textbackslash sugar\textbackslash cluster\textbackslash lab\_field\_test
+\item Fig: None
+\item Run: main.c
+\end{itemize}
+
+
+\section{Phase 5: Lab(Database Test)}
+\begin{itemize}
+\item Location: \textbackslash sugar\textbackslash cluster\textbackslash lab\_database
+\item Fig: 
+	\begin{itemize}
+	\item Clustering(path\_length = 10000) 
+	\item Navigaion
+	\end{itemize}
+\item Run:
+	\begin{itemize}
+	\item p1\_collect\_readings.m (collecting data, done, don't run again)
+	\item p2\_data\_process.m (generate proper data structure for later, done, don't run again)
+	\item p3\_generate\_cluster.m 
+	\item p4\_match\_area\_to\_cluter.m 
+	\item p5\_testing.m
+	\item p6\_kmeans.m
+	\end{itemize}
+\end{itemize}
+
+\section{Phase 6: Supermarket Experiment}
+\begin{itemize}
+\item Location: \textbackslash sugar\textbackslash cluster\textbackslash supermarket\_exp
+\item Supermarket layout: supermarket.skp
+\item Data: 
+	\begin{itemize}
+	\item Raw Data: \textbackslash sugar\textbackslash cluster\textbackslash supermarket\_exp\textbackslash step3\textbackslash raw\_data\textbackslash
+	\item \underline{\Large{Complete Data and Documentation:}}  \textbackslash sugar\textbackslash cluster\textbackslash supermarket\_exp\textbackslash step3\textbackslash complete\_data\textbackslash
+	\end{itemize}
+\item Fig:
+	\begin{itemize}
+	\item Compass Direction
+	\item Clustering(path\_length = 10000) 
+	\item Navigation
+	\end{itemize}
+\item Run: 
+	\begin{itemize}
+	\item p1\_collect\_readings.m (collecting data, done, don't run again)
+	\item p2\_data\_process.m (generate proper data structure for later, done, don't run again)
+	\item draw\_compass\_direction.m
+	\item p3\_generate\_cluster.m 
+	\item p4\_testing.m
+	\end{itemize}
+\end{itemize}
+
+
+\end{document}

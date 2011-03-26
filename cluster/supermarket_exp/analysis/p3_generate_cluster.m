@@ -1,6 +1,7 @@
 % Select 3000 Readings for Clustering
 %% Initialization
 clear all;
+close all;
 load ('processed_data.mat');
 load ('distribution_table.mat'); % contains 7 distribution tables
 distr_init = 7;
@@ -23,11 +24,13 @@ base_number = 30;
 reading_count = 1; % used when generate readings
 reading_amount = 10000; % readings size
 reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, compass_reading, sig)
-
+scatter(points(:,1),points(:,2),'b');
+hold on;
+pause(0.5);
 
 %% Start point
-random_start_point = unidrnd(size(std_sig, 1));
-start_point = [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
+%random_start_point = unidrnd(size(std_sig, 1));
+start_point = [-1, 0]; % [std_sig(random_start_point, 1) , std_sig(random_start_point, 2)];
 current_point = start_point;
 
 %% Main loop
@@ -37,14 +40,14 @@ for mainloop = 1 : reading_amount
     reading(reading_count,2:3) = current_point; % real location
     reference_compass_reading = std_sig(std_sig(:,1) == current_point(1) & std_sig(:,2) == current_point(2), 4);
     valid = 0;
-    tic;
-    while valid == 0
+    %tic;
+    while valid == 0 % generate next valid point based on current location
         [next_point(1) next_point(2) compass_reading] = get_next_point(current_point, std_sig);
         next_std_sig_record = std_sig(std_sig(:,1) == next_point(1) & std_sig(:,2) == next_point(2), :);
         [valid next_signature valid_reading] = valid_sig(next_std_sig_record, std_threshold, valid_reading_threshold, base_number);
     end
-    fprintf('validation: ');
-    toc;
+    %fprintf('validation: ');
+    %toc;
     reading(reading_count,4) = direction_convert(compass_reading, reference_compass_reading); % get direction 
     reading(reading_count,5) = reference_compass_reading; % get reference compass reading
     if mainloop == 1 % current_signature need to be generated
@@ -53,12 +56,17 @@ for mainloop = 1 : reading_amount
             current_std_sig_record = std_sig(std_sig(:,1) == current_point(1) & std_sig(:,2) == current_point(2), :);
             [valid current_signature current_valid_reading] = valid_sig(current_std_sig_record, std_threshold, valid_reading_threshold, base_number);
         end
+    else
+        % draw paths
+        plot([current_point(1), next_point(1)],[current_point(2), next_point(2)],'r');
+        hold on;
+        pause(0.5);
     end
     reading(reading_count, 6:5+base_number) = current_signature;
     reading(reading_count, 6+base_number) = current_valid_reading;
-    
+
     %% Calculate the believe
-    tic;
+    %tic;
     bel_bar = zeros(1,size(center,1)); % initialize the bel_bar
     for j = 1:size(center,1)
         total_count = sum(trans_history(j, reading(reading_count-1,4), :));
@@ -71,8 +79,8 @@ for mainloop = 1 : reading_amount
             bel_bar(k) = bel_bar(k) + trans_p * bel(j);
         end
     end
-    fprintf('calculate belief: ');
-    toc;
+    %fprintf('calculate belief: ');
+    %toc;
     %% Get the distance reading and the new believe
     for j = 1:size(center,1) % check all the centers
         %% Calculate euclidean distance between reading and one center
@@ -97,6 +105,7 @@ for mainloop = 1 : reading_amount
             reading(reading_count,1) = j; % classify the point to one cluster
         end         
     end
+    %tic;
     %% Clustering the new reading and generate new center if needed
     if reading(reading_count,1) ~= 0 % find the cluster center that the reading belongs
         center(reading(reading_count, 1), 2) = center(reading(reading_count, 1), 2) + 1;
@@ -113,6 +122,8 @@ for mainloop = 1 : reading_amount
         trans_history(1:size(center, 1), 1:direction_number, size(center, 1)) = trans_init_number;%update the trans_history
         trans_history(size(center, 1), 1:direction_number, 1:size(center, 1)) = trans_init_number;%update the trans_history
     end
+    %fprintf('clustering: ');
+    %toc;
     %% Record into trans_history
     if mainloop ~= 1
         trans_history(reading(reading_count-1,1), reading(reading_count-1,4), reading(reading_count,1))=trans_history(reading(reading_count-1,1), reading(reading_count-1,4), reading(reading_count,1))+1;
@@ -121,14 +132,14 @@ for mainloop = 1 : reading_amount
     bel_total = sum(bel(:));
     bel = bel / bel_total; 
     %% Next reading
-    save 'clustering_0p9_10000.mat';
+    %save 'clustering_0p9_10000.mat';
     last_cluster = reading(reading_count,1);
     current_point = next_point;
     current_signature = next_signature;
     current_valid_reading = valid_reading;
     reading_count = reading_count + 1;
 end
-
+hold off;
 
 %% Filter the centers
 cn = 1/size(center,1)*center_filter*reading_amount;
@@ -173,4 +184,4 @@ clear cc;
 clear rc;
 clear cr;
 %% Save 
-save 'clustering_0p9_10000.mat';
+% save 'clustering_0p9_10000.mat';

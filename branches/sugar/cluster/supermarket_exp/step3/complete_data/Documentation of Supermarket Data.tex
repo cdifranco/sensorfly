@@ -8,46 +8,88 @@
 
 \section{Apparatus}
 \begin{itemize}
-\item Nodes
+\item Nodes (SensorFly Boards)
 	\begin{itemize}
-	\item Function:  
-	\item Code: 
+	\item Code: ARM + AVR
+	\item Function: Get Compass Reading. The main function in ARM has always been waiting for packets requring for Compass reading. Once the request packet arrives, the ARM will put current compass reading in result packet and send it out.
 	\end{itemize}
-\item Anchors
-	\begin{}
-	\item 
-	\item
-	\end{}
-\item Base
-	\begin{}
-	\item
-	
-	\end{}
-\item Laptop
-	\begin{}
-	\item
-	
-	\end{}
+\item Anchors (SensorFly Boards)
+	\begin{itemize}
+	\item Code: AVR
+	\item Function: Ranging with Base, the ranging parts have been implemented already
+	\end{itemize}
+\item Base (SensorFly Boards)
+	\begin{itemize}
+	\item Code: AVR
+	\item Function: Get Ranging Reading and Compass Reading. The AVR has always been receiving instruction packet from PC through serial port. When receiving packet for ranging, it will ranging with anchors directly; when receiving packet for compass reading, it will re-direct the packet to Node. The results of received packets (ranging and compass reading) will be printed by APLCallback() and in certain format so that the PC can recognize it later.
+	\end{itemize}
+\item Main Control (Laptop)
+	\begin{itemize}
+	\item Code: Matlab 
+	\item Function: Get Ranging Reading and Compass Reading 
+	\end{itemize}
 \end{itemize}
 
-\section{Layout}
+\section{Supermarket Layout}
 \begin{itemize}
-\item 
+\item 3D model
+\item Anchor Location:
+	\begin{itemize}
+	\item Node 3: 3', 40', 4'2"
+	\item Node 4: 30', 23', 4'6"
+	\item Node 5: 24', 42', 4"
+	\item Node 6: 3', 18', 3'8"
+	\item Node 7: 24', 42', 3'9"
+	\item Node 8: 13', 70', 5'5"
+	\item Node 9: 24', 42', 6'5"
+	\item Node 10: 13', 20', 2'11"
+	\item Node 11: 21', 56', 4'8"
+	\item Node 12: 21', 21', 4'
+	\item Node 13: 40', 13', 4'6"
+	\item Node 14: 9', -5', 3'2" 
+	\item Node 15: 40', 56', 2'11"
+ 	\item Node 16: 32', 83', 2'10"
+	\item Node 17: 30', 60', 2'11"
+	\item Node 18: 51', 26', 4'10"
+	\item Node 19: 61', 40', 6'8"
+	\item Node 20: 66', 77', 6'9"
+	\item Node 21: 66', 22', 4'2"
+	\item Node 22: 51', 64', 3'8"
+	\item Node 23: 50', 83', 2'10"
+	\item Node 24: 61', -5', 4'
+	\item Node 25: 81', 40', 6'11"
+	\item Node 26: 81', 77', 6'11"
+	\item Node 27: 75', 82', 3'9"
+	\item Node 28: 83', 16'4", 5'
+	\item Node 29: 81', -26', 6'4"
+	\item Node 30: 105', 46', 6'8"
+	\item Node 31: 105', 81', 6'8"
+	\item Node 32: 105', 12', 6'4"	
+	\end{itemize}
 \end{itemize}
 
 \section{Purpose}
 \begin{itemize}
-\item 
+\item In order to test the algorithm of clustering and navigation, we collected readings of real location in a real supermarket, with people walking around, so that we can run the clustering and navigation code easily with modified algorithm easily.
 \end{itemize}
 
 \section{Principle}
 \begin{itemize}
-\item 
+\item Signature: the reading of ranging is not accurate at all, due to 
 \end{itemize}
 
 \section{Data Analysis}
 \begin{itemize}
-\item 
+\item Clustering: 
+	\begin{itemize}
+	\item Generate new cluster center when the new reading cannot be clustered to any other existed cluster.
+	\item The pertantial problem is the location of the cluster center is generated based on the path picked randomly, and the center' location will effect the later clustering and the process of generating centers.
+	\item Optimization: doing re-clustering using other existed algorithm such as KMeans.
+	\end{itemize}
+\item Navigation: 
+	\begin{itemize}
+	\item Use Dijkstra to pick the best path
+	\end{itemize}
 \end{itemize}
 
 \section{Result}

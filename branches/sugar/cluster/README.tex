@@ -97,6 +97,32 @@
 	\item draw\_compass\_direction.m
 	\item p3\_generate\_cluster.m 
 	\item p4\_testing.m
+	\end{itemize} 
+\item Code for analysis: \textbackslash sugar\textbackslash cluster\textbackslash supermarket\_exp\textbackslash analysis
+	\begin{itemize}
+	\item .m files:
+		\begin{itemize}
+		\item angle\_convert.m : convert direction information into angle
+		\item dijkstra.m : Dijkstra Algorithm
+		\item direction\_convert.m : convert current reading into direction info based on the reading at that point
+		\item draw\_cluster.m : draw the clusters, should be updated with translucent style soon
+		\item draw\_compass\_direction.m : draw the magnetic field based on compass reading in supermarket
+		\item get\_cluster\_sig.m : get the cluster which the signature belongs to, used to implemented by choosing the minimum eclidean distance, but with the using of sub-set in signature, we change it to use possibility also, but it does not work well with the later one, cannot select correct cluster often. 
+		\item get\_next\_point.m : used in the "training part", when the training paths are generated, it will give out the next point in path, based on random walk and the data from supermarket.
+		\item get\_next\_step.m : used in the "testing part", when the guiding paths are generated, it will give out the next step location in navigation, based on guiding info and the data from supermarket.
+		\item guide.m : the main part of guiding
+		\item is\_blocked.m : check whether if the path of current point and next point is blocked by environment.
+		\item navigate.m : called in testing.m for navigation from one point to another
+		\item possibility.m : give out the possibility of one ready belongs to certain cluster.
+		\item valid\_sig.m : check whether the signature reading is valid and how many valid info is in one signature. 
+		\end{itemize}
+	\item .mat files:
+		\begin{itemize}
+		\item 2feet\_grid.mat : real supermarket readings, ranging with different anchors and compass reading at each point of the grid
+		\item processed\_data.mat : the data processed from raw data.
+		\item distribution\_table.mat : calcutate the possibility of one reading belongs to the cluster with certain center
+		\item environment\_info.mat : racks' edges info, for obstacle detection
+		\end{itemize}
 	\end{itemize}
 \end{itemize}
 

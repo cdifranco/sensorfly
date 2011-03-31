@@ -9,7 +9,7 @@ for c = 1 : size(reading_test_result, 1)
 end
 
 %% Node 21
-
+% signatures and readings
 node_21_reading = valid_reading(valid_reading(:,2)== 21, :);% change here 21 --> 2? to see other fig
 node_21_timestamp = node_21_reading(:, 1);
 node_21_reading_compass = node_21_reading(:, 3);
@@ -27,6 +27,39 @@ node_21_reading_edist = zeros(1, size(node_21_reading, 1));
 for c = 1 : size(node_21_reading, 1);
     node_21_reading_edist(c) = sqrt(sum(node_21_reading(c, 4:end).*node_21_reading(c, 4:end)));
 end
+% standard deviation
+std_sig_1 = std(node_21_reading_sig_1);
+mean_sig_1 = mean(node_21_reading_sig_1);
+std_sig_2 = std(node_21_reading_sig_2);
+mean_sig_2 = mean(node_21_reading_sig_2);
+std_sig_3 = std(node_21_reading_sig_3);
+mean_sig_3 = mean(node_21_reading_sig_3);
+std_sig_4 = std(node_21_reading_sig_4);
+mean_sig_4 = mean(node_21_reading_sig_4);
+std_sig_5 = std(node_21_reading_sig_5);
+mean_sig_5 = mean(node_21_reading_sig_5);
+std_sig_6 = std(node_21_reading_sig_6);
+mean_sig_6 = mean(node_21_reading_sig_6);
+std_sig_7 = std(node_21_reading_sig_7);
+mean_sig_7 = mean(node_21_reading_sig_7);
+std_sig_8 = std(node_21_reading_sig_8);
+mean_sig_8 = mean(node_21_reading_sig_8);
+std_sig_9 = std(node_21_reading_sig_9);
+mean_sig_9 = mean(node_21_reading_sig_9);
+std_sig_10 = std(node_21_reading_sig_10);
+mean_sig_10 = mean(node_21_reading_sig_10);
+std_edist = std(node_21_reading_edist);
+mean_edist = mean(node_21_reading_edist);
+percentage = [std_sig_1/mean_sig_1, std_sig_2/mean_sig_2, std_sig_3/mean_sig_3, std_sig_4/mean_sig_4, std_sig_5/mean_sig_5, std_sig_6/mean_sig_6, std_sig_7/mean_sig_7,...
+    std_sig_8/mean_sig_8, std_sig_9/mean_sig_9, std_sig_10/mean_sig_10];
+
+bar(percentage);
+hold on;
+plot([0, size(percentage, 2)+1],[std_edist/mean_edist, std_edist/mean_edist], 'r');
+axis([0, size(percentage, 2)+1, 0, 1]);
+hold off;
+figure;
+% plot everything
 plot(node_21_timestamp, node_21_reading_compass);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_compass)]);
 datetick;

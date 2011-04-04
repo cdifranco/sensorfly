@@ -50,14 +50,14 @@ std_sig_10 = std(node_21_reading_sig_10);
 mean_sig_10 = mean(node_21_reading_sig_10);
 std_edist = std(node_21_reading_edist);
 mean_edist = mean(node_21_reading_edist);
-percentage = [std_sig_1/std_edist, std_sig_2/std_edist, std_sig_3/std_edist, std_sig_4/std_edist, std_sig_5/std_edist, std_sig_6/std_edist, std_sig_7/std_edist,...
-    std_sig_8/std_edist, std_sig_9/std_edist, std_sig_10/std_edist]
+percentage = [std_sig_1/mean_sig_1, std_sig_2/mean_sig_2, std_sig_3/mean_sig_3, std_sig_4/mean_sig_4, std_sig_5/mean_sig_5, std_sig_6/mean_sig_6, std_sig_7/mean_sig_7,...
+    std_sig_8/mean_sig_8, std_sig_9/mean_sig_9, std_sig_10/mean_sig_10]
 
 
 bar(percentage);
 hold on;
 plot([0, size(percentage, 2)+1],[std_edist/mean_edist, std_edist/mean_edist], 'r');
-axis([0, size(percentage, 2)+1, 0, 1]);
+axis([0, size(percentage, 2)+1, 0, max(percentage)]);
 hold off;
 figure;
 % plot everything
@@ -65,6 +65,34 @@ plot(node_21_timestamp, node_21_reading_compass);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_compass)]);
 datetick;
 figure;
+%%
+subplot(3,1,1);
+plot(node_21_timestamp, node_21_reading_edist/max(node_21_reading_edist));
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, 1]);% max(node_21_reading_edist)]);
+datetick;
+subplot(3,1,2);
+plot(node_21_timestamp, node_21_reading_sig_1/max(node_21_reading_sig_1));
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, 1]);% max(node_21_reading_sig_1)]);
+datetick;
+subplot(3,1,3);
+plot(node_21_timestamp, node_21_reading_sig_9/max(node_21_reading_sig_9));
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, 1]);% max(node_21_reading_sig_9)]);
+datetick;
+figure;
+subplot(3,1,1);
+plot(node_21_timestamp, node_21_reading_edist);
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_edist)]);
+datetick;
+subplot(3,1,2);
+plot(node_21_timestamp, node_21_reading_sig_1);
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_1)]);
+datetick;
+subplot(3,1,3);
+plot(node_21_timestamp, node_21_reading_sig_9);
+axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_9)]);
+datetick;
+
+%{
 subplot(5,7,[1:5 8:12 15:19 22:26 29:33]);
 plot(node_21_timestamp, node_21_reading_edist);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_edist)]);
@@ -109,7 +137,7 @@ subplot(5,7,35);
 plot(node_21_timestamp, node_21_reading_sig_10);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_10)]);
 datetick('keeplimits','keepticks');  
-
+%}
 
 %{
 %% Node 22

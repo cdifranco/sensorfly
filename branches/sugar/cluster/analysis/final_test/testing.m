@@ -45,7 +45,7 @@ for j = 1:testing_round
         end;
     end;
     fprintf('start to navigate\n');
-    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], base_number, trans_history, center_sig, points, matrix, std_sig, distribution_table{distribution_table_id}, base_number);
+    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], anchor_number, trans_history, matrix, sigxy);
     if succ == 1
         len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
         error = error + sum((coordRoute(end,:)-[destX destY]).^2).^.5;

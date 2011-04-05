@@ -4,8 +4,7 @@ clear all;
 close all;
 load 'kmeans_cluster.mat';
 direction_number = 4; % how many direction can each sensorfly take
-trans_init_number = 1; % initiate number of transition histroy
-trans_history = []; % transition history     
+trans_init_number = 1; % initiate number of transition histroy  
 center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 10;
 reading_count = 1; % used when generate readings

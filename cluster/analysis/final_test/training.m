@@ -31,46 +31,4 @@ for mainloop = 1 : reading_amount
 end
 hold off;
 
-cn = 1/size(center,1)*center_filter*reading_amount;
-center_new = [];
-count_to_id = [];
-for cc = 1 : size(center,1)
-   if center(cc,2) > cn 
-      center_new = [center_new; center(cc,:)];
-      count_to_id = [count_to_id, center(cc, 1)]
-   else
-      rc = 1;
-      while rc <= size(reading, 1)
-      	if reading(rc, 1) == center(cc, 1)
-            reading(rc, :) = [];
-        else
-            rc = rc + 1;
-        end
-      end
-   end
-end
-center_sig = center_new(:,5:end-1);
-
-
-%% Draw Cluster
-colors = randperm(size(center,1));
-scatter(reading(:,2),reading(:,3),75,colors(reading(:,1)),'filled');
-
-
-%% Clear up 
-clear reading_amount;
-clear reading_count;
-clear mainloop;
-clear start_point;
-clear random_start_point;
-clear current_point;
-clear next_point;
-clear j;
-clear bel_total;
-clear temp;
-clear colors;
-clear cc;
-clear rc;
-clear cr;
-%% Save 
-% save 'clustering_0p9_10000.mat';
+save('', '');

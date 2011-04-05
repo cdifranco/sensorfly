@@ -9,3 +9,4 @@ elseif direction == 4
 else
     angle = 225 + unidrnd(90);
 end
+angle = angle/180*pi;

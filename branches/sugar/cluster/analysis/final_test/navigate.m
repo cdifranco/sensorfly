@@ -8,9 +8,9 @@ last_coord = current_coord;
 current_index = find(sigxy.x == start_coord(1) & sigxy.y == start_coord(2),1);
 dest_index =  find(sigxy.x == dest_coord(1) & sigxy.y == dest_coord(2),1);
 total_count = total_count + 1;
-current_cluster = sigxy.cluster_id(current_index)
+current_cluster = sigxy.cluster_id(current_index);
 dest_cluster = sigxy.cluster_id(dest_index);
-cluster_route(total_count) = current_cluster
+cluster_route(total_count) = current_cluster;
 
 while 1
     if sigxy.cluster_id(current_index) == dest_cluster

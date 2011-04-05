@@ -1,45 +1,42 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, anchor_number, transHistory, matrix, sigxy)
+function [succ sig_route cluster_route coord_route start_cluster dest_cluster] = navigate(start_coord, dest_coord, trans_history, matrix, sigxy)
 succ = 1;
-successCnt = 0;
-totalCnt = 0;
-direction_number = size(transHistory, 2);
-currentCoord = startCoord;
-current_index = [sigxy.sigs(sigxy.x == startCoord(1) & sigxy.y == startCoord(2), 5:2:end)];
-totalCnt = totalCnt + 1;
-sigRoute(totalCnt, 1:baseNumber) = currentSig;
-coordRoute(totalCnt, 1:2) = currentCoord;
-currentCluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table);
-startCluster = currentCluster;
-clusterRoute(totalCnt) = currentCluster;
-
-destSig = std_sig(std_sig(:,1) == destCoord(1) & std_sig(:,2) == destCoord(2), 5:2:end);
-destCluster = get_cluster_sig(centers, destSig, baseNumber, distribution_table);
+success_count = 0;
+total_count = 0;
+direction_number = size(trans_history, 2);
+current_coord = start_coord;
+current_index = find(sigxy.x == start_coord(1) & sigxy.y == start_coord(2),1);
+dest_index =  find(sigxy.x == dest_coord(1) & sigxy.y == dest_coord(2),1);
+total_count = total_count + 1;
+sig_route(total_count, 1:baseNumber) = current_coord;
+coord_route(total_count, 1:2) = current_coord;
+current_cluster = sigxy.cluster_id(current_index);
+start_cluster = current_cluster;
+dest_cluster = sigxy.cluster_id(dest_index);
+cluster_route(total_count) = current_cluster;
 
 while 1
-    if get_cluster_sig(centers, currentSig, baseNumber, distribution_table) == destCluster
+    if sigxy.cluster_id(current_index) == dest_cluster
         break;
     else
-        [path direction] = guide(currentSig, destCluster, transHistory, centers, matrix, base_number, distribution_table);
-        path
-        direction
+        [path direction] = guide(currentSig, dest_cluster, trans_history, centers, matrix, base_number, distribution_table);
         if isempty(path)
             rand_direction = ceil(direction_number*rand);
-            currentCoord = get_next_step(rand_direction, currentCoord, points);
+            current_coord = get_next_step(rand_direction, current_coord, points);
         else
-            currentCoord = get_next_step(direction(1), currentCoord, points);
+            current_coord = get_next_step(direction(1), current_coord, points);
         end
-        totalCnt = totalCnt + 1;
-        if totalCnt > 300
+        total_count = total_count + 1;
+        if total_count > 300
             succ = 0;
             break;
         end
-        currentSig = std_sig(std_sig(:,1) == currentCoord(1) & std_sig(:,2) == currentCoord(2), 5:2:end);
-        sigRoute(totalCnt, 1:baseNumber) = currentSig;
-        coordRoute(totalCnt, 1:2) = currentCoord;
-        currentCluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table);
-        clusterRoute(totalCnt) = currentCluster;
-        if length(path) >= 1 && currentCluster == path(2)
-            successCnt = successCnt + 1;
+        current_index = find(sigxy.x == start_coord(1) & sigxy.y == start_coord(2),1);
+        sig_route(total_count, 1:baseNumber) = currentSig;
+        coord_route(total_count, 1:2) = current_coord;
+        current_cluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table);
+        cluster_route(total_count) = current_cluster;
+        if length(path) >= 1 && current_cluster == path(2)
+            success_count = success_count + 1;
         end
     end
 end

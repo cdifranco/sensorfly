@@ -16,4 +16,4 @@ while ~isvalid_point
         next_point_index = find(sigxy.x == new_x & sigxy.y == new_y, 1);
     end
 end
-direction = direction_convert(angle)
+direction = direction_convert(angle);

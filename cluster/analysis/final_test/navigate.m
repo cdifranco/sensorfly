@@ -1,6 +1,5 @@
 function [succ cluster_route last_coord] = navigate(start_coord, dest_coord, trans_history, matrix, sigxy)
 succ = 1;
-success_count = 0;
 total_count = 0;
 direction_number = size(trans_history, 2);
 current_coord = start_coord;
@@ -33,8 +32,5 @@ while 1
         
         current_cluster = sigxy.cluster_id(current_index);
         cluster_route(total_count) = current_cluster;
-        if length(path) >= 1 && current_cluster == path(2)
-            success_count = success_count + 1;
-        end
     end
 end

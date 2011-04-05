@@ -1,17 +1,14 @@
 % used for generate data set, used in generate cluster
-function [new_x new_y compass_reading] = get_next_point(current_point, signatures)
-old_x = current_point(1);
+function [new_x new_y compass_reading] = get_next_point(current_point_index, sigxy)
+old_x = sigxy.x(current_point_index);
 old_y = current_point(2);
-reference_compass_reading = signatures(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4);
+reference_compass_reading = sigxy(signatures(:,1) == current_point(1) & signatures(:,2) == current_point(2), 4);
 isvalid_point = 0;
 while ~isvalid_point
-    step_len = 2 + unidrnd(1); %step length is from 0.6m to 0.9m
+    step_len = 60 + unidrnd(30); %step length is from 60 cm to 90 cm
     angle = (rand*2-1)*pi;
     new_x = round(old_x + step_len * cos(angle));
     new_y = round(old_y + step_len * sin(angle));
-    % if the new location does not have reading in database, re-direct; 
-    % if detect obstacle; e.g. cross rack, re-direct
-    % fprintf('(%d,%d)-->(%d,%d) is blocked:%d\n',old_x,old_y,new_x,new_y,is_blocked(old_x, old_y, new_x, new_y));
     if isempty(find(signatures(:,1)==new_x & signatures(:,2) == new_y, 1)) 
         %fprintf('invalid sig: %d,%d\n', new_x, new_y);
         continue;

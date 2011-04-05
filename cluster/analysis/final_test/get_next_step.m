@@ -1,5 +1,5 @@
 % used for generate next step in testing
-function new_coord = get_next_step(direction, current_point, points)
+function new_coord = get_next_step(direction, current_point, sigxy)
 tx = current_point(1);
 ty = current_point(2);
 angle = angle_convert(direction);
@@ -10,7 +10,7 @@ sentry_distance = inf;
 %% project location to grid
 for i = tx - step_len : tx + step_len
     for j = ty - step_len : ty + step_len
-        if isempty(find(points(:,1)== i & points(:,2) == j, 1))
+        if isempty(find(sigxy.x== i & sigxy.y == j, 1))
             continue; % check if the point has reading
         else
             distance = sqrt(sum(([new_x, new_y] - [i, j]) .^ 2));

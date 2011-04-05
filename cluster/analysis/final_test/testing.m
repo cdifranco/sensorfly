@@ -2,12 +2,15 @@
 clear all;
 close all;
 load 'trained_data.mat';
+load 'kmeans_cluster.mat';
+RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
 testing_round = 10000;
 step_len = 50; % 50 cm
 success = []; % measurement: success rate
 step = []; % measurement: steps
 dist_error = []; % measurement: distance error
-RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
+trans_init_number = 1;
+direction_number = 4;
 path = [];
 %% Generate Paths
 for i = 1:testing_round
@@ -45,10 +48,10 @@ for j = 1:testing_round
         end;
     end;
     fprintf('start to navigate\n');
-    [succ sigRoute clusterRoute coordRoute startClus destClus] = navigate([startX, startY], [destX, destY], anchor_number, trans_history, matrix, sigxy);
+    [succ cluster_route] = navigate([startX, startY], [destX, destY], trans_history, matrix, sigxy);
     if succ == 1
-        len = len + length(clusterRoute)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
-        error = error + sum((coordRoute(end,:)-[destX destY]).^2).^.5;
+        len = len + length(cluster_route)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
+        error = error + sum(([startX, startY]-[destX destY]).^2).^.5;
     else
         e = e + 1;
     end

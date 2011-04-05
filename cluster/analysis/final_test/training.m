@@ -30,4 +30,4 @@ for mainloop = 1 : reading_amount
     reading_count = reading_count + 1;
 end
 
-save('trained_data.mat', 'reading');
+save('trained_data.mat', 'trans_history');

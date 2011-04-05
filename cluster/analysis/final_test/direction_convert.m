@@ -1,13 +1,11 @@
-% convert current reading into direction info based on the reading at that
-% point
-function dir = direction_convert(real_dir, reference_dir)
-relative_dir = mod(reference_dir - real_dir, 3600);
-if  relative_dir <= 450 || relative_dir > 3150
-    dir = 2;
-elseif relative_dir <= 1350
-    dir = 1;
-elseif relative_dir <= 2250
-    dir = 4;
-else
+function dir = direction_convert(angle)
+% Convert angle (radian, in[-pi, pi)) to direction, right is 0, up is 1, left is 2 and down is 3
+if -3*pi/4 <= angle || angle < -pi/4
     dir = 3;
+elseif -pi/4 <= angle || angle < pi/4
+    dir = 0;
+elseif pi/4 <= angle || angle < 3*pi/4
+    dir = 1;
+else
+    dir = 2;
 end

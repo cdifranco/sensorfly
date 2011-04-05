@@ -16,4 +16,4 @@ for mainloop = 1 : size(reading,2)
 end
 %}
 
-save 'kmeans_cluster.mat';
+save ('kmeans_cluster.mat','sigxy');

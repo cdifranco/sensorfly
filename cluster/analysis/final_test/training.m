@@ -10,9 +10,10 @@ center_filter = 0.7; % to filter clusters that contains too little readings
 base_number = 10;
 reading_count = 1; % used when generate readings
 reading_amount = 10000; % readings size
-reading = zeros(reading_amount, size(std_sig, 2)+1);% reading(cluster_id, real_x, real_y, dir, sig)
-current_point_index = unidrnd(size(sigxy.sigs, 1));
 anchor_number = size(sigxy.sigs,2)/2;
+reading = zeros(reading_amount, 4 + anchor_number);% reading(cluster_id, real_x, real_y, dir, sig)
+current_point_index = unidrnd(size(sigxy.sigs, 1));
+
 
 for mainloop = 1 : reading_amount   
     fprintf('round %d\n',mainloop);
@@ -31,4 +32,4 @@ for mainloop = 1 : reading_amount
 end
 hold off;
 
-save('', '');
+save('trained_data.mat', 'reading');

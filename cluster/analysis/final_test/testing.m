@@ -25,7 +25,7 @@ error = 0;
 e = 0;
 
 for j = 1:testing_round
-    j
+    fprintf('testing round: %d\n', j);
     startX = path(j,1)
     startY = path(j,2)
     destX = path(j,3)

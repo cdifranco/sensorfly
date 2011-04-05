@@ -17,20 +17,14 @@ while 1
         last_coord = [sigxy.x(current_index), sigxy.y(current_index)];
         break;
     else
-        [path direction] = guide(current_index, dest_cluster, trans_history, matrix, sigxy);
-        if isempty(path)
-            rand_direction = ceil(direction_number*rand);
-            current_coord = get_next_step(rand_direction, current_coord, sigxy);
-        else
-            current_coord = get_next_step(direction(1), current_coord, sigxy);
-        end
+        rand_direction = ceil(direction_number*rand);
+        current_coord = get_next_step(rand_direction, current_coord, sigxy);
         total_count = total_count + 1;
-        if total_count > 500 % if more than 300 steps, count it as fail
+        if total_count > 500 % if more than 500 steps, count it as fail
             succ = 0;
             break;
         end
         current_index = find(sigxy.x == current_coord(1) & sigxy.y == current_coord(2),1);
-        
         current_cluster = sigxy.cluster_id(current_index);
         cluster_route(total_count) = current_cluster;
         if length(path) >= 1 && current_cluster == path(2)

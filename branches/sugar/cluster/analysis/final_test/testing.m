@@ -1,22 +1,22 @@
 %% Initialization
 clear all;
 close all;
-load 'clustering_0p9_10000.mat';
-testing_round = 1000;
-step_len = 3;
-success = [];
-observed_step = [];
-step = [];
+load 'trained_data.mat';
+testing_round = 10000;
+step_len = 50; % 50 cm
+success = []; % measurement: success rate
+step = []; % measurement: steps
+dist_error = []; % measurement: distance error
 RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
 path = [];
 %% Generate Paths
 for i = 1:testing_round
-    start_index = unidrnd(size(points,1));
-    end_index = unidrnd(size(points,1));
+    start_index = unidrnd(size(sigxy.sigs,1));
+    end_index = unidrnd(size(sigxy.sigs,1));
     while end_index == start_index
-        end_index = unidrnd(size(points,1));
+        end_index = unidrnd(size(sigxy.sigs,1));
     end
-    path = [path; points(start_index , :), points(end_index , :)];
+    path = [path; sigxy.x(start_index), sigxy.y(end_index), sigxy.y(start_index), sigxy.y(end_index)];
 end
 
 %% Testing loop

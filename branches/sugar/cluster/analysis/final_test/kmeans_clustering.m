@@ -1,5 +1,4 @@
 clear all;
-load 'sigDataLab.mat';
 load 'sigxyLab.mat';
 cluster_number = 10;
 

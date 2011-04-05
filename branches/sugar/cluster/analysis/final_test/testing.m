@@ -4,7 +4,7 @@ close all;
 load 'trained_data.mat';
 load 'kmeans_cluster.mat';
 RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
-testing_round = 100;
+testing_round = 10000;
 step_len = 50; % 50 cm
 success = []; % measurement: success rate
 step = []; % measurement: steps
@@ -60,4 +60,8 @@ dist_error_std = std(dist_error);
 step_ave = mean(step);
 step_std = std(step);
 error_count = e;
+load 'final_result.mat';
+dist_error_collection = [dist_error_collection; dist_error_mean, dist_error_std];
+step_collection = [step_collection; step_ave, step_std];
+save ('final_result.mat','dist_error_collection','dist_error_collection');
 

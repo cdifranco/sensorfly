@@ -1,18 +1,20 @@
-function [succ cluster_route] = navigate(start_coord, dest_coord, trans_history, matrix, sigxy)
+function [succ cluster_route last_coord] = navigate(start_coord, dest_coord, trans_history, matrix, sigxy)
 succ = 1;
 success_count = 0;
 total_count = 0;
 direction_number = size(trans_history, 2);
 current_coord = start_coord;
+last_coord = current_coord;
 current_index = find(sigxy.x == start_coord(1) & sigxy.y == start_coord(2),1);
 dest_index =  find(sigxy.x == dest_coord(1) & sigxy.y == dest_coord(2),1);
 total_count = total_count + 1;
-current_cluster = sigxy.cluster_id(current_index);
+current_cluster = sigxy.cluster_id(current_index)
 dest_cluster = sigxy.cluster_id(dest_index);
-cluster_route(total_count) = current_cluster;
+cluster_route(total_count) = current_cluster
 
 while 1
     if sigxy.cluster_id(current_index) == dest_cluster
+        last_coord = [sigxy.x(current_index), sigxy.y(current_index)];
         break;
     else
         [path direction] = guide(current_index, dest_cluster, trans_history, matrix, sigxy);
@@ -29,7 +31,7 @@ while 1
         end
         current_index = find(sigxy.x == start_coord(1) & sigxy.y == start_coord(2),1);
         
-        current_cluster = get_cluster_sig(centers, currentSig, baseNumber, distribution_table);
+        current_cluster = sigxy.cluster_id(current_index);
         cluster_route(total_count) = current_cluster;
         if length(path) >= 1 && current_cluster == path(2)
             success_count = success_count + 1;

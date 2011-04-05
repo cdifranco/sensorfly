@@ -4,7 +4,7 @@ close all;
 load 'trained_data.mat';
 load 'kmeans_cluster.mat';
 RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
-testing_round = 10000;
+testing_round = 100;
 step_len = 50; % 50 cm
 success = []; % measurement: success rate
 step = []; % measurement: steps
@@ -19,7 +19,7 @@ for i = 1:testing_round
     while end_index == start_index
         end_index = unidrnd(size(sigxy.sigs,1));
     end
-    path = [path; sigxy.x(start_index), sigxy.y(end_index), sigxy.y(start_index), sigxy.y(end_index)];
+    path = [path; sigxy.x(start_index), sigxy.y(start_index), sigxy.x(end_index), sigxy.y(end_index)];
 end
 
 %% Testing loop
@@ -29,10 +29,10 @@ e = 0;
 
 for j = 1:testing_round
     fprintf('testing round: %d\n', j);
-    startX = path(j,1)
-    startY = path(j,2)
-    destX = path(j,3)
-    destY = path(j,4)
+    startX = path(j,1);
+    startY = path(j,2);
+    destX = path(j,3);
+    destY = path(j,4);
     %create matrix
     noOfNodes = size(trans_history,1);
     matrix = zeros(noOfNodes, noOfNodes);
@@ -47,16 +47,17 @@ for j = 1:testing_round
             end;
         end;
     end;
-    fprintf('start to navigate\n');
     [succ cluster_route last_coord] = navigate([startX, startY], [destX, destY], trans_history, matrix, sigxy);
     if succ == 1
-        len = len + length(cluster_route)/((sum(([startX, startY]-[destX destY]).^2)).^.5);
-        error = error + sum((last_coord-[destX destY]).^2).^.5;
+        step = [step, length(cluster_route)*100/((sum(([startX, startY]-[destX destY]).^2)).^.5)];
+        dist_error = [dist_error, sum((last_coord-[destX destY]).^2).^.5];
     else
         e = e + 1;
     end
 end
-error_rate = error / (testing_round-e)
-step_ave = len / (testing_round-e)
-error_count = e
+dist_error_mean = mean(dist_error);
+dist_error_std = std(dist_error);
+step_ave = mean(step);
+step_std = std(step);
+error_count = e;
 

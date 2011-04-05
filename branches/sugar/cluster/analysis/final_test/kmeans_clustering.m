@@ -7,6 +7,4 @@ opts = statset('Display','final');
 colors = randperm(size(sigxy.ctrs,1));
 scatter(sigxy.x,sigxy.y,75,colors(sigxy.cluster_id),'filled');
 
-if cluster_number == 10
-    save ('kmeans_cluster.mat','sigxy');
-end
+save ('kmeans_cluster.mat','sigxy');

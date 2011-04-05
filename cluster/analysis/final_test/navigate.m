@@ -1,10 +1,10 @@
-function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, baseNumber, transHistory, centers, points, matrix, std_sig, distribution_table, base_number)
+function [succ sigRoute clusterRoute coordRoute startCluster destCluster] = navigate(startCoord, destCoord, anchor_number, transHistory, matrix, sigxy)
 succ = 1;
 successCnt = 0;
 totalCnt = 0;
-directionNumber = size(transHistory, 2);
+direction_number = size(transHistory, 2);
 currentCoord = startCoord;
-currentSig = std_sig(std_sig(:,1) == startCoord(1) & std_sig(:,2) == startCoord(2), 5:2:end);
+current_index = [sigxy.sigs(sigxy.x == startCoord(1) & sigxy.y == startCoord(2), 5:2:end)];
 totalCnt = totalCnt + 1;
 sigRoute(totalCnt, 1:baseNumber) = currentSig;
 coordRoute(totalCnt, 1:2) = currentCoord;
@@ -23,7 +23,7 @@ while 1
         path
         direction
         if isempty(path)
-            rand_direction = ceil(directionNumber*rand);
+            rand_direction = ceil(direction_number*rand);
             currentCoord = get_next_step(rand_direction, currentCoord, points);
         else
             currentCoord = get_next_step(direction(1), currentCoord, points);

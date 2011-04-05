@@ -9,10 +9,11 @@ while ~isvalid_point
     new_x = round(old_x/10 + step_len * cos(angle))*10;
     new_y = round(old_y/10 + step_len * sin(angle))*10;
     if isempty(find(sigxy.x == new_x & sigxy.x == new_y, 1)) 
+        %fprintf('invalid points\n');
         continue;
     else
         isvalid_point = 1;
         next_point_index = find(sigxy.x == new_x & sigxy.x == new_y, 1);
     end
 end
-direction = direction_convert(angle);
+direction = direction_convert(angle)

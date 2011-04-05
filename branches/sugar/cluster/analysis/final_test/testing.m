@@ -25,7 +25,7 @@ end
 %% Testing loop
 len = 0;
 error = 0;
-e = 0;
+error_count = 0;
 
 for j = 1:testing_round
     fprintf('testing round: %d\n', j);
@@ -49,19 +49,19 @@ for j = 1:testing_round
     end;
     [succ cluster_route last_coord] = navigate([startX, startY], [destX, destY], trans_history, matrix, sigxy);
     if succ == 1
-        step = [step, length(cluster_route)*100/((sum(([startX, startY]-[destX destY]).^2)).^.5)];
+        step = [step, length(cluster_route)*100/((sum((last_coord-[destX destY]).^2)).^.5)];
         dist_error = [dist_error, sum((last_coord-[destX destY]).^2).^.5];
     else
-        e = e + 1;
+        error_count = error_count + 1
     end
 end
 dist_error_mean = mean(dist_error);
 dist_error_std = std(dist_error);
 step_ave = mean(step);
 step_std = std(step);
-error_count = e;
-load 'final_result.mat';
-dist_error_collection = [dist_error_collection; dist_error_mean, dist_error_std];
-step_collection = [step_collection; step_ave, step_std];
-save ('final_result.mat','dist_error_collection','dist_error_collection');
+load 'final_result_controlled.mat';
+dist_error_collection_controlled = [dist_error_collection_controlled; dist_error_mean, dist_error_std];
+step_collection_controlled = [step_collection_controlled; step_ave, step_std];
+error_count_collection_controlled = [error_count_collection_controlled, error_count];
+save ('final_result_controlled.mat','dist_error_collection_controlled','step_collection_controlled','error_count_collection_controlled');
 

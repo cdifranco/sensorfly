@@ -5,7 +5,6 @@ load 'trained_data.mat';
 load 'kmeans_cluster.mat';
 RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
 testing_round = 1000;
-step_len = 50; % 50 cm
 success = []; % measurement: success rate
 step = []; % measurement: steps
 dist_error = []; % measurement: distance error

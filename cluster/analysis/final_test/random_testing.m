@@ -45,7 +45,7 @@ for j = 1:testing_round
     end;
     [succ cluster_route last_coord] = random_navigate([startX, startY], [destX, destY], trans_history, matrix, sigxy);
     if succ == 1
-        step = [step, length(cluster_route)*100/((sum((last_coord-[destX destY]).^2)).^.5)];
+        step = [step, length(cluster_route)*100/((sum(([startX, startY]-[destX destY]).^2)).^.5)];
         dist_error = [dist_error, sum((last_coord-[destX destY]).^2).^.5];
     else
         error_count = error_count + 1

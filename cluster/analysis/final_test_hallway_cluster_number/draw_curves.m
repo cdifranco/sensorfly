@@ -18,7 +18,10 @@ figure;
 plot(cluster_number_record(p1), step_collection_controlled(p1,1), 'b');
 hold on;
 plot(cluster_number_record(p1), step_collection_random(p1,1), 'r');
+hold on;
+plot([min(cluster_number_record(p1)), max(cluster_number_record(p1))], [1/0.45, 1/0.45], 'g');
 hold off;
+axis ([min(cluster_number_record(p1)), max(cluster_number_record(p1)), 0, max(step_collection_random(p2,1))]);
 %{
 figure;
 

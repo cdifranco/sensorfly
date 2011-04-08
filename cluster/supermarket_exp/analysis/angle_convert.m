@@ -1,3 +1,4 @@
+% convert direction information into angle
 function angle = angle_convert(direction)
 if  direction == 2 
     angle = mod(315 + unidrnd(90),360);

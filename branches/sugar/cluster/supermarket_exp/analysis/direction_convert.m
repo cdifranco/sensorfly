@@ -1,3 +1,5 @@
+% convert current reading into direction info based on the reading at that
+% point
 function dir = direction_convert(real_dir, reference_dir)
 relative_dir = mod(reference_dir - real_dir, 3600);
 if  relative_dir <= 450 || relative_dir > 3150

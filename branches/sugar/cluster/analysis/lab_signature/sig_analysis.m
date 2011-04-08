@@ -66,6 +66,7 @@ axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_com
 datetick;
 figure;
 %%
+%{
 subplot(3,1,1);
 plot(node_21_timestamp, node_21_reading_edist/max(node_21_reading_edist));
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, 1]);% max(node_21_reading_edist)]);
@@ -79,18 +80,25 @@ plot(node_21_timestamp, node_21_reading_sig_9/max(node_21_reading_sig_9));
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, 1]);% max(node_21_reading_sig_9)]);
 datetick;
 figure;
+%}
 subplot(3,1,1);
 plot(node_21_timestamp, node_21_reading_edist);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_edist)]);
 datetick;
+xlabel('Time');
+ylabel('Eclidean Distance');
 subplot(3,1,2);
 plot(node_21_timestamp, node_21_reading_sig_1);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_1)]);
 datetick;
+xlabel('Time');
+ylabel('Distance');
 subplot(3,1,3);
 plot(node_21_timestamp, node_21_reading_sig_9);
 axis([min(node_21_timestamp), max(node_21_timestamp), 0, max(node_21_reading_sig_9)]);
 datetick;
+xlabel('Time');
+ylabel('Distance');
 
 %{
 subplot(5,7,[1:5 8:12 15:19 22:26 29:33]);

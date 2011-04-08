@@ -1,5 +1,5 @@
 clear all;
-load 'sigxyHallway.mat';
+load 'sigxyHallway3.mat';
 load 'parameters.mat';
 load 'anchor_amount.mat';
 

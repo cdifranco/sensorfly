@@ -8,7 +8,7 @@ testing_round = 1000;
 success = []; % measurement: success rate
 step = []; % measurement: steps
 dist_error = []; % measurement: distance error
-trans_init_number = 1;
+trans_init_number = 1000;
 direction_number = 4;
 path = [];
 %% Generate Paths
@@ -48,7 +48,7 @@ for j = 1:testing_round
     end;
     [succ cluster_route last_coord] = navigate([startX, startY], [destX, destY], trans_history, matrix, sigxy);
     if succ == 1
-        step = [step, length(cluster_route)*100/((sum(([startX, startY]-[startX, startY]).^2)).^.5)];
+        step = [step, length(cluster_route)*100/((sum(([startX, startY]-[destX, destY]).^2)).^.5)];
         dist_error = [dist_error, sum((last_coord-[destX destY]).^2).^.5];
     else
         error_count = error_count + 1

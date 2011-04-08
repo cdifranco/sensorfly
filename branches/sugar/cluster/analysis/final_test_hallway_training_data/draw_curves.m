@@ -36,5 +36,8 @@ figure;
 plot(training_round_record(p2), step_collection_controlled(p2,1), 'b');
 hold on;
 plot(training_round_record(p2), step_collection_random(p2,1), 'r');
+hold on;
+plot([min(training_round_record(p2)), max(training_round_record(p2))], [1/0.45, 1/0.45], 'g');
 hold off;
+axis ([min(training_round_record(p2)), max(training_round_record(p2)), 0, max(step_collection_random(p2,1))]);
 

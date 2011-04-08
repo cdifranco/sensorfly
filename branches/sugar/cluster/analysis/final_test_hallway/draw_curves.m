@@ -36,5 +36,8 @@ figure;
 plot(p2, step_collection_controlled(p2,1), 'b');
 hold on;
 plot(p2, step_collection_random(p2,1), 'r');
+hold on;
+plot([min(p2), max(p2)], [1/0.45, 1/0.45], 'g');
 hold off;
+axis ([min(p2), max(p2), 0, max(step_collection_random(p2,1))]);
 

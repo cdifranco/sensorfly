@@ -1,6 +1,7 @@
 % Main
 clear all;
 close all;
+%{
 dist_error_collection_controlled = [];
 step_collection_controlled = [];
 error_count_collection_controlled = [];
@@ -17,6 +18,7 @@ save ('final_result_controlled.mat','dist_error_collection_controlled','step_col
 save ('final_result_random.mat','dist_error_collection_random','step_collection_random','error_count_collection_random');
 save ('testing_parameters_record.mat', 'training_round_record', 'cluster_number_record','anchor_number_record');
 clear all;
+
 
 for anchor_number = 10:10
     save ('anchor_amount.mat', 'anchor_number');

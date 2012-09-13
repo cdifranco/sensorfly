@@ -1,0 +1,20 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+To use the settings as in the Chinese supermarket, you need to set for the following.
+
+
+= Details =
+
+ARM code: 
+- Define BASE/ANCHOR/NODE
+- Give ID to the device
+
+AVR code:
+- Define whether it is base or not (app.h)
+
+Matlab code:
+- base_id
+- base_numbr
+- node_id 
